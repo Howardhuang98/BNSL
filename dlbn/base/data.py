@@ -52,6 +52,9 @@ class Data:
         return count
 
     def contingency_table(self):
+        """
+        计算该data的contingency table: pd.Dataframe
+        """
         con_tb = pd.DataFrame(columns=list(self.variables) + ['count'])
         conditions = {}
         for var in self.variables:
