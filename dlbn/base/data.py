@@ -8,6 +8,7 @@
 """
 
 import pandas as pd
+import itertools
 
 
 class Data:
@@ -31,6 +32,7 @@ class Data:
         """
         状态计数器，用于计算特定的条件下的样本数
         parameters:
+        dict: {'A':1, 'B': 2}
         for example (A = 1, B = 2)
         """
         query = kwargs
@@ -49,12 +51,28 @@ class Data:
 
         return count
 
-    def contingency_table(self, **kwargs):
+    def contingency_table(self):
+        con_tb = pd.DataFrame(columns=list(self.variables) + ['count'])
+        conditions = {}
+        for var in self.variables:
+            conditions[var] = self._collect_state_names(var)
+        for condition in itertools.product(*conditions.values()):
+            condition = dict(zip(self.variables, condition))
+            condition['count'] = self._state_count(**condition)
+            con_tb.loc[con_tb.shape[0]] = condition
+
+        return con_tb
+
+    def AD_tree(self):
+        """
+        采用AD_tree数据结构进行储存contingency_table
+        """
         pass
 
 
 if __name__ == '__main__':
     data = pd.read_excel(r"../test/test_data.xlsx")
     a = Data(data)
-    print(a.variables)
+    print(a._collect_state_names('A'))
     print(a._state_count(A=1, B=0))
+    print(a.contingency_table())
