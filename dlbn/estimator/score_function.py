@@ -47,7 +47,20 @@ class BicScore(Score):
         num_child_states = len(self.contingency_table.state_names[child])
         penalization = 0.5 * np.log(sample_size) * num_parents_states * (num_child_states - 1)
 
-        return likelihood-penalization
+        return likelihood - penalization
+
+
+class MdlScore(BicScore):
+    def __init__(self, contingency_table):
+        """
+        MDL score is opposite number of BIC score
+        :param contingency_table:
+        """
+        super(MdlScore, self).__init__(contingency_table)
+
+    def local_score(self, child: str, parents: list):
+        score = -super(MdlScore, self).local_score(child, parents)
+        return score
 
 
 if __name__ == '__main__':
@@ -56,3 +69,6 @@ if __name__ == '__main__':
     b = a.contingency_table()
     s = BicScore(b)
     print(s.local_score('A', ['B', 'C']))
+    m = MdlScore(b)
+    print(m.contingency_table)
+    print(m.local_score('A', ['B', 'C']))
