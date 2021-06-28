@@ -7,8 +7,9 @@
 ------------
 """
 
-import pandas as pd
 import itertools
+
+import pandas as pd
 
 
 class Data:
@@ -62,6 +63,24 @@ class Data:
 
         return count
 
+    def state_count_in_conTB(self, **kwargs):
+        query = kwargs
+        columns = list(query.keys())
+        indexes = []
+        for index, series in self.DataFrame.loc[:, columns].iterrows():
+            flag = True
+            for _ in query.items():
+                if series[_[0]] == _[1]:
+                    continue
+                else:
+                    flag = False
+                    break
+            if flag:
+                indexes.append(index)
+        count = self.DataFrame.loc[indexes, 'count'].sum()
+
+        return count
+
     def contingency_table(self):
         """
         计算该data的contingency table: pd.Dataframe
@@ -75,7 +94,7 @@ class Data:
             condition['count'] = self.state_count(**condition)
             con_tb.loc[con_tb.shape[0]] = condition
         con_tb = con_tb[con_tb['count'] != 0]
-        con_tb.reset_index(drop=True,inplace=True)
+        con_tb.reset_index(drop=True, inplace=True)
         return con_tb
 
     def AD_tree(self):
@@ -91,3 +110,6 @@ if __name__ == '__main__':
     print(a.collect_state_names(['A', 'B']))
     print(a.state_count(A=1, B=0))
     print(a.contingency_table())
+    b = Data(a.contingency_table())
+    config = {'B': 0, 'C': 0}
+    print(b.state_count_in_conTB(**config))
