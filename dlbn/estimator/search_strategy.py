@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 """
-@File    :   search_trategy.py    
+@File    :   search_strategy.py
 @Contact :   huanghoward@foxmail.com
 @Modify Time :    2021/6/28 15:30  
 ------------      
