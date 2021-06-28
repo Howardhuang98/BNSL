@@ -21,14 +21,25 @@ class Data:
         self.variables = list(DataFrame.columns.values)
         self.state_names = dict()
         for var in self.variables:
-            self.state_names[var] = self._collect_state_names(var)
+            self.state_names[var] = self.collect_state_names(var)
 
-    def _collect_state_names(self, variable):
-        """Return a list of states that the variable takes in the data."""
-        states = sorted(list(self.DataFrame.loc[:, variable].unique()))
-        return states
+    def collect_state_names(self, variable):
+        """Return a list of states that the variable takes in the data.
+        'A'->[1,0]
+        ['A','B']->[(1, 0), (2, 1)]  where list[tuple()]
+        """
+        if isinstance(variable, str):
+            states = sorted(list(self.DataFrame.loc[:, variable].unique()))
+            return states
+        if isinstance(variable, list):
+            list_data = []
+            for i, s in self.DataFrame[variable].iterrows():
+                s = tuple(s.values.tolist())
+                list_data.append(s)
+            states = list(set(list_data))
+            return states
 
-    def _state_count(self, **kwargs):
+    def state_count(self, **kwargs):
         """
         状态计数器，用于计算特定的条件下的样本数
         parameters:
@@ -58,12 +69,13 @@ class Data:
         con_tb = pd.DataFrame(columns=list(self.variables) + ['count'])
         conditions = {}
         for var in self.variables:
-            conditions[var] = self._collect_state_names(var)
+            conditions[var] = self.collect_state_names(var)
         for condition in itertools.product(*conditions.values()):
             condition = dict(zip(self.variables, condition))
-            condition['count'] = self._state_count(**condition)
+            condition['count'] = self.state_count(**condition)
             con_tb.loc[con_tb.shape[0]] = condition
-
+        con_tb = con_tb[con_tb['count'] != 0]
+        con_tb.reset_index(drop=True,inplace=True)
         return con_tb
 
     def AD_tree(self):
@@ -76,6 +88,6 @@ class Data:
 if __name__ == '__main__':
     data = pd.read_excel(r"../test/test_data.xlsx")
     a = Data(data)
-    print(a._collect_state_names('A'))
-    print(a._state_count(A=1, B=0))
+    print(a.collect_state_names(['A', 'B']))
+    print(a.state_count(A=1, B=0))
     print(a.contingency_table())
