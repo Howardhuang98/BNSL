@@ -9,3 +9,4 @@
 from dlbn.base import *
 
 g = DAG()
+max()
