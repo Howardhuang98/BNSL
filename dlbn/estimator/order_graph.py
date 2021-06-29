@@ -8,8 +8,6 @@
 """
 from itertools import permutations
 
-import networkx as nx
-
 from dlbn import DAG
 
 
@@ -31,17 +29,16 @@ class OrderGraph(DAG):
                     previous = [node]
                     previous_name = frozenset(previous)
                 else:
-                    node_name = frozenset(previous+[node])
+                    node_name = frozenset(previous + [node])
                     self.add_node(node_name)
-                    self.add_edge(previous_name,node_name)
-                    previous = previous+[node]
+                    self.add_edge(previous_name, node_name)
+                    previous = previous + [node]
                     previous_name = frozenset(previous)
         return self
 
 
-
 if __name__ == '__main__':
-    variables = ['X1', 'X2', 'X3']
+    variables = ['X1', 'X2', 'X3','X4']
     a = OrderGraph(variables)
     a.generate_order_graph()
     print(len(a.nodes))

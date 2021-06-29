@@ -1,5 +1,6 @@
+from itertools import combinations
+
 import numpy as np
-import pandas as pd
 
 from dlbn.base import *
 
@@ -33,7 +34,7 @@ class BicScore(Score):
         :param contingency_table: pd.Dataframe or Data
         """
         super(BicScore, self).__init__()
-        if isinstance(contingency_table,pd.DataFrame):
+        if isinstance(contingency_table, pd.DataFrame):
             self.contingency_table = Data(contingency_table)
         else:
             self.contingency_table = contingency_table
@@ -52,6 +53,18 @@ class BicScore(Score):
         penalization = 0.5 * np.log(sample_size) * num_parents_states * (num_child_states - 1)
 
         return likelihood - penalization
+
+    def find_optimal_parents(self, child: str, potential_parents: list):
+        optimal_parents = potential_parents
+        score = self.local_score(child, optimal_parents)
+        for i in range(len(potential_parents)):
+            for parents in combinations(potential_parents, i):
+                parents = list(parents)
+                new_score = self.local_score(child, parents)
+                if new_score > score:
+                    optimal_parents = parents
+
+        return optimal_parents, score
 
 
 class MdlScore(BicScore):
@@ -74,5 +87,5 @@ if __name__ == '__main__':
     s = BicScore(b)
     print(s.local_score('A', ['B', 'C']))
     m = MdlScore(b)
-    print(m.contingency_table)
     print(m.local_score('A', ['B', 'C']))
+    print(s.find_optimal_parents('A', ['B', 'C']))
