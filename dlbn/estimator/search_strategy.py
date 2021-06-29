@@ -8,6 +8,9 @@
 """
 from itertools import permutations
 
+import pandas as pd
+from tqdm import trange
+
 from score_function import *
 
 
@@ -20,7 +23,7 @@ class SearchStrategy:
 
 
 class HillClimb(SearchStrategy):
-    def __init__(self, score_function, data):
+    def __init__(self, score_function, data, max_iter=1000, initial_dag: DAG = None, show_process=True):
         """
         hill climb search
         :param score_function: BicScore,MdlScore
@@ -31,6 +34,13 @@ class HillClimb(SearchStrategy):
             data = Data(data)
         self.data = data
         self.score = score_function(data.contingency_table())
+        self.max_iter = max_iter
+        if not initial_dag:
+            self.initial_DAG = DAG()
+        else:
+            self.initial_DAG = initial_dag
+        self.initial_DAG.add_nodes_from(self.data.variables)
+        self.show_process = show_process
 
     def legal_operation(self, dag: DAG):
         """
@@ -39,7 +49,6 @@ class HillClimb(SearchStrategy):
         :param DAG
         :yield (legal operation, score diff)
         """
-        dag.add_nodes_from(self.data.variables)
         # all potential operation for adding edges
         potential_adding_edges = (
                 set(permutations(self.data.variables, 2))
@@ -99,12 +108,30 @@ class HillClimb(SearchStrategy):
                 score_diff = new_score - old_score
                 yield operation, score_diff
 
+    def run(self):
+        start_dag = self.initial_DAG
+        if self.show_process:
+            iteration = trange(self.max_iter)
+        else:
+            iteration = range(int(self.max_iter))
+        current_dag = start_dag
+        for _ in iteration:
+            best_operation, best_score_diff = max(self.legal_operation(current_dag), key=lambda x: x[1])
+            if best_operation[0] == '+':
+                current_dag.add_edge(*best_operation[1])
+            elif best_operation[0] == '-':
+                current_dag.remove_edge(*best_operation[1])
+            elif best_operation[0] == 'rev':
+                X, Y = best_operation[1]
+                current_dag.remove_edge(X, Y)
+                current_dag.add_edge(Y, X)
+
+        return current_dag
+
 
 if __name__ == '__main__':
-    pddata = pd.read_excel(r"../test/test_data.xlsx")
-    hc = HillClimb(BicScore, pddata)
-    g = DAG()
-    g.add_edges_from([('A', 'B'), ('C', 'B')])
-    generator = hc.legal_operation(g)
-    print(type(generator))
-    print(max(generator))
+    pddata = pd.read_csv(r"../datasets/Asian.csv",index_col=False)
+    hc = HillClimb(BicScore, pddata,max_iter=500)
+    result = hc.run()
+    print(result.edges)
+

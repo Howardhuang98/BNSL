@@ -10,6 +10,7 @@
 import itertools
 
 import pandas as pd
+from tqdm import tqdm
 
 
 class Data:
@@ -89,7 +90,7 @@ class Data:
         conditions = {}
         for var in self.variables:
             conditions[var] = self.collect_state_names(var)
-        for condition in itertools.product(*conditions.values()):
+        for condition in tqdm(itertools.product(*conditions.values()),desc="Generating the contingency table"):
             condition = dict(zip(self.variables, condition))
             condition['count'] = self.state_count(**condition)
             con_tb.loc[con_tb.shape[0]] = condition
