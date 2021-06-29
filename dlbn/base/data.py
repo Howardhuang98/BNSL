@@ -82,7 +82,7 @@ class Data:
 
         return count
 
-    def contingency_table(self):
+    def contingency_table(self, save_dir:str = None):
         """
         计算该data的contingency table: pd.Dataframe
         """
@@ -96,6 +96,8 @@ class Data:
             con_tb.loc[con_tb.shape[0]] = condition
         con_tb = con_tb[con_tb['count'] != 0]
         con_tb.reset_index(drop=True, inplace=True)
+        if save_dir:
+            con_tb.to_excel(save_dir)
         return con_tb
 
     def AD_tree(self):

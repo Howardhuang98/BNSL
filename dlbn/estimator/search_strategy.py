@@ -8,10 +8,9 @@
 """
 from itertools import permutations
 
-import pandas as pd
 from tqdm import trange
 
-from score_function import *
+from dlbn.estimator.score_function import *
 
 
 class SearchStrategy:
@@ -31,9 +30,10 @@ class HillClimb(SearchStrategy):
         """
         super(HillClimb, self).__init__()
         if isinstance(data, pd.DataFrame):
-            data = Data(data)
-        self.data = data
-        self.score = score_function(data.contingency_table())
+            self.data = Data(data)
+        else:
+            self.data = data
+        self.score = score_function(self.data.contingency_table())
         self.max_iter = max_iter
         if not initial_dag:
             self.initial_DAG = DAG()

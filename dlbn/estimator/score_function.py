@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from dlbn.base import *
 
@@ -29,10 +30,13 @@ class BicScore(Score):
     def __init__(self, contingency_table):
         """
 
-        :param contingency_table: pd.Dataframe
+        :param contingency_table: pd.Dataframe or Data
         """
         super(BicScore, self).__init__()
-        self.contingency_table = Data(contingency_table)
+        if isinstance(contingency_table,pd.DataFrame):
+            self.contingency_table = Data(contingency_table)
+        else:
+            self.contingency_table = contingency_table
 
     def local_score(self, child: str, parents: list):
         likelihood = 0
