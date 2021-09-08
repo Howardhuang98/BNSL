@@ -9,8 +9,7 @@
 import numpy as np
 import pandas as pd
 from numpy import log
-
-from DAG import DAG
+from dlbn.direct_graph import *
 
 
 class Score:
@@ -87,5 +86,5 @@ class MDL_score(Score):
 
 if __name__ == '__main__':
     dag = DAG()
-    s = MDL_score(pd.read_csv(r"../datasets/Asian.csv"), dag)
+    s = MDL_score(pd.read_csv(r"datasets/Asian.csv"))
     print(s.local_score('smoke', ['tub', 'lung']))

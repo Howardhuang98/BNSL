@@ -7,16 +7,44 @@
 ------------      
 """
 from itertools import permutations
+from datetime import datetime
 
-from dlbn.base.score import *
+import networkx as nx
+from tqdm import tqdm
 
+from dlbn.score import *
+"""
+OrderGraph class
+ParentGraph class
+
+            workflow:
+            
+            OrderGraph
+                |
+            generate order graph
+                |                       |-parent graph
+            add cost on order graph ----|-add cost on parent graph
+                |                       |-find optimal parents
+            find shortest path
+
+
+"""
 
 class OrderGraph(DAG):
+    """
+    Order graph class
+    base on a list of variable, initialize an order graph.
+
+    """
     def __init__(self, variables: list):
         self.variables = variables
+        self.shortest_path = None
         super(OrderGraph, self).__init__()
 
     def generate_order_graph(self):
+        """
+        generate order graph. if there is n variable, there will be 2^n-1 states(nodes) in graph
+        """
         for order in permutations(self.variables):
             previous = []
             previous_name = frozenset(previous)
@@ -37,10 +65,15 @@ class OrderGraph(DAG):
         return self
 
     def add_cost(self, score_method: Score, data: pd.DataFrame):
+        """
+        use score method to add cost on edges.
+        :param score_method:
+        :param data:
+        :return:
+        """
         if not self.edges:
             raise ValueError("please run generate_order_graph")
-        for _, edge in enumerate(self.edges):
-            print("{}个边".format(_))
+        for edge in tqdm(self.edges,desc="adding cost",colour='green',miniters=1):
             u = edge[0]
             v = edge[1]
             # new added node: x
@@ -58,7 +91,39 @@ class OrderGraph(DAG):
         return self
 
     def find_shortest_path(self):
-        pass
+        start = frozenset()
+        end = frozenset(self.variables)
+        shortest_path = nx.dijkstra_path(self,start,end,weight='cost')
+        self.shortest_path = shortest_path
+        return shortest_path
+
+    def optimal_result(self,io:str=None):
+        """
+        store the optimal result
+        :param io:
+        :return:
+        """
+        if not self.shortest_path:
+            raise ValueError("please run find_shortest_path()")
+        else:
+            result_dag = DAG()
+            cost_list = []
+            if not io:
+                now = datetime.now()
+                io = "{}-{}-{}-{}-{}.csv".format(now.year,now.month,now.day,now.hour,now.second)
+            for i in range(len(self.shortest_path)-1):
+                u = self.shortest_path[i]
+                v = self.shortest_path[i + 1]
+                cost = self.edges[u, v]['cost']
+                optimal_parents = list(self.edges[u,v]['optimal_parents'])
+                variable = str(list(v-u)[0])
+                for parent in optimal_parents:
+                    result_dag.add_edge(parent,variable)
+                cost_list.append(cost)
+            result_df = nx.to_pandas_edgelist(result_dag)
+            result_df['score'] = sum(cost_list)
+            result_df.to_csv(io)
+        return result_dag
 
 
 class ParentGraph(OrderGraph):
@@ -96,9 +161,9 @@ class ParentGraph(OrderGraph):
 
 
 if __name__ == '__main__':
-    data = pd.read_csv(r"../datasets/Asian.csv")
+    data = pd.read_excel(r"./datasets/simple.xlsx")
     variables = list(data.columns)
     og = OrderGraph(variables)
     og.generate_order_graph()
     og.add_cost(MDL_score, data)
-    print(og.edges.data())
+    og.find_shortest_path()
