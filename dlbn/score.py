@@ -7,8 +7,9 @@
 ------------      
 """
 import numpy as np
+import pandas as pd
 
-from dlbn.direct_graph import *
+from dlbn.direct_graph import DAG
 
 
 class Score:
@@ -51,7 +52,7 @@ class MDL_score(Score):
             self.data.groupby([x] + parents).size().unstack(parents)
         )
         row_index = self.state_names[x]
-        if len(parents)==1:
+        if len(parents) == 1:
             column_index = parents_states[0]
         else:
             column_index = pd.MultiIndex.from_product(parents_states, names=parents)
@@ -113,4 +114,4 @@ class BIC_score(Score):
 if __name__ == '__main__':
     dag = DAG()
     s = MDL_score(pd.read_csv(r"../datasets/Asian.csv"))
-    print(s.local_score('smoke', ['tub','asia','xray']))
+    print(s.local_score('smoke', ['tub', 'asia', 'xray']))
