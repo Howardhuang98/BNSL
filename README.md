@@ -10,7 +10,7 @@ Here you can use:
 
 ## Project structure
 
-![workflow](images\dlbn_workflow.png)
+![workflow](blob/master/images/dlbn_workflow.png)
 
 ## Acknowledgement
 
