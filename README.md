@@ -1,4 +1,4 @@
-![log](https://raw.githubusercontent.com/Howardhuang98/DLBN/master/images/dlbn_log.svg)
+![log](https://raw.githubusercontent.com/Howardhuang98/DLBN/master/images/log.png)
 # Deep Learning Bayesian Network
 
 A Bayesian network structure learning package based on deep learning. Still developing ...  
