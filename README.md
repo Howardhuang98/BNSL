@@ -10,7 +10,7 @@ Here you can use:
 
 ## Project structure
 
-![](I:\python_project\DLBN\images\dlbn_workflow.png)
+![](images\dlbn_workflow.png)
 
 ## Acknowledgement
 
