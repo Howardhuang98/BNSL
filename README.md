@@ -1,10 +1,11 @@
-# Deep learning Bayesian network
+![log](https://raw.githubusercontent.com/Howardhuang98/DLBN/master/images/dlbn_log.svg)
+# Deep Learning Bayesian Network
 
 A Bayesian network structure learning package based on deep learning. Still developing ...  
 
 Author: Huang Hao   
-School: Tianjin University, Priceless Lab
-Here you can use:
+School: Tianjin University, Priceless Lab  
+##Here you can use:
 * greedy hill climb
 * dynamic program: shortest path perspective
 
@@ -13,5 +14,5 @@ Here you can use:
 ![workflow](https://raw.githubusercontent.com/Howardhuang98/DLBN/master/images/dlbn_workflow.png)
 
 ## Acknowledgement
-
+Any question, feel free to email me!
 
