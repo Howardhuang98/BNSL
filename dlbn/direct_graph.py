@@ -9,6 +9,8 @@
 import networkx as nx
 import pandas as pd
 
+from dlbn.score import Score
+
 
 class DAG(nx.DiGraph):
     """
@@ -31,6 +33,20 @@ class DAG(nx.DiGraph):
             return False
         else:
             return cycles
+
+    def score(self, score_method: Score, data: pd.DataFrame, detail=False):
+        score_dict = {}
+        score_list = []
+        for node in self.nodes:
+            parents = list(self.predecessors(node))
+            s = score_method(data)
+            local_score = s.local_score(node, parents)
+            score_list.append(local_score)
+            if detail:
+                score_dict[node]=local_score
+        if detail:
+            return sum(score_list),score_dict
+        return sum(score_list)-10e10
 
     def to_excel(self, path: str):
         edge_list = self.edges

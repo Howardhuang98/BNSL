@@ -6,13 +6,14 @@
 @Modify Time :    2021/6/29 14:03  
 ------------      
 """
+import logging
 from itertools import permutations
-from datetime import datetime
 
-import networkx as nx
 from tqdm import tqdm
 
 from dlbn.score import *
+from dlbn.direct_graph import *
+
 """
 OrderGraph class
 ParentGraph class
@@ -30,12 +31,14 @@ ParentGraph class
 
 """
 
+
 class OrderGraph(DAG):
     """
     Order graph class
     base on a list of variable, initialize an order graph.
 
     """
+
     def __init__(self, variables: list):
         self.variables = variables
         self.shortest_path = None
@@ -73,7 +76,7 @@ class OrderGraph(DAG):
         """
         if not self.edges:
             raise ValueError("please run generate_order_graph")
-        for edge in tqdm(self.edges,desc="adding cost",colour='green',miniters=1):
+        for edge in tqdm(self.edges, desc="Adding cost", colour='green', miniters=1):
             u = edge[0]
             v = edge[1]
             # new added node: x
@@ -82,22 +85,23 @@ class OrderGraph(DAG):
             if u:
                 pg = ParentGraph(x, list(u))
                 pg.generate_order_graph()
-                pg.add_cost(MDL_score, data)
+                pg.add_cost(score_method, data)
                 optimal_parents, cost = pg.find_optimal_parents()
                 self.add_edge(u, v, cost=cost, optimal_parents=optimal_parents)
+                logging.info("{}->{},cost={},optimal_parents={}".format(u, v, cost, optimal_parents))
             else:
-                self.add_edge(u, v, cost=0, optimal_parents=frozenset())
+                self.add_edge(u,v,cost=0, optimal_parents=frozenset())
 
         return self
 
     def find_shortest_path(self):
         start = frozenset()
         end = frozenset(self.variables)
-        shortest_path = nx.dijkstra_path(self,start,end,weight='cost')
+        shortest_path = nx.dijkstra_path(self, start, end, weight='cost')
         self.shortest_path = shortest_path
         return shortest_path
 
-    def optimal_result(self,io:str=None):
+    def optimal_result(self):
         """
         store the optimal result
         :param io:
@@ -108,21 +112,16 @@ class OrderGraph(DAG):
         else:
             result_dag = DAG()
             cost_list = []
-            if not io:
-                now = datetime.now()
-                io = "{}-{}-{}-{}-{}.csv".format(now.year,now.month,now.day,now.hour,now.second)
-            for i in range(len(self.shortest_path)-1):
+
+            for i in range(len(self.shortest_path) - 1):
                 u = self.shortest_path[i]
                 v = self.shortest_path[i + 1]
                 cost = self.edges[u, v]['cost']
-                optimal_parents = list(self.edges[u,v]['optimal_parents'])
-                variable = str(list(v-u)[0])
+                optimal_parents = list(self.edges[u, v]['optimal_parents'])
+                variable = str(list(v - u)[0])
                 for parent in optimal_parents:
-                    result_dag.add_edge(parent,variable)
+                    result_dag.add_edge(parent, variable)
                 cost_list.append(cost)
-            result_df = nx.to_pandas_edgelist(result_dag)
-            result_df['score'] = sum(cost_list)
-            result_df.to_csv(io)
         return result_dag
 
 
@@ -154,7 +153,7 @@ class ParentGraph(OrderGraph):
         if not self.edges:
             raise ValueError("Parents graph is empty, please run add_cost() !")
         else:
-            optimal_tuple = max(self.edges.data(), key=lambda x: x[2]["cost"])
+            optimal_tuple = min(self.edges.data(), key=lambda x: x[2]["cost"])
             optimal_parents = optimal_tuple[1]
             cost = optimal_tuple[2]['cost']
         return optimal_parents, cost
