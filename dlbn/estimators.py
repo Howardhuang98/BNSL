@@ -80,8 +80,16 @@ if __name__ == '__main__':
     data = pd.read_csv(r"../datasets/Asian.csv")
     est = HC_estimator(data)
     est.run(num_iteration=100,score_method=MDL_score,direction='down')
+    est.show()
+    asia_net = DAG()
+    asia_net.read_excel(r"../datasets/Asian net.xlsx")
+    shd = est.result_dag - asia_net
+    print(shd)
     est2 = estimator(data)
     est2.run()
-    est.show()
     est2.show()
+    shd2 = est2.result_dag - asia_net
+    print(shd2)
+
+
 

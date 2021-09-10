@@ -113,5 +113,7 @@ class BIC_score(Score):
 
 if __name__ == '__main__':
     dag = DAG()
-    s = MDL_score(pd.read_csv(r"../datasets/Asian.csv"))
-    print(s.local_score('smoke', ['tub', 'asia', 'xray']))
+    dag.read_excel(r"../datasets/cancer net.xlsx")
+    data = pd.read_csv(r"../datasets/cancer.csv",index_col=0)
+    s = dag.score(MDL_score,data)
+    print(s)

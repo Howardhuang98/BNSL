@@ -8,8 +8,7 @@
 """
 import networkx as nx
 import pandas as pd
-
-
+from matplotlib import pyplot as plt
 
 
 class DAG(nx.DiGraph):
@@ -73,14 +72,32 @@ class DAG(nx.DiGraph):
         else:
             raise ValueError("cannot subtract DAG instance with other instance")
 
+    def read_excel(self, path: str):
+        """
+        here we need excel written in this format:
+
+            source node   target node
+        1       a            b
+        2       a            c
+       ...       ...          ...
+        :param path:
+        :return:
+        """
+        data = pd.read_excel(path)
+        edge_list = []
+        for row_tuple in data.iterrows():
+            u = row_tuple[1]['source node']
+            v = row_tuple[1]['target node']
+            edge_list.append((u, v))
+        self.add_edges_from(edge_list)
+        return self
+
+    def show(self,score_method,data:pd.DataFrame):
+        nx.draw_networkx(self)
+        plt.title("Bayesian network with Score={}".format(self.score(score_method,data)))
+        plt.show()
+        return None
+
+
 if __name__ == '__main__':
-    d1 = DAG()
-    d1.add_edge('a','b')
-    d1.add_edge('c', 'b')
-    d2 = DAG()
-    d2.add_edge('a', 'b')
-    d2.add_edge('b', 'c')
-    print(d1-d2)
-
-
-
+    pass

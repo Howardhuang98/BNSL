@@ -5,7 +5,7 @@ A Bayesian network structure learning package based on deep learning. Still deve
 
 Author: Huang Hao   
 School: Tianjin University, Priceless Lab  
-##Here you can use:
+## Here you can use:
 * greedy hill climb
 * dynamic program: shortest path perspective
 
