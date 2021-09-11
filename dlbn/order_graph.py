@@ -8,7 +8,9 @@
 """
 import logging
 from itertools import permutations
+from multiprocessing import Pool
 
+import pandas as pd
 from tqdm import tqdm
 
 from dlbn.score import *
@@ -67,32 +69,77 @@ class OrderGraph(DAG):
                     previous_name = frozenset(previous)
         return self
 
-    def add_cost(self, score_method: Score, data: pd.DataFrame):
+    @classmethod
+    def _cost_on_u_v(cls,dic):
+        """
+        required by add_cost function. Because the map() only can pass one argument into function
+        u, v, score_method, data: pd.DataFrame
+        u is a frozenset()
+        v is a frozenset()
+
+        return dict
+        """
+        # get all argument we need
+        u = dic['u']
+        v = dic['v']
+        score_method = dic['score_method']
+        data = dic['data']
+        # store result as networkx format:
+        res = {'u_of_edge': u, 'v_of_edge': v}
+        # new added node: x
+        x = str(list(v - u)[0])
+        # get optimal parents out of u
+        if u:
+            pg = ParentGraph(x, list(u))
+            pg.generate_order_graph()
+            pg.add_cost(score_method, data)
+            optimal_parents, cost = pg.find_optimal_parents()
+            res['cost'] = cost
+            res['optimal_parents'] = optimal_parents
+            return res
+        else:
+            res['cost'] = 0
+            res['optimal_parents'] = frozenset()
+            return res
+
+    def add_cost(self, score_method: Score, data: pd.DataFrame, num_of_workers=4):
         """
         use score method to add cost on edges.
         :param score_method:
         :param data:
+        :num_of_worker
         :return:
         """
         if not self.edges:
             raise ValueError("please run generate_order_graph")
-        for edge in tqdm(self.edges, desc="Adding cost", colour='green', miniters=1):
-            u = edge[0]
-            v = edge[1]
-            # new added node: x
-            x = str(list(v - u)[0])
-            # get optimal parents out of u
-            if u:
-                pg = ParentGraph(x, list(u))
-                pg.generate_order_graph()
-                pg.add_cost(score_method, data)
-                optimal_parents, cost = pg.find_optimal_parents()
-                self.add_edge(u, v, cost=cost, optimal_parents=optimal_parents)
-                logging.info("{}->{},cost={},optimal_parents={}".format(u, v, cost, optimal_parents))
-            else:
-                self.add_edge(u,v,cost=0, optimal_parents=frozenset())
-
+        with Pool(processes=num_of_workers) as pool:
+            arg_list = []
+            for edge in self.edges:
+                arg = {'u': edge[0], 'v': edge[1], 'score_method': score_method, 'data': data}
+                arg_list.append(arg)
+            result = pool.map(self._cost_on_u_v, tqdm(arg_list, desc="Adding cost"))
+            for res in result:
+                self.add_edge(**res)
         return self
+
+        # 串行方式进行add cost
+        # for edge in tqdm(self.edges, desc="Adding cost", colour='green', miniters=1):
+        #     u = edge[0]
+        #     v = edge[1]
+        #     # new added node: x
+        #     x = str(list(v - u)[0])
+        #     # get optimal parents out of u
+        #     if u:
+        #         pg = ParentGraph(x, list(u))
+        #         pg.generate_order_graph()
+        #         pg.add_cost(score_method, data)
+        #         optimal_parents, cost = pg.find_optimal_parents()
+        #         self.add_edge(u, v, cost=cost, optimal_parents=optimal_parents)
+        #         logging.info("{}->{},cost={},optimal_parents={}".format(u, v, cost, optimal_parents))
+        #     else:
+        #         self.add_edge(u ,v, cost=0, optimal_parents=frozenset())
+        #
+        # return self
 
     def find_shortest_path(self):
         start = frozenset()
@@ -132,7 +179,7 @@ class ParentGraph(OrderGraph):
         self.potential_parents = potential_parents
         self.variable = variable
 
-    def add_cost(self, score_method: Score, data: pd.DataFrame):
+    def add_cost(self, score_method: Score, data: pd.DataFrame = 4):
         """
         edge 的存储形式：(frozenset(), frozenset({'bronc'}), {'cost': 8.517193191416238})
         :param score_method:
@@ -160,9 +207,10 @@ class ParentGraph(OrderGraph):
 
 
 if __name__ == '__main__':
-    data = pd.read_excel(r"./datasets/simple.xlsx")
+    data = pd.read_excel('../datasets/simple.xlsx')
     variables = list(data.columns)
     og = OrderGraph(variables)
     og.generate_order_graph()
     og.add_cost(MDL_score, data)
     og.find_shortest_path()
+    print(og.edges.data())

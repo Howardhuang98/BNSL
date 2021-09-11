@@ -53,12 +53,11 @@ class estimator:
 
         return None
 
-    def show(self,score_method:Score=MDL_score):
+    def show(self, score_method: Score = MDL_score):
         nx.draw_networkx(self.result_dag)
-        plt.title("Bayesian network with Score={}".format(self.result_dag.score(score_method,self.data)))
+        plt.title("Bayesian network with Score={}".format(self.result_dag.score(score_method, self.data)))
         plt.show()
         return None
-
 
 
 class HC_estimator(estimator):
@@ -79,7 +78,7 @@ class HC_estimator(estimator):
 if __name__ == '__main__':
     data = pd.read_csv(r"../datasets/Asian.csv")
     est = HC_estimator(data)
-    est.run(num_iteration=100,score_method=MDL_score,direction='down')
+    est.run(num_iteration=100, score_method=MDL_score, direction='down')
     est.show()
     asia_net = DAG()
     asia_net.read_excel(r"../datasets/Asian net.xlsx")
@@ -90,6 +89,3 @@ if __name__ == '__main__':
     est2.show()
     shd2 = est2.result_dag - asia_net
     print(shd2)
-
-
-
