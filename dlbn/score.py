@@ -47,16 +47,19 @@ class MDL_score(Score):
         :param parents:
         :return:
         """
-        parents_states = [self.state_names[parent] for parent in parents]
-        state_count_data = (
-            self.data.groupby([x] + parents).size().unstack(parents)
-        )
-        row_index = self.state_names[x]
-        if len(parents) == 1:
-            column_index = parents_states[0]
+        if parents:
+            parents_states = [self.state_names[parent] for parent in parents]
+            state_count_data = (
+                self.data.groupby([x] + parents).size().unstack(parents)
+            )
+            row_index = self.state_names[x]
+            if len(parents) == 1:
+                column_index = parents_states[0]
+            else:
+                column_index = pd.MultiIndex.from_product(parents_states, names=parents)
+            state_counts = state_count_data.reindex(index=row_index, columns=column_index).fillna(0)
         else:
-            column_index = pd.MultiIndex.from_product(parents_states, names=parents)
-        state_counts = state_count_data.reindex(index=row_index, columns=column_index).fillna(0)
+            state_counts = self.data.groupby(x).size()
         return state_counts
 
     def local_score(self, x: str, parents: list):
@@ -69,32 +72,35 @@ class MDL_score(Score):
         :param parents:
         :return: score
         """
-        # if parents list is an empty list
-        if not parents:
-            return 10e10
-        # else
-        else:
-            state_count = self.state_count(x, parents)
-            sample_size = len(self.data)
+        state_count = self.state_count(x, parents)
+        # if the state_count has 0 in the array, it will result numerical error in log(), to
+        # avoid this error, add 1 on each 0 value
+        state_count[state_count == 0] = 1
+        counts = np.asarray(state_count)
+
+        sample_size = len(self.data)
+        log_likelihoods = np.zeros_like(counts, dtype=np.float_)
+        # the counts data is different in the condition of parents = [] and other
+        np.log(counts, out=log_likelihoods, where=counts > 0)
+        if parents:
             num_parents_states = float(state_count.shape[1])
-            x_cardinality = float(state_count.shape[0])
-            counts = np.asarray(state_count)
-            log_likelihoods = np.zeros_like(counts, dtype=np.float_)
-            # 求 log N(X,Pa) --> log_likelihoods
-            np.log(counts, out=log_likelihoods, where=counts > 0)
-            # 求 log N(X) --> log_conditionals
+            # the log condition array is an 1 * r
             log_conditionals = np.sum(counts, axis=0, dtype=np.float_)
             np.log(log_conditionals, out=log_conditionals, where=log_conditionals > 0)
-            # log (N(X,Pa)/N(X))
-            log_likelihoods -= log_conditionals
-            # N(X,Pa) * log (N(X,Pa)/N(X))
-            log_likelihoods *= counts
-            # sum
-            H = - np.sum(log_likelihoods)
-            # K
-            K = (x_cardinality - 1) * num_parents_states
-            score = H + np.log(sample_size) / 2 * K
-            return score
+        else:
+            num_parents_states = 1
+            # the log conditionals is a float
+            log_conditionals = np.log(np.sum(counts, axis=0, dtype=np.float_))
+        log_likelihoods -= log_conditionals
+        log_likelihoods *= counts
+        x_cardinality = float(state_count.shape[0])
+
+        # sum
+        H = - np.sum(log_likelihoods)
+        # K
+        K = (x_cardinality - 1) * num_parents_states
+        score = H + np.log(sample_size) / 2 * K
+        return score
 
 
 class BIC_score(Score):
@@ -113,7 +119,9 @@ class BIC_score(Score):
 
 if __name__ == '__main__':
     dag = DAG()
-    dag.read_excel(r"../datasets/cancer net.xlsx")
-    data = pd.read_csv(r"../datasets/cancer.csv",index_col=0)
-    s = dag.score(MDL_score,data)
-    print(s)
+    dag.read_excel(r"../datasets/Asian net.xlsx")
+    data = pd.read_csv(r"../datasets/Asian.csv")
+    s =  MDL_score(data)
+    print(s.local_score('smoke',[]))
+    s = dag.score(MDL_score, data, detail=True)
+

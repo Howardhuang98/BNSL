@@ -45,7 +45,7 @@ class DAG(nx.DiGraph):
                 score_dict[node] = local_score
         if detail:
             return sum(score_list), score_dict
-        return sum(score_list) - 10e10
+        return sum(score_list)
 
     def to_excel(self, path: str):
         edge_list = self.edges
