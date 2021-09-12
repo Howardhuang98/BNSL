@@ -179,7 +179,7 @@ class ParentGraph(OrderGraph):
         self.potential_parents = potential_parents
         self.variable = variable
 
-    def add_cost(self, score_method: Score, data: pd.DataFrame = 4):
+    def add_cost(self, score_method: Score, data: pd.DataFrame):
         """
         edge 的存储形式：(frozenset(), frozenset({'bronc'}), {'cost': 8.517193191416238})
         :param score_method:
@@ -188,21 +188,19 @@ class ParentGraph(OrderGraph):
         """
         score = score_method(data)
         self.generate_order_graph()
-        for edge in self.edges:
-            parents = list(edge[1])
+        for node in self.nodes:
+            parents = list(node)
             cost = score.local_score(self.variable, parents)
-            u = edge[0]
-            v = edge[1]
-            self.add_edge(u, v, cost=cost)
+            self.add_node(node, cost=cost)
         return self
 
     def find_optimal_parents(self):
         if not self.edges:
             raise ValueError("Parents graph is empty, please run add_cost() !")
         else:
-            optimal_tuple = min(self.edges.data(), key=lambda x: x[2]["cost"])
-            optimal_parents = optimal_tuple[1]
-            cost = optimal_tuple[2]['cost']
+            optimal_tuple = min(self.nodes.data(), key=lambda x: x[1]["cost"])
+            optimal_parents = optimal_tuple[0]
+            cost = optimal_tuple[1]['cost']
         return optimal_parents, cost
 
 

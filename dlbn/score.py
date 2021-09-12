@@ -124,4 +124,5 @@ if __name__ == '__main__':
     s =  MDL_score(data)
     print(s.local_score('smoke',[]))
     s = dag.score(MDL_score, data, detail=True)
+    print(s)
 

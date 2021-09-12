@@ -79,6 +79,7 @@ if __name__ == '__main__':
     data = pd.read_csv(r"../datasets/Asian.csv")
     est = HC_estimator(data)
     est.run(num_iteration=100, score_method=MDL_score, direction='down')
+    print(est.result_dag.score(score_method=MDL_score,data=data))
     est.show()
     asia_net = DAG()
     asia_net.read_excel(r"../datasets/Asian net.xlsx")
@@ -89,3 +90,4 @@ if __name__ == '__main__':
     est2.show()
     shd2 = est2.result_dag - asia_net
     print(shd2)
+    print("原网络评分{}".format(asia_net.score(score_method=MDL_score,data=data)))
