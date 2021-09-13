@@ -29,14 +29,19 @@ class estimator:
         self.data = data
         self.result_dag = None
         self.io = io
+        self.og = None
+        # print estimator information
+        print("====="*10)
+        print(self.data.head(5))
+        print("Recover the BN with {} variables".format(len(self.data.columns)))
 
-    def run(self):
+    def run(self,**kwargs):
         variables = list(self.data.columns)
-        og = OrderGraph(variables)
-        og.generate_order_graph()
-        og.add_cost(MDL_score, self.data)
-        og.find_shortest_path()
-        self.result_dag = og.optimal_result()
+        self.og = OrderGraph(variables)
+        self.og.generate_order_graph()
+        self.og.add_cost(MDL_score, self.data,**kwargs)
+        self.og.find_shortest_path()
+        self.result_dag = self.og.optimal_result()
 
         return self.result_dag
 
@@ -54,8 +59,10 @@ class estimator:
         return None
 
     def show(self, score_method: Score = MDL_score):
+        plt.figure()
         nx.draw_networkx(self.result_dag)
-        plt.title("Bayesian network with Score={}".format(self.result_dag.score(score_method, self.data)))
+        plt.title("Bayesian network")
+        plt.text(0,0,"Score={}".format(self.result_dag.score(score_method, self.data)))
         plt.show()
         return None
 
@@ -86,8 +93,9 @@ if __name__ == '__main__':
     shd = est.result_dag - asia_net
     print(shd)
     est2 = estimator(data)
-    est2.run()
+    est2.run(num_of_workers=48)
     est2.show()
     shd2 = est2.result_dag - asia_net
     print(shd2)
+    print(est2.result_dag.score(score_method=MDL_score, data=data))
     print("原网络评分{}".format(asia_net.score(score_method=MDL_score,data=data)))

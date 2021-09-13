@@ -89,18 +89,15 @@ class OrderGraph(DAG):
         # new added node: x
         x = str(list(v - u)[0])
         # get optimal parents out of u
-        if u:
-            pg = ParentGraph(x, list(u))
-            pg.generate_order_graph()
-            pg.add_cost(score_method, data)
-            optimal_parents, cost = pg.find_optimal_parents()
-            res['cost'] = cost
-            res['optimal_parents'] = optimal_parents
-            return res
-        else:
-            res['cost'] = 0
-            res['optimal_parents'] = frozenset()
-            return res
+
+        pg = ParentGraph(x, list(u))
+        pg.generate_order_graph()
+        pg.add_cost(score_method, data)
+        optimal_parents, cost = pg.find_optimal_parents()
+        res['cost'] = cost
+        res['optimal_parents'] = optimal_parents
+        return res
+
 
     def add_cost(self, score_method: Score, data: pd.DataFrame, num_of_workers=4):
         """
@@ -166,8 +163,11 @@ class OrderGraph(DAG):
                 cost = self.edges[u, v]['cost']
                 optimal_parents = list(self.edges[u, v]['optimal_parents'])
                 variable = str(list(v - u)[0])
-                for parent in optimal_parents:
-                    result_dag.add_edge(parent, variable)
+                if optimal_parents:
+                    for parent in optimal_parents:
+                        result_dag.add_edge(parent, variable)
+                else:
+                    result_dag.add_node(variable)
                 cost_list.append(cost)
         return result_dag
 
@@ -195,12 +195,10 @@ class ParentGraph(OrderGraph):
         return self
 
     def find_optimal_parents(self):
-        if not self.edges:
-            raise ValueError("Parents graph is empty, please run add_cost() !")
-        else:
-            optimal_tuple = min(self.nodes.data(), key=lambda x: x[1]["cost"])
-            optimal_parents = optimal_tuple[0]
-            cost = optimal_tuple[1]['cost']
+
+        optimal_tuple = min(self.nodes.data(), key=lambda x: x[1]["cost"])
+        optimal_parents = optimal_tuple[0]
+        cost = optimal_tuple[1]['cost']
         return optimal_parents, cost
 
 
