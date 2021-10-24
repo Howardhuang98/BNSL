@@ -70,7 +70,7 @@ class OrderGraph(DAG):
         return self
 
     @classmethod
-    def _cost_on_u_v(cls,dic):
+    def _cost_on_u_v(cls, dic):
         """
         required by add_cost function. Because the map() only can pass one argument into function
         u, v, score_method, data: pd.DataFrame
@@ -97,7 +97,6 @@ class OrderGraph(DAG):
         res['cost'] = cost
         res['optimal_parents'] = optimal_parents
         return res
-
 
     def add_cost(self, score_method: Score, data: pd.DataFrame, num_of_workers=4):
         """
@@ -195,7 +194,6 @@ class ParentGraph(OrderGraph):
         return self
 
     def find_optimal_parents(self):
-
         optimal_tuple = min(self.nodes.data(), key=lambda x: x[1]["cost"])
         optimal_parents = optimal_tuple[0]
         cost = optimal_tuple[1]['cost']
