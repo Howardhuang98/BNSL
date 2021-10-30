@@ -9,23 +9,8 @@
 import numpy as np
 import pandas as pd
 
+from dlbn.base import Score
 from dlbn.direct_graph import DAG
-
-
-class Score:
-    """
-    Score base class
-    """
-
-    def __init__(self, data: pd.DataFrame):
-        self.data = data
-        self.state_names = {}
-        for var in list(data.columns.values):
-            self.state_names[var] = sorted(list(self.data.loc[:, var].unique()))
-        self.contingency_table = None
-
-    def local_score(self, *args):
-        return 0
 
 
 class MDL_score(Score):
@@ -121,8 +106,7 @@ if __name__ == '__main__':
     dag = DAG()
     dag.read_excel(r"../datasets/Asian net.xlsx")
     data = pd.read_csv(r"../datasets/Asian.csv")
-    s =  MDL_score(data)
-    print(s.local_score('smoke',[]))
+    s = MDL_score(data)
+    print(s.local_score('smoke', []))
     s = dag.score(MDL_score, data, detail=True)
     print(s)
-

@@ -98,7 +98,7 @@ class OrderGraph(DAG):
         res['optimal_parents'] = optimal_parents
         return res
 
-    def add_cost(self, score_method: Score, data: pd.DataFrame, num_of_workers=4):
+    def add_cost(self, score_method: Score, data: pd.DataFrame, num_of_workers=4, **kwargs):
         """
         use score method to add cost on edges.
         :param score_method:
@@ -147,7 +147,6 @@ class OrderGraph(DAG):
     def optimal_result(self):
         """
         store the optimal result
-        :param io:
         :return:
         """
         if not self.shortest_path:

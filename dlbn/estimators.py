@@ -7,9 +7,7 @@
 ------------      
 """
 from datetime import datetime
-
-import pandas as pd
-from matplotlib import pyplot as plt
+from base import Estimator
 
 from dlbn.heuristic import HillClimb
 from dlbn.order_graph import *
@@ -20,26 +18,23 @@ estimator class is used to structure learning with one step, thus it concludes a
 """
 
 
-class estimator:
+class SPP(Estimator):
     """
     dynamic program estimator: shortest path perspective
     """
 
-    def __init__(self, data: pd.DataFrame, io: str = None):
-        self.data = data
+    def __init__(self, data):
+        self.load_data(data)
         self.result_dag = None
-        self.io = io
         self.og = None
         # print estimator information
-        print("====="*10)
-        print(self.data.head(5))
-        print("Recover the BN with {} variables".format(len(self.data.columns)))
+        self.show_est()
 
-    def run(self,**kwargs):
+    def run(self, score_method:Score):
         variables = list(self.data.columns)
         self.og = OrderGraph(variables)
         self.og.generate_order_graph()
-        self.og.add_cost(MDL_score, self.data,**kwargs)
+        self.og.add_cost(score_method, self.data)
         self.og.find_shortest_path()
         self.result_dag = self.og.optimal_result()
 
@@ -58,44 +53,26 @@ class estimator:
 
         return None
 
-    def show(self, score_method: Score = MDL_score):
-        plt.figure()
-        nx.draw_networkx(self.result_dag)
-        plt.title("Bayesian network")
-        plt.text(0,0,"Score={}".format(self.result_dag.score(score_method, self.data)))
-        plt.show()
-        return None
 
 
-class HC_estimator(estimator):
+class HC(Estimator):
     """
     greedy hill climb
     """
 
-    def __init__(self, data: pd.DataFrame, io: str = None):
-        super(HC_estimator, self).__init__(data, io)
+    def __init__(self, data, io: str = None):
+        self.load_data(data)
+        self.result_dag = None
 
     def run(self, **kwargs):
         hc = HillClimb(self.data, **kwargs)
         self.result_dag = hc.climb(**kwargs)
-
         return self.result_dag
+
 
 
 if __name__ == '__main__':
     data = pd.read_csv(r"../datasets/Asian.csv")
-    est = HC_estimator(data)
-    est.run(num_iteration=100, score_method=MDL_score, direction='down')
-    print(est.result_dag.score(score_method=MDL_score,data=data))
+    est = SPP(data)
+    est.run(MDL_score)
     est.show()
-    asia_net = DAG()
-    asia_net.read_excel(r"../datasets/Asian net.xlsx")
-    shd = est.result_dag - asia_net
-    print(shd)
-    est2 = estimator(data)
-    est2.run(num_of_workers=48)
-    est2.show()
-    shd2 = est2.result_dag - asia_net
-    print(shd2)
-    print(est2.result_dag.score(score_method=MDL_score, data=data))
-    print("原网络评分{}".format(asia_net.score(score_method=MDL_score,data=data)))
