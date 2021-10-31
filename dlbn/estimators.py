@@ -7,11 +7,11 @@
 ------------      
 """
 from datetime import datetime
-from base import Estimator
 
-from dlbn.heuristic import HillClimb
-from dlbn.order_graph import *
+from base import Estimator
+from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.score import *
+from dlbn.graph import *
 
 """
 estimator class is used to structure learning with one step, thus it concludes all the workflow
@@ -30,7 +30,7 @@ class SPP(Estimator):
         # print estimator information
         self.show_est()
 
-    def run(self, score_method:Score):
+    def run(self, score_method: Score = MDL_score):
         variables = list(self.data.columns)
         self.og = OrderGraph(variables)
         self.og.generate_order_graph()
@@ -54,25 +54,37 @@ class SPP(Estimator):
         return None
 
 
-
 class HC(Estimator):
     """
     greedy hill climb
     """
 
-    def __init__(self, data, io: str = None):
+    def __init__(self, data):
         self.load_data(data)
         self.result_dag = None
+        self.show_est()
 
     def run(self, **kwargs):
         hc = HillClimb(self.data, **kwargs)
         self.result_dag = hc.climb(**kwargs)
         return self.result_dag
 
+class SA(Estimator):
+    """
+    
+    """
+    def __init__(self,data):
+        self.load_data(data)
+        self.result_dag = None
+        self.show_est()
 
+    def run(self,**kwargs):
+        sa = SimulatedAnnealing(self.data,score_method=BIC_score)
+        self.result_dag = sa.run()
+        return self.result_dag
 
 if __name__ == '__main__':
     data = pd.read_csv(r"../datasets/Asian.csv")
     est = SPP(data)
-    est.run(MDL_score)
+    est.run()
     est.show()

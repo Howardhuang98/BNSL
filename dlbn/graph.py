@@ -1,27 +1,176 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 """
-@File    :   order_graph.py    
+@File    :   data.py
 @Contact :   huanghoward@foxmail.com
-@Modify Time :    2021/6/29 14:03  
-------------      
+@Modify Time :    2021/6/25 14:50
+------------
 """
-import logging
 from itertools import permutations
 from multiprocessing import Pool
 
+import networkx as nx
 import pandas as pd
+from matplotlib import pyplot as plt
 from tqdm import tqdm
 
-from dlbn.score import *
-from dlbn.direct_graph import *
+from dlbn.score import BIC_score
+
+
+class DAG(nx.DiGraph):
+    """
+    inherit class nx.DiGraph
+    """
+
+    def __init__(self, incoming_graph_data=None):
+        super(DAG, self).__init__(incoming_graph_data)
+        cycle = self._check_cycle()
+        if cycle:
+            out_str = "Cycles are not allowed in a DAG."
+            out_str += "\nEdges indicating the path taken for a loop: "
+            out_str += "".join([f"({u},{v}) " for (u, v) in cycle])
+            raise ValueError(out_str)
+
+    def _check_cycle(self):
+        try:
+            cycles = list(nx.find_cycle(self))
+        except nx.NetworkXNoCycle:
+            return False
+        else:
+            return cycles
+
+    def score(self, score_method, data: pd.DataFrame, detail=False):
+        score_dict = {}
+        score_list = []
+        for node in self.nodes:
+            parents = list(self.predecessors(node))
+            s = score_method(data)
+            local_score = s.local_score(node, parents)
+            score_list.append(local_score)
+            if detail:
+                score_dict[node] = local_score
+        if detail:
+            return sum(score_list), score_dict
+        return sum(score_list)
+
+    def to_excel(self, path: str):
+        edge_list = self.edges
+        edges_data = pd.DataFrame(columns=['source node', 'target node'])
+        for edge_pair in edge_list:
+            edges_data.loc[edges_data.shape[0]] = {'source node': edge_pair[0], 'target node': edge_pair[1]}
+        edges_data.to_excel(path)
+        return None
+
+    def __sub__(self, other):
+        """
+        Use structure Hamming Distance (SHD) to subtract.
+        SHD = FP + FN
+        FP: The number of edges discovered in the learned graph that do not exist in the true graph(other)
+        FN: The number of direct independence discovered in the learned graph that do not exist in the true graph.
+        :param other:
+        :return:
+        """
+        if isinstance(self, type(other)):
+            FP = len(set(self.edges) - set(other.edges))
+            FN = len(set(other.edges) - set(self.edges))
+            return FP + FN
+
+        else:
+            raise ValueError("cannot subtract DAG instance with other instance")
+
+    def read_excel(self, path: str):
+        """
+        here we need excel written in this format:
+
+            source node   target node
+        1       a            b
+        2       a            c
+       ...       ...          ...
+        :param path:
+        :return:
+        """
+        data = pd.read_excel(path)
+        edge_list = []
+        for row_tuple in data.iterrows():
+            u = row_tuple[1]['source node']
+            v = row_tuple[1]['target node']
+            edge_list.append((u, v))
+        self.add_edges_from(edge_list)
+        return self
+
+    def show(self, score_method, data: pd.DataFrame):
+        nx.draw_networkx(self)
+        plt.title("Bayesian network with Score={}".format(self.score(score_method, data)))
+        plt.show()
+        return None
+
+    def legal_operations(self):
+        """
+        iterator
+        yield all legal operations
+        :return:
+        """
+
+        potential_new_edges = (set(permutations(list(self.nodes), 2)) - set(self.edges()) - set(
+            [(v, u) for (u, v) in self.edges()]))
+
+        for u, v in potential_new_edges:
+            if not nx.has_path(self, v, u):
+                operation = ('+', (u, v))
+                yield operation
+
+        for u, v in self.edges:
+            operation = ('-', (u, v))
+            yield operation
+
+        for u, v in self.edges:
+            if not any(map(lambda path: len(path) > 2, nx.all_simple_paths(self, u, v))):
+                operation = ('flip', (u, v))
+                yield operation
+
+    def score_delta(self, operation, data, score_method = BIC_score):
+        opera, uv = operation[0], operation[1]
+        u,v = uv[0],uv[1]
+        s = score_method(data)
+        if opera == '+':
+            old_parents = list(self.predecessors(v))
+            new_parents = old_parents + [u]
+            score_delta = s.local_score(v, new_parents) - s.local_score(v, old_parents)
+            return score_delta
+        if opera == '-':
+            old_parents = list(self.predecessors(v))
+            new_parents = old_parents[:]
+            new_parents.remove(u)
+            score_delta = s.local_score(v, new_parents) - s.local_score(v, old_parents)
+            return score_delta
+        if opera == 'flip':
+            old_v_parents = list(self.predecessors(v))
+            old_u_parents = list(self.predecessors(u))
+            new_u_parents = old_u_parents + [v]
+            new_v_parents = old_v_parents[:]
+            new_v_parents.remove(u)
+            score_delta = (s.local_score(v, new_v_parents) + s.local_score(u,new_u_parents) - s.local_score(v, old_v_parents) - s.local_score(u, old_u_parents))
+            return score_delta
+
+    def do_operation(self,operation):
+        if operation[0] == '+':
+            self.add_edge(*operation[1])
+        if operation[0] == '-':
+            self.remove_edge(*operation[1])
+        if operation[0] == 'flip':
+            u, v = operation[1]
+            self.remove_edge(u, v)
+            self.add_edge(v, u)
+        return None
+
+
 
 """
 OrderGraph class
 ParentGraph class
 
             workflow:
-            
+
             OrderGraph
                 |
             generate order graph
@@ -98,7 +247,7 @@ class OrderGraph(DAG):
         res['optimal_parents'] = optimal_parents
         return res
 
-    def add_cost(self, score_method: Score, data: pd.DataFrame, num_of_workers=4, **kwargs):
+    def add_cost(self, score_method, data: pd.DataFrame, num_of_workers=4, **kwargs):
         """
         use score method to add cost on edges.
         :param score_method:
@@ -177,7 +326,7 @@ class ParentGraph(OrderGraph):
         self.potential_parents = potential_parents
         self.variable = variable
 
-    def add_cost(self, score_method: Score, data: pd.DataFrame):
+    def add_cost(self, score_method, data: pd.DataFrame):
         """
         edge 的存储形式：(frozenset(), frozenset({'bronc'}), {'cost': 8.517193191416238})
         :param score_method:
@@ -200,10 +349,5 @@ class ParentGraph(OrderGraph):
 
 
 if __name__ == '__main__':
-    data = pd.read_excel('../datasets/simple.xlsx')
-    variables = list(data.columns)
-    og = OrderGraph(variables)
-    og.generate_order_graph()
-    og.add_cost(MDL_score, data)
-    og.find_shortest_path()
-    print(og.edges.data())
+    pass
+

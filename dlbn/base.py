@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from dlbn.direct_graph import DAG
 
 
 class Estimator(ABC):
@@ -74,7 +73,7 @@ class Score(ABC):
         return local score
         """
 
-    def all_score(self, dag:DAG, detail=True):
+    def all_score(self, dag, detail=True):
         """
         return score on the DAG
         """

@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 
 from dlbn.base import Score
-from dlbn.direct_graph import DAG
 
 
 class MDL_score(Score):
