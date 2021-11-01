@@ -15,7 +15,12 @@ from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.score import *
 
 """
-estimator class is used to structure learning with one step, thus it concludes all the workflow
+estimators
+
+score based estimator work flow:
+load data
+show itself
+instance a score method
 """
 
 
@@ -60,13 +65,14 @@ class HC(Estimator):
     greedy hill climb
     """
 
-    def __init__(self, data):
+    def __init__(self, data, score_method,**kwargs):
         self.load_data(data)
         self.result_dag = None
         self.show_est()
+        self.score_method = score_method(self.data,**kwargs)
 
     def run(self, **kwargs):
-        hc = HillClimb(self.data, **kwargs)
+        hc = HillClimb(self.data, self.score_method)
         self.result_dag = hc.climb(**kwargs)
         return self.result_dag
 
@@ -76,13 +82,14 @@ class SA(Estimator):
     
     """
 
-    def __init__(self, data):
+    def __init__(self, data, score_method, **kwargs):
         self.load_data(data)
         self.result_dag = None
         self.show_est()
+        self.score_method = score_method(data, **kwargs)
 
-    def run(self, **kwargs):
-        sa = SimulatedAnnealing(self.data, score_method=BIC_score)
+    def run(self):
+        sa = SimulatedAnnealing(self.data, self.score_method)
         self.result_dag = sa.run()
         return self.result_dag
 
@@ -93,6 +100,8 @@ class SA(Estimator):
 
 if __name__ == '__main__':
     data = pd.read_csv(r"../datasets/Asian.csv")
-    est = SPP(data)
+    expert_data = pd.read_csv(r"../datasets/Asian expert.csv", index_col=0)
+    expert = Expert(expert_data)
+    est = SA(data,score_method=Knowledge_fused_score,expert=expert)
     est.run()
     est.show()

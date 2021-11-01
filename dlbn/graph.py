@@ -128,10 +128,10 @@ class DAG(nx.DiGraph):
                 operation = ('flip', (u, v))
                 yield operation
 
-    def score_delta(self, operation, data, score_method = BIC_score):
+    def score_delta(self, operation, score_method):
         opera, uv = operation[0], operation[1]
         u,v = uv[0],uv[1]
-        s = score_method(data)
+        s = score_method
         if opera == '+':
             old_parents = list(self.predecessors(v))
             new_parents = old_parents + [u]

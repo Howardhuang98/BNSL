@@ -132,6 +132,12 @@ class BIC_score(Score):
 
 
 class Knowledge_fused_score(Score):
+    """
+    Knowledge fused score
+    score = likelihood + log p(G|E)
+    where E is fused expert matrix
+    """
+
     def __init__(self, data: pd.DataFrame, expert: Expert):
         super(Knowledge_fused_score, self).__init__(data)
         self.mdl = MDL_score(data)
@@ -180,19 +186,18 @@ class Knowledge_fused_score(Score):
         return r
 
     def show_act(self):
-        x = np.arange(0,1,0.01)
+        x = np.arange(0, 1, 0.01)
         y = self.activation_function(x)
-        plt.plot(x,y)
+        plt.plot(x, y)
         plt.show()
-
 
 
 if __name__ == '__main__':
     data = pd.read_csv(r"../datasets/Asian.csv")
-    expert_data = pd.read_csv(r"../datasets/Asian expert.csv",index_col=0)
+    expert_data = pd.read_csv(r"../datasets/Asian expert.csv", index_col=0)
     expert = Expert(expert_data)
-    k = Knowledge_fused_score(data,expert)
+    k = Knowledge_fused_score(data, expert)
     k.show_act()
     b = BIC_score(data)
-    print(k.local_score('smoke',['bronc']))
+    print(k.local_score('smoke', ['bronc']))
     print(b.local_score('smoke', ['bronc']))

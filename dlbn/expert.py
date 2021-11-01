@@ -6,6 +6,7 @@
 @Modify Time :    2021/11/1 19:07  
 ------------      
 """
+import numpy as np
 import pandas as pd
 
 """
@@ -28,6 +29,16 @@ class Expert:
         #
         #     待补充
         #
+        if data.columns.all() != data.index.all():
+            raise ValueError("Expert matrix is wrong, check column and index!")
+        # force the diagonal element to 0
+        self.data.values[tuple([np.arange(self.data.shape[0])] * 2)] = 0
+        for i in range(len(self.data.columns)):
+            for j in range(i):
+                if self.data.values[i, j] + self.data.values[j, i] > 1:
+                    raise ValueError(
+                        "Opinions added together cannot exceed 1! "
+                        "position: [{},{}] with value:{},{}".format(i, j, self.data.values[i, j],self.data.values[j, i]))
 
     def think(self, u, v):
         """
@@ -45,9 +56,9 @@ class Expert:
 if __name__ == '__main__':
     chen_data = pd.DataFrame({
         "A": [0, 0.8, 0.7, 0.3],
-        "B": [0.1, 0, 0.3, 0.9],
-        "C": [0.5, 0.2, 0, 0.1],
-        "D": [0.3, 0.2, 0.1, 0]
+        "B": [0.1, 0, 0.9, 0.9],
+        "C": [0.3, 0.05, 0, 0.1],
+        "D": [0.3, 0.1, 0.1, 0]
     }, index=["A", "B", "C", "D"])
     chen = Expert(data=chen_data)
     print(chen.think("A", "B"))

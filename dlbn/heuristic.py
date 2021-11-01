@@ -23,14 +23,13 @@ logging.basicConfig(filename='run.log', level=logging.INFO)
 
 
 class HillClimb:
-    def __init__(self, data: pd.DataFrame, score_method: Score, dag: DAG = None, **Kwargs):
+    def __init__(self, data: pd.DataFrame, score_method: Score, dag: DAG = None,**kwargs):
         self.score_method = score_method
         if not dag:
             self.dag = DAG()
         self.data = data
         self.vars = list(data.columns.values)
         self.dag.add_nodes_from(self.vars)
-        self.score_method = score_method(self.data)
         self.tabu_list = []
 
     def legal_operation(self, current_dag: DAG):
@@ -104,7 +103,7 @@ class HillClimb:
         return self.dag
 
 class SimulatedAnnealing:
-    def __init__(self,data: pd.DataFrame, score_method: Score, dag: DAG = None):
+    def __init__(self,data: pd.DataFrame, score_method, dag: DAG = None):
         self.data = data
         self.score_method = score_method
         if dag is None:
@@ -116,7 +115,7 @@ class SimulatedAnnealing:
         for _ in tqdm(range(num_iteration)):
             legal_operations = list(current_dag.legal_operations())
             operation = random.sample(legal_operations,1)[0]
-            score_delta = current_dag.score_delta(operation,self.data)
+            score_delta = current_dag.score_delta(operation,self.score_method)
             if score_delta > 0:
                 current_dag.do_operation(operation)
             if score_delta < 0:
