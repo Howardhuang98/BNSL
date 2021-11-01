@@ -9,9 +9,10 @@
 from datetime import datetime
 
 from base import Estimator
+from dlbn.expert import Expert
+from dlbn.graph import *
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.score import *
-from dlbn.graph import *
 
 """
 estimator class is used to structure learning with one step, thus it concludes all the workflow
@@ -69,19 +70,26 @@ class HC(Estimator):
         self.result_dag = hc.climb(**kwargs)
         return self.result_dag
 
+
 class SA(Estimator):
     """
     
     """
-    def __init__(self,data):
+
+    def __init__(self, data):
         self.load_data(data)
         self.result_dag = None
         self.show_est()
 
-    def run(self,**kwargs):
-        sa = SimulatedAnnealing(self.data,score_method=BIC_score)
+    def run(self, **kwargs):
+        sa = SimulatedAnnealing(self.data, score_method=BIC_score)
         self.result_dag = sa.run()
         return self.result_dag
+
+
+
+
+
 
 if __name__ == '__main__':
     data = pd.read_csv(r"../datasets/Asian.csv")

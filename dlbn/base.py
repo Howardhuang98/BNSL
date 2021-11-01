@@ -45,7 +45,7 @@ class Estimator(ABC):
         run the estimator
         """
 
-    def show(self):
+    def show(self,):
         if self.result_dag:
             plt.figure()
             nx.draw_networkx(self.result_dag)
