@@ -6,10 +6,13 @@
 @Modify Time :    2021/9/6 14:56  
 ------------      
 """
+from math import lgamma
+
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from scipy.optimize import fsolve
+from scipy.special import gammaln
 
 from dlbn.base import Score
 from dlbn.expert import Expert
@@ -192,6 +195,45 @@ class Knowledge_fused_score(Score):
         plt.show()
 
 
+class BDeu_score(MDL_score):
+    """
+    reference pgmpy code
+    https://pgmpy.org/_modules/pgmpy/estimators/StructureScore.html#BDsScore
+    """
+
+    def __init__(self, data: pd.DataFrame, equivalent_sample_size=10, **kwargs):
+        super(BDeu_score, self).__init__(data)
+        self.equivalent_sample_size = equivalent_sample_size
+
+    def local_score(self, variable, parents):
+        'Computes a score that measures how much a \
+        given variable is "influenced" by a given list of potential parents.'
+
+        var_states = self.state_names[variable]
+        var_cardinality = len(var_states)
+        state_counts = self.state_count(variable, parents)
+        num_parents_states = float(state_counts.shape[1])
+
+        counts = np.asarray(state_counts)
+        log_gamma_counts = np.zeros_like(counts, dtype=float)
+        alpha = self.equivalent_sample_size / num_parents_states
+        beta = self.equivalent_sample_size / counts.size
+        # Compute log(gamma(counts + beta))
+        gammaln(counts + beta, out=log_gamma_counts)
+
+        # Compute the log-gamma conditional sample size
+        log_gamma_conds = np.sum(counts, axis=0, dtype=float)
+        gammaln(log_gamma_conds + alpha, out=log_gamma_conds)
+
+        score = (
+                np.sum(log_gamma_counts)
+                - np.sum(log_gamma_conds)
+                + num_parents_states * lgamma(alpha)
+                - counts.size * lgamma(beta)
+        )
+        return score
+
+
 if __name__ == '__main__':
     data = pd.read_csv(r"../datasets/Asian.csv")
     expert_data = pd.read_csv(r"../datasets/Asian expert.csv", index_col=0)
@@ -199,5 +241,7 @@ if __name__ == '__main__':
     k = Knowledge_fused_score(data, expert)
     k.show_act()
     b = BIC_score(data)
+    bd = BDeu_score(data)
     print(k.local_score('smoke', ['bronc']))
     print(b.local_score('smoke', ['bronc']))
+    print(bd.local_score('smoke', ['bronc']))
