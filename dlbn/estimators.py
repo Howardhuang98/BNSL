@@ -9,7 +9,6 @@
 from datetime import datetime
 
 from base import Estimator
-from dlbn.expert import Expert
 from dlbn.graph import *
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.score import *

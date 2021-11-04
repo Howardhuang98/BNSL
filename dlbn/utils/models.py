@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 """
-@File    :   data_generator.py    
+@File    :   models.py
 @Contact :   huanghoward@foxmail.com
 @Modify Time :    2021/10/24 12:22  
 ------------      
@@ -11,7 +11,7 @@ from copy import deepcopy
 import numpy as np
 
 
-class DataGenerator:
+class Linear_acyclic_model:
     # use to generate synthetic data
     # based on https://github.com/cdt15/lingam
     def __init__(self):
@@ -79,14 +79,13 @@ class DataGenerator:
         np.random.seed(seed)
         w = self.generate_W(d=d)
         data, dag, c = self.generate_data(W=w, n=n, noise_type=noise_type)
-        print(dag)
         if save:
             np.save('data-d={}-seed{}.npy'.format(d, seed), data)
             np.save('dag-d={}-seed{}.npy'.format(d, seed), dag)
-        return data,dag
+        return data, dag
 
 
 if __name__ == '__main__':
-    dg = DataGenerator()
-    a,b = dg.run(6, 100, 'non-Gaussian', save=False)
+    dg = Linear_acyclic_model()
+    a, b = dg.run(6, 100, 'non-Gaussian', save=False)
     print(a)
