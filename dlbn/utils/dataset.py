@@ -7,7 +7,6 @@
 ------------      
 """
 import pandas as pd
-from pandas import DataFrame
 
 from dlbn.utils.models import *
 
@@ -30,6 +29,7 @@ class Dataset:
     @classmethod
     def generate_data(cls, d, n, noise_type='Gaussian', save=False):
         """
+        based on linear acyclic model, generate synthesis data.
 
         :param d: 邻接矩阵的维度 M = d*d
         :param n: 样本数目 n

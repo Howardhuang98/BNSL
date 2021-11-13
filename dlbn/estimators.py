@@ -8,9 +8,12 @@
 """
 from datetime import datetime
 
+import pandas as pd
+
 from base import Estimator
 from dlbn.graph import *
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
+from dlbn.pc import *
 from dlbn.score import *
 
 """
@@ -64,11 +67,11 @@ class HC(Estimator):
     greedy hill climb
     """
 
-    def __init__(self, data, score_method,**kwargs):
+    def __init__(self, data, score_method, **kwargs):
         self.load_data(data)
         self.result_dag = None
         self.show_est()
-        self.score_method = score_method(self.data,**kwargs)
+        self.score_method = score_method(self.data, **kwargs)
 
     def run(self, **kwargs):
         hc = HillClimb(self.data, self.score_method)
@@ -93,14 +96,51 @@ class SA(Estimator):
         return self.result_dag
 
 
+class PC_estimator(Estimator):
+    def __init__(self, data):
+        """
+        pc算法，参考代码：
+        https://github.com/Renovamen/pcalg-py
+        :param data: DataFrame
+        """
+        self.load_data(data)
+        self.result_dag = None
+        self.show_est()
 
+    def run(self):
+        data = self.data
+        labels = data.columns.values
+        columns_count = len(data.columns)
+        p = pc(
+            suffStat={"C": data.corr().values, "n": data.values.shape[0]},
+            alpha=0.05,
+            labels=[str(i) for i in range(columns_count)],
+            indepTest=gauss_ci_test,
+            verbose=False
+        )
 
+        # DFS 因果关系链
+        start = 2  # 起始异常节点
+        vis = [0 for i in range(columns_count)]
+        vis[start] = True
+        path = []
+        path.append(start)
+        dfs(p, start, path, vis)
+
+        # 画图
+        g = generate_graph(p, labels)
+        self.result_dag = g
+        return g
 
 
 if __name__ == '__main__':
-    data = pd.read_csv(r"../datasets/Asian.csv")
-    expert_data = pd.read_csv(r"../datasets/Asian expert.csv", index_col=0)
-    expert = Expert(expert_data)
-    est = SA(data,score_method=Knowledge_fused_score,expert=expert)
+    # data = pd.read_csv(r"../datasets/Asian.csv")
+    # expert_data = pd.read_csv(r"../datasets/Asian expert.csv", index_col=0)
+    # expert = Expert(expert_data)
+    # est = SA(data, score_method=Knowledge_fused_score, expert=expert)
+    # est.run()
+    # est.show()
+    data = pd.read_excel(r"../datasets/simple.xlsx")
+    est = PC_estimator(data)
     est.run()
     est.show()

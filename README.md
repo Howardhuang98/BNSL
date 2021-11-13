@@ -8,6 +8,7 @@ School: Tianjin University, Priceless Lab
 ## Here you can use:
 * greedy hill climb
 * dynamic program: shortest path perspective
+* PC algorithm
 
 ## Project structure
 
