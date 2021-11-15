@@ -8,9 +8,8 @@
 """
 from datetime import datetime
 
-import pandas as pd
 
-from base import Estimator
+from dlbn.base import Estimator
 from dlbn.graph import *
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.pc import *
@@ -96,7 +95,7 @@ class SA(Estimator):
         return self.result_dag
 
 
-class PC_estimator(Estimator):
+class PC(Estimator):
     def __init__(self, data):
         """
         pc算法，参考代码：
@@ -140,7 +139,10 @@ if __name__ == '__main__':
     # est = SA(data, score_method=Knowledge_fused_score, expert=expert)
     # est.run()
     # est.show()
-    data = pd.read_excel(r"../datasets/simple.xlsx")
-    est = PC_estimator(data)
+    data = pd.read_csv(r"../datasets/Asian.csv", )
+    data[data == 'no'] = 0
+    data[data == 'yes'] = 1
+    data = data.astype(int)
+    est = PC(data)
     est.run()
     est.show()
