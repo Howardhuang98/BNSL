@@ -83,7 +83,7 @@ class SA(Estimator):
     
     """
 
-    def __init__(self, data, score_method, **kwargs):
+    def __init__(self, data, score_method: BIC_score, **kwargs):
         self.load_data(data)
         self.result_dag = None
         self.show_est()
@@ -139,10 +139,22 @@ if __name__ == '__main__':
     # est = SA(data, score_method=Knowledge_fused_score, expert=expert)
     # est.run()
     # est.show()
+    # data = pd.read_csv(r"../datasets/Asian.csv", )
+    # data[data == 'no'] = 0
+    # data[data == 'yes'] = 1
+    # data = data.astype(int)
+    # est = PC(data)
+    # est.run()
+    # est.show()
     data = pd.read_csv(r"../datasets/Asian.csv", )
     data[data == 'no'] = 0
     data[data == 'yes'] = 1
-    data = data.astype(int)
-    est = PC(data)
-    est.run()
-    est.show()
+    data = data.astype(int)[:2000]
+    ground_truth = DAG()
+    ground_truth.read_excel(r"../datasets/Asian net.xlsx")
+    exp = pd.read_csv(r"../datasets/Asian expert.csv", index_col=0)
+    expert = Expert(exp)
+    hc_est = HC(data, Knowledge_fused_score, expert=expert)
+    hc_est.run()
+    hc_est.show()
+    print(hc_est.result_dag-ground_truth)

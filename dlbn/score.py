@@ -148,9 +148,10 @@ class Knowledge_fused_score(Score):
         self.activation_parameter = []
 
     def local_score(self, x, parents):
-        likelihood = self.mdl.likelihood_score(x, parents)
-        log_pg = self.activation_function(self.multiply_epsilon(x, parents))
-        return likelihood + log_pg
+        # likelihood = - self.mdl.likelihood_score(x, parents)
+        likelihood = - self.mdl.local_score(x, parents)
+        log_pg = self.activation_function(self.multiply_epsilon(x, parents),activation='else')
+        return likelihood + 0.005*log_pg
 
     def multiply_epsilon(self, x, parents):
         parents = set(parents)
@@ -158,6 +159,7 @@ class Knowledge_fused_score(Score):
         # calculate the multiply epsilon
         E = 1
         for node in self.data.columns:
+            # thinks = [u->v, u<-v, u><v]
             thinks = self.expert.think(x, node)
             if node == x:
                 continue
@@ -167,9 +169,17 @@ class Knowledge_fused_score(Score):
                 E *= thinks[2]
         return E
 
-    def activation_function(self, x):
-        parameters = self.get_activation_parameter()
-        y = parameters[0] * x ** 3 + parameters[1] * (x ** 2) + parameters[2] * x + parameters[3]
+    def activation_function(self, x, activation="cubic"):
+        if activation == "cubic":
+            parameters = self.get_activation_parameter()
+            y = parameters[0] * x ** 3 + parameters[1] * (x ** 2) + parameters[2] * x + parameters[3]
+        if activation == "else":
+            n = len(self.data.columns)
+            zero_point = (1 / 3) ** (n - 1)
+            if x < zero_point:
+                y = 0
+            else:
+                y = 100
         return y
 
     def get_activation_parameter(self):

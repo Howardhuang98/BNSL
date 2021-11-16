@@ -14,7 +14,6 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
-from dlbn.score import BIC_score
 
 
 class DAG(nx.DiGraph):
