@@ -146,15 +146,17 @@ if __name__ == '__main__':
     # est = PC(data)
     # est.run()
     # est.show()
+
     data = pd.read_csv(r"../datasets/Asian.csv", )
     data[data == 'no'] = 0
     data[data == 'yes'] = 1
-    data = data.astype(int)[:2000]
+    data = data.astype(int)
     ground_truth = DAG()
     ground_truth.read_excel(r"../datasets/Asian net.xlsx")
-    exp = pd.read_csv(r"../datasets/Asian expert.csv", index_col=0)
-    expert = Expert(exp)
+    expert = Expert(path=r"../experiments/expert-100-4.csv")
+    random_expert = Expert.random_init(data)
     hc_est = HC(data, Knowledge_fused_score, expert=expert)
     hc_est.run()
     hc_est.show()
     print(hc_est.result_dag-ground_truth)
+

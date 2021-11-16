@@ -150,8 +150,8 @@ class Knowledge_fused_score(Score):
     def local_score(self, x, parents):
         # likelihood = - self.mdl.likelihood_score(x, parents)
         likelihood = - self.mdl.local_score(x, parents)
-        log_pg = self.activation_function(self.multiply_epsilon(x, parents),activation='else')
-        return likelihood + 0.005*log_pg
+        log_pg = self.activation_function(self.multiply_epsilon(x, parents), activation='else')
+        return likelihood + log_pg
 
     def multiply_epsilon(self, x, parents):
         parents = set(parents)
@@ -177,9 +177,9 @@ class Knowledge_fused_score(Score):
             n = len(self.data.columns)
             zero_point = (1 / 3) ** (n - 1)
             if x < zero_point:
-                y = 0
+                y = -10000
             else:
-                y = 100
+                y = 10000 * x
         return y
 
     def get_activation_parameter(self):
