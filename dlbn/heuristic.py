@@ -74,17 +74,11 @@ class HillClimb:
         current = self.dag
         for _ in tqdm(range(num_iteration), desc="Hill climbing"):
             if direction == 'up':
-                try:
-                    best_operation, score_delta = max(self.legal_operation(current), key=lambda x: x[1])
-                except:
-                    break
+                best_operation, score_delta = max(self.legal_operation(current), key=lambda x: x[1])
                 if score_delta < 0:
                     break
             if direction == 'down':
-                try:
-                    best_operation, score_delta = min(self.legal_operation(current), key=lambda x: x[1])
-                except:
-                    break
+                best_operation, score_delta = min(self.legal_operation(current), key=lambda x: x[1])
                 if score_delta > 0:
                     break
 

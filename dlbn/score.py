@@ -222,7 +222,10 @@ class BDeu_score(MDL_score):
         var_states = self.state_names[variable]
         var_cardinality = len(var_states)
         state_counts = self.state_count(variable, parents)
-        num_parents_states = float(state_counts.shape[1])
+        if parents:
+            num_parents_states = float(state_counts.shape[1])
+        else:
+            num_parents_states = float(1)
 
         counts = np.asarray(state_counts)
         log_gamma_counts = np.zeros_like(counts, dtype=float)
@@ -233,11 +236,13 @@ class BDeu_score(MDL_score):
 
         # Compute the log-gamma conditional sample size
         log_gamma_conds = np.sum(counts, axis=0, dtype=float)
-        gammaln(log_gamma_conds + alpha, out=log_gamma_conds)
+        gammaln(np.array(log_gamma_conds + alpha), out=np.array(log_gamma_conds))
+        likelihood = log_gamma_counts - log_gamma_conds
+        likelihood *= counts
+
 
         score = (
-                np.sum(log_gamma_counts)
-                - np.sum(log_gamma_conds)
+                np.sum(likelihood)
                 + num_parents_states * lgamma(alpha)
                 - counts.size * lgamma(beta)
         )
@@ -253,5 +258,5 @@ if __name__ == '__main__':
     b = BIC_score(data)
     bd = BDeu_score(data)
     print(k.local_score('smoke', ['bronc']))
-    print(b.local_score('smoke', ['bronc']))
-    print(bd.local_score('smoke', ['bronc']))
+    print(b.local_score('smoke', []))
+    print(bd.local_score('smoke', []))
