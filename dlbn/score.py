@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from scipy.optimize import fsolve
-from scipy.special import gammaln
+from scipy.special import gammaln,gamma
 
 from dlbn.base import Score
 from dlbn.expert import Expert
@@ -213,39 +213,60 @@ class BDeu_score(MDL_score):
 
     def __init__(self, data: pd.DataFrame, equivalent_sample_size=10, **kwargs):
         super(BDeu_score, self).__init__(data)
-        self.equivalent_sample_size = equivalent_sample_size
+        self.equivalent_sample_size = np.float_(equivalent_sample_size)
 
     def local_score(self, variable, parents):
         'Computes a score that measures how much a \
         given variable is "influenced" by a given list of potential parents.'
 
-        var_states = self.state_names[variable]
-        var_cardinality = len(var_states)
-        state_counts = self.state_count(variable, parents)
+        state_count = self.state_count(variable, parents)
+        state_count[state_count == 0] = 1
+        counts = np.asarray(state_count,dtype=np.float_)
+        Nij = np.sum(counts, axis=0, dtype=np.float_)
         if parents:
-            num_parents_states = float(state_counts.shape[1])
+            r = np.float_(len(state_count.index))
+            q = np.float_(len(state_count.columns))
         else:
-            num_parents_states = float(1)
+            r = np.float_(len(state_count))
+            q = np.float_(1)
+        second_term = counts + self.equivalent_sample_size/(r*q)
+        second_term = gammaln(second_term)-gammaln(self.equivalent_sample_size/(r*q))
+        second_term = np.sum(second_term)
 
-        counts = np.asarray(state_counts)
-        log_gamma_counts = np.zeros_like(counts, dtype=float)
-        alpha = self.equivalent_sample_size / num_parents_states
-        beta = self.equivalent_sample_size / counts.size
-        # Compute log(gamma(counts + beta))
-        gammaln(counts + beta, out=log_gamma_counts)
-
-        # Compute the log-gamma conditional sample size
-        log_gamma_conds = np.sum(counts, axis=0, dtype=float)
-        gammaln(np.array(log_gamma_conds + alpha), out=np.array(log_gamma_conds))
-        likelihood = log_gamma_counts - log_gamma_conds
-        likelihood *= counts
+        first_term = gammaln(self.equivalent_sample_size/q)-gammaln(Nij + self.equivalent_sample_size/q)
+        first_term = np.sum(first_term)
+        score = first_term + second_term
 
 
-        score = (
-                np.sum(likelihood)
-                + num_parents_states * lgamma(alpha)
-                - counts.size * lgamma(beta)
-        )
+
+
+        # var_states = self.state_names[variable]
+        # var_cardinality = len(var_states)
+        # state_counts = self.state_count(variable, parents)
+        # if parents:
+        #     num_parents_states = float(state_counts.shape[1])
+        # else:
+        #     num_parents_states = float(1)
+        #
+        # counts = np.asarray(state_counts)
+        # log_gamma_counts = np.zeros_like(counts, dtype=float)
+        # alpha = self.equivalent_sample_size / num_parents_states
+        # beta = self.equivalent_sample_size / counts.size
+        # # Compute log(gamma(counts + beta))
+        # gammaln(counts + beta, out=log_gamma_counts)
+        #
+        # # Compute the log-gamma conditional sample size
+        # log_gamma_conds = np.sum(counts, axis=0, dtype=float)
+        # gammaln(np.array(log_gamma_conds + alpha), out=np.array(log_gamma_conds))
+        # likelihood = log_gamma_counts - log_gamma_conds
+        # likelihood *= counts
+        #
+        #
+        # score = (
+        #         np.sum(likelihood)
+        #         + num_parents_states * lgamma(alpha)
+        #         - counts.size * lgamma(beta)
+        # )
         return score
 
 
@@ -258,5 +279,6 @@ if __name__ == '__main__':
     b = BIC_score(data)
     bd = BDeu_score(data)
     print(k.local_score('smoke', ['bronc']))
-    print(b.local_score('smoke', []))
+    print(b.local_score('smoke', ['bronc']))
     print(bd.local_score('smoke', []))
+    print(bd.local_score('smoke', ['bronc']))
