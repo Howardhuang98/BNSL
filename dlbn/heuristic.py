@@ -7,27 +7,29 @@
 ------------      
 """
 import logging
+
 from itertools import permutations
+from math import exp
 
 import networkx as nx
 import pandas as pd
 from tqdm import tqdm
+import random
 
-from dlbn.direct_graph import DAG
+from dlbn.graph import DAG
 from dlbn.score import Score
 
 logging.basicConfig(filename='run.log', level=logging.INFO)
 
 
 class HillClimb:
-    def __init__(self, data: pd.DataFrame, score_method: Score, dag: DAG = None, **Kwargs):
+    def __init__(self, data: pd.DataFrame, score_method: Score, dag: DAG = None,**kwargs):
         self.score_method = score_method
         if not dag:
             self.dag = DAG()
         self.data = data
         self.vars = list(data.columns.values)
         self.dag.add_nodes_from(self.vars)
-        self.score_method = score_method(self.data)
         self.tabu_list = []
 
     def legal_operation(self, current_dag: DAG):
@@ -72,17 +74,11 @@ class HillClimb:
         current = self.dag
         for _ in tqdm(range(num_iteration), desc="Hill climbing"):
             if direction == 'up':
-                try:
-                    best_operation, score_delta = max(self.legal_operation(current), key=lambda x: x[1])
-                except:
-                    break
+                best_operation, score_delta = max(self.legal_operation(current), key=lambda x: x[1])
                 if score_delta < 0:
                     break
             if direction == 'down':
-                try:
-                    best_operation, score_delta = min(self.legal_operation(current), key=lambda x: x[1])
-                except:
-                    break
+                best_operation, score_delta = min(self.legal_operation(current), key=lambda x: x[1])
                 if score_delta > 0:
                     break
 
@@ -99,3 +95,33 @@ class HillClimb:
                 self.dag.remove_edge(u, v)
                 self.dag.add_edge(v, u)
         return self.dag
+
+class SimulatedAnnealing:
+    def __init__(self,data: pd.DataFrame, score_method, dag: DAG = None):
+        self.data = data
+        self.score_method = score_method
+        if dag is None:
+            self.dag = DAG()
+            self.dag.add_nodes_from(list(data.columns.values))
+
+    def run(self,T=1000.0,k=0.99,num_iteration=1000):
+        current_dag = self.dag
+        for _ in tqdm(range(num_iteration)):
+            legal_operations = list(current_dag.legal_operations())
+            operation = random.sample(legal_operations,1)[0]
+            score_delta = current_dag.score_delta(operation,self.score_method)
+            if score_delta > 0:
+                current_dag.do_operation(operation)
+            if score_delta < 0:
+                if exp(score_delta/T) > random.uniform(0,1):
+                    current_dag.do_operation(operation)
+            # cooling
+            T *= k
+        self.dag = current_dag
+        return self.dag
+
+if __name__ == '__main__':
+    pass
+
+
+
