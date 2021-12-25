@@ -164,9 +164,9 @@ class Knowledge_fused_score(Score):
             if node == x:
                 continue
             elif node in parents:
-                E *= thinks[1]
+                E += thinks[1]
             else:
-                E *= thinks[2]
+                E += thinks[2]
         return E
 
     def activation_function(self, x, activation="cubic"):
@@ -175,11 +175,11 @@ class Knowledge_fused_score(Score):
             y = parameters[0] * x ** 3 + parameters[1] * (x ** 2) + parameters[2] * x + parameters[3]
         if activation == "else":
             n = len(self.data.columns)
-            zero_point = (1 / 3) ** (n - 1)
+            zero_point = (1 / 3) * (n - 1)
             if x < zero_point:
-                y = -10000
+                y = -100
             else:
-                y = 10000 * x
+                y = 100 * x
         return y
 
     def get_activation_parameter(self):
@@ -278,7 +278,9 @@ if __name__ == '__main__':
     k.show_act()
     b = BIC_score(data)
     bd = BDeu_score(data)
-    print(k.local_score('smoke', ['bronc']))
-    print(b.local_score('smoke', ['bronc']))
-    print(bd.local_score('smoke', []))
-    print(bd.local_score('smoke', ['bronc']))
+    #print(k.local_score('smoke', ['bronc']))
+    #print(k.local_score('smoke', ['bronc','lung','xray']))
+    print(b.local_score('lung', ['smoke']))
+    print(b.local_score('smoke', ['lung']))
+    #print(bd.local_score('smoke', []))
+    #print(bd.local_score('smoke', ['bronc']))

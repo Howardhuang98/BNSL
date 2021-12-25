@@ -12,7 +12,6 @@ from datetime import datetime
 from dlbn.base import Estimator
 from dlbn.graph import *
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
-from dlbn.pc import *
 from dlbn.score import *
 
 """
@@ -111,7 +110,7 @@ class PC(Estimator):
         labels = data.columns.values
         columns_count = len(data.columns)
         p = pc(
-            suffStat={"C": data.corr().values, "n": data.values.shape[0]},
+            suffStat={"C": data.corr().values, "num_of_nodes": data.values.shape[0]},
             alpha=0.05,
             labels=[str(i) for i in range(columns_count)],
             indepTest=gauss_ci_test,
@@ -147,16 +146,21 @@ if __name__ == '__main__':
     # est.run()
     # est.show()
 
-    data = pd.read_csv(r"../datasets/Asian.csv", )
-    data[data == 'no'] = 0
-    data[data == 'yes'] = 1
-    data = data.astype(int)
-    ground_truth = DAG()
-    ground_truth.read_excel(r"../datasets/Asian net.xlsx")
-    # expert = Expert(path=r"../experiments/expert-100-4.csv")
-    # random_expert = Expert.random_init(data)
-    hc_est = HC(data, BDeu_score)
-    hc_est.run()
-    hc_est.show()
-    print(hc_est.result_dag-ground_truth)
-
+    # data = pd.read_csv(r"../datasets/Asian.csv", )
+    # data[data == 'no'] = 0
+    # data[data == 'yes'] = 1
+    # data = data.astype(int)
+    # ground_truth = DAG()
+    # ground_truth.read_excel(r"../datasets/Asian net.xlsx")
+    # # expert = Expert(path=r"../experiments/expert-100-4.csv")
+    # # random_expert = Expert.random_init(data)
+    # hc_est = HC(data, BDeu_score)
+    # hc_est.run()
+    # hc_est.show()
+    # print(hc_est.result_dag-ground_truth)
+    data = pd.read_csv(r"../datasets/Asian.csv")
+    est = SPP(data)
+    dag = est.run()
+    s = dag.score(MDL_score,data)
+    print(dag.edges,dag.nodes)
+    print(s)

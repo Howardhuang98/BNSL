@@ -120,6 +120,8 @@ class SimulatedAnnealing:
         self.dag = current_dag
         return self.dag
 
+
+
 if __name__ == '__main__':
     pass
 

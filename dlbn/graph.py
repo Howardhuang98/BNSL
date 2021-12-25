@@ -14,6 +14,19 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
+def acc(dag,true_dag):
+    """
+
+    :param dag0:
+    :param dag1:
+    :return:
+    """
+    FP = len(set(dag.edges) - set(true_dag.edges))
+    FN = len(set(true_dag.edges) - set(dag.edges))
+    TP = len(set(true_dag.edges) & set(dag.edges))
+    TN = (len(dag.nodes)**2-len(dag.nodes))-FP-FN-TP
+    return (TP+TN)/(FP+FN+TP+TN)
+
 
 
 class DAG(nx.DiGraph):
@@ -41,6 +54,9 @@ class DAG(nx.DiGraph):
     def score(self, score_method, data: pd.DataFrame, detail=False):
         score_dict = {}
         score_list = []
+        if len(self.nodes) < len(data.columns):
+            print("Isolated node detected, this function will add nodes")
+            self.add_nodes_from(data.columns)
         for node in self.nodes:
             parents = list(self.predecessors(node))
             s = score_method(data)
@@ -77,7 +93,8 @@ class DAG(nx.DiGraph):
         else:
             raise ValueError("cannot subtract DAG instance with other instance")
 
-    def read_excel(self, path: str):
+
+    def read(self, path: str, source = 'source node', target = 'target node'):
         """
         here we need excel written in this format:
 
@@ -88,11 +105,16 @@ class DAG(nx.DiGraph):
         :param path:
         :return:
         """
-        data = pd.read_excel(path)
+        if path.endswith("xlsx"):
+            data = pd.read_excel(path)
+        elif path.endswith("csv"):
+            data = pd.read_csv(path)
+        else:
+            raise ValueError()
         edge_list = []
         for row_tuple in data.iterrows():
-            u = row_tuple[1]['source node']
-            v = row_tuple[1]['target node']
+            u = row_tuple[1][source]
+            v = row_tuple[1][target]
             edge_list.append((u, v))
         self.add_edges_from(edge_list)
         return self
@@ -196,7 +218,7 @@ class OrderGraph(DAG):
 
     def generate_order_graph(self):
         """
-        generate order graph. if there is n variable, there will be 2^n-1 states(nodes) in graph
+        generate order graph. if there is num_of_nodes variable, there will be 2^num_of_nodes-1 states(nodes) in graph
         """
         for order in permutations(self.variables):
             previous = []
@@ -307,6 +329,7 @@ class OrderGraph(DAG):
                 u = self.shortest_path[i]
                 v = self.shortest_path[i + 1]
                 cost = self.edges[u, v]['cost']
+                print(u,v,cost)
                 optimal_parents = list(self.edges[u, v]['optimal_parents'])
                 variable = str(list(v - u)[0])
                 if optimal_parents:
@@ -348,5 +371,6 @@ class ParentGraph(OrderGraph):
 
 
 if __name__ == '__main__':
-    pass
+    ground_truth = DAG()
+    ground_truth.read(r"I:\python_project\DLBN\experiments\data\Asia\Asian net.xlsx")
 
