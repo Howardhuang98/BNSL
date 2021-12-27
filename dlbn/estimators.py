@@ -8,11 +8,13 @@
 """
 from datetime import datetime
 
+import matplotlib.pyplot as plt
 
 from dlbn.base import Estimator
 from dlbn.graph import *
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.score import *
+from dlbn.pc import *
 
 """
 estimators
@@ -97,38 +99,18 @@ class SA(Estimator):
 class PC(Estimator):
     def __init__(self, data):
         """
-        pc算法，参考代码：
-        https://github.com/Renovamen/pcalg-py
-        :param data: DataFrame
+
+        :param data:
         """
         self.load_data(data)
         self.result_dag = None
         self.show_est()
 
     def run(self):
-        data = self.data
-        labels = data.columns.values
-        columns_count = len(data.columns)
-        p = pc(
-            suffStat={"C": data.corr().values, "num_of_nodes": data.values.shape[0]},
-            alpha=0.05,
-            labels=[str(i) for i in range(columns_count)],
-            indepTest=gauss_ci_test,
-            verbose=False
-        )
-
-        # DFS 因果关系链
-        start = 2  # 起始异常节点
-        vis = [0 for i in range(columns_count)]
-        vis[start] = True
-        path = []
-        path.append(start)
-        dfs(p, start, path, vis)
-
-        # 画图
-        g = generate_graph(p, labels)
-        self.result_dag = g
-        return g
+        skl, sep_set = estimate_skeleton(self.data)
+        cpdag = estimate_cpdag(skl, sep_set)
+        cpdag = nx.relabel.relabel_nodes(cpdag, dict(zip(range(len(data.columns)), data.columns)))
+        return cpdag
 
 
 if __name__ == '__main__':
@@ -159,8 +141,8 @@ if __name__ == '__main__':
     # hc_est.show()
     # print(hc_est.result_dag-ground_truth)
     data = pd.read_csv(r"../datasets/Asian.csv")
-    est = SPP(data)
+    est = PC(data)
     dag = est.run()
-    s = dag.score(MDL_score,data)
-    print(dag.edges,dag.nodes)
-    print(s)
+    nx.draw_networkx(dag)
+    plt.show()
+
