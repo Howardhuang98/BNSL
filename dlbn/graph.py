@@ -189,7 +189,7 @@ class DAG(nx.DiGraph):
 
     @property
     def adj_matrix(self):
-        return nx.to_numpy_array(self,dtype=int)
+        return nx.to_numpy_array(self, dtype=int)
 
     @property
     def genome(self):
@@ -205,7 +205,10 @@ class DAG(nx.DiGraph):
                 elif adj_matrix[i, j] == 1:
                     self.add_edge(node_labels[i], node_labels[j])
                 elif adj_matrix[i, j] == 0:
-                    self.remove_edge(node_labels[i], node_labels[j])
+                    try:
+                        self.remove_edge(node_labels[i], node_labels[j])
+                    except:
+                        continue
         return self
 
 
