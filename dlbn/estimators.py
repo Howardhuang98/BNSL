@@ -11,6 +11,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 from dlbn.base import Estimator
+from dlbn.bionics import Genetic
 from dlbn.graph import *
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.score import *
@@ -112,6 +113,18 @@ class PC(Estimator):
         cpdag = nx.relabel.relabel_nodes(cpdag, dict(zip(range(len(data.columns)), data.columns)))
         return cpdag
 
+class GA(Estimator):
+    def __init__(self,data):
+        self.load_data(data)
+        self.result_dag = None
+
+    def run(self,score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05):
+        pso = Genetic(self.data, score_method=BIC_score, pop=pop, max_iter=max_iter, c1=c1, c2=c2, w=w)
+        solu, history = pso.run()
+        g = DAG()
+        g.from_genome(solu,self.data.columns)
+        return g
+
 
 if __name__ == '__main__':
     # data = pd.read_csv(r"../datasets/Asian.csv")
@@ -141,8 +154,8 @@ if __name__ == '__main__':
     # hc_est.show()
     # print(hc_est.result_dag-ground_truth)
     data = pd.read_csv(r"../datasets/Asian.csv")
-    est = PC(data)
-    dag = est.run()
+    est = GA(data)
+    dag = est.run(max_iter=150)
     nx.draw_networkx(dag)
-    plt.show()
+    dag.to_excel()
 

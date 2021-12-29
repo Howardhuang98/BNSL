@@ -7,17 +7,24 @@
 ------------      
 """
 from copy import copy
-
 import networkx as nx
 import numpy as np
+from numpy.random import permutation
 from tqdm import tqdm
-
 from dlbn.graph import DAG
 from dlbn.score import *
 
 
-class PSO:
+class Genetic:
     def __init__(self, data: pd.DataFrame, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05):
+        """
+        X is a np.array [pop,dim_genome]
+                genome
+        pop1    01010101
+        pop2
+        pop3
+
+        """
         self.max_iter = max_iter
         self.score_method = score_method
         self.data = data
@@ -26,44 +33,33 @@ class PSO:
         self.w = w
         self.pop = pop
         self.dim_genome = len(data.columns) ** 2
-        self.X = np.random.randint(0, 2, size=(pop, self.dim_genome))
+        self.X = np.zeros(shape=(pop, self.dim_genome))
         self.dag = DAG()
-        """
-                X is a np.array [pop,dim_genome]
-                        genome
-                pop1    01010101
-                pop2
-                pop3
-
-        """
         self.personal_best_solution = copy(self.X)
         self.global_best_solution = None
         self.best_X = copy(self.X)
         self.history = []
 
+    def generate_gen(self):
+        g = DAG()
+        nodes = permutation(list(self.data.columns))
+        for i in range(len(nodes)):
+            v = nodes[i]
+            num_parents = np.random.randint(0,len(nodes)-i)
+            parent_list = permutation(nodes[i+1:])[:num_parents]
+            for pa in parent_list:
+                g.add_edge(pa,v)
+            if parent_list.size == 0:
+                g.add_node(v)
+        return g.genome
+
+
     def mutate(self):
-        mutated_X = []
-        for gen in self.X:
-            if not self.check_cycle(gen):
-                while True:
-                    idx = np.random.randint(0, len(gen))
-                    if gen[idx] == 1:
-                        gen[idx] = 0
-                    else:
-                        gen[idx] = 1
-                    if not self.check_cycle(gen):
-                        break
-            elif np.random.rand(1) < self.w:
-                while True:
-                    idx = np.random.randint(0, len(gen))
-                    if gen[idx] == 1:
-                        gen[idx] = 0
-                    else:
-                        gen[idx] = 1
-                    if not self.check_cycle(gen):
-                        break
-            mutated_X.append(gen)
-        return np.asarray(mutated_X)
+        mutated_X = copy(self.X)
+        for i in range(self.X.shape[0]):
+            if self.has_cycle(self.X[i]) or np.random.rand(1) < self.w:
+                mutated_X[i] = self.generate_gen()
+        return mutated_X
 
     def crossover(self, X1, X2, r):
         children = []
@@ -75,7 +71,7 @@ class PSO:
                         child.append(X1[i, j])
                     else:
                         child.append(X2[i, j])
-                children.append(child)
+                children.append(np.asarray(child))
             else:
                 children.append(X1[i])
         return np.asarray(children)
@@ -92,15 +88,14 @@ class PSO:
         idx = np.argmax(pop_score)
         return X[idx]
 
-    def check_cycle(self, gen):
+    def has_cycle(self, gen):
         g = DAG()
         g.from_genome(gen, self.data.columns)
         try:
             cycles = list(nx.find_cycle(g))
         except nx.NetworkXNoCycle:
             return False
-        else:
-            return cycles
+        return True
 
     def run(self):
         pop_score = self.pop_score()
@@ -123,8 +118,10 @@ class PSO:
 
 if __name__ == '__main__':
     data = pd.read_csv(r"../datasets/Asian.csv")
-    pso = PSO(data,pop=5)
+    pso = Genetic(data, pop=40,max_iter=200)
     solu, history = pso.run()
     g = DAG()
-    g.from_genome(solu)
+    g.from_genome(solu,data.columns)
     print(g.edges)
+    g.show(BIC_score,data)
+    print(pso.has_cycle(solu))
