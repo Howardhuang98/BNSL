@@ -8,6 +8,7 @@
 """
 from copy import copy
 
+import networkx as nx
 import numpy as np
 from tqdm import tqdm
 
@@ -37,20 +38,30 @@ class PSO:
         """
         self.personal_best_solution = copy(self.X)
         self.global_best_solution = None
-
-
         self.best_X = copy(self.X)
         self.history = []
 
     def mutate(self):
         mutated_X = []
         for gen in self.X:
-            if np.random.rand(1)<self.w:
-                idx = np.random.randint(0,len(gen))
-                if gen[idx] == 1:
-                    gen[idx] = 0
-                else:
-                    gen[idx] = 1
+            if not self.check_cycle(gen):
+                while True:
+                    idx = np.random.randint(0, len(gen))
+                    if gen[idx] == 1:
+                        gen[idx] = 0
+                    else:
+                        gen[idx] = 1
+                    if not self.check_cycle(gen):
+                        break
+            elif np.random.rand(1) < self.w:
+                while True:
+                    idx = np.random.randint(0, len(gen))
+                    if gen[idx] == 1:
+                        gen[idx] = 0
+                    else:
+                        gen[idx] = 1
+                    if not self.check_cycle(gen):
+                        break
             mutated_X.append(gen)
         return np.asarray(mutated_X)
 
@@ -63,7 +74,7 @@ class PSO:
                     if np.random.rand(1) < 0.5:
                         child.append(X1[i, j])
                     else:
-                        child.append(X2[i,j])
+                        child.append(X2[i, j])
                 children.append(child)
             else:
                 children.append(X1[i])
@@ -72,24 +83,35 @@ class PSO:
     def pop_score(self):
         scores = []
         for genome in self.X:
-            self.dag.from_genome(genome,self.data.columns)
-            s = self.dag.score(self.score_method,self.data)
+            self.dag.from_genome(genome, self.data.columns)
+            s = self.dag.score(self.score_method, self.data)
             scores.append(s)
         return np.asarray(scores)
 
-    def get_global_best_position(self,pop_score,X):
+    def get_global_best_position(self, pop_score, X):
         idx = np.argmax(pop_score)
         return X[idx]
+
+    def check_cycle(self, gen):
+        g = DAG()
+        g.from_genome(gen, self.data.columns)
+        try:
+            cycles = list(nx.find_cycle(g))
+        except nx.NetworkXNoCycle:
+            return False
+        else:
+            return cycles
 
     def run(self):
         pop_score = self.pop_score()
         personal_best_position = self.X
-        global_best_position = self.get_global_best_position(pop_score,personal_best_position)
+        global_best_position = self.get_global_best_position(pop_score, personal_best_position)
         for i in tqdm(range(self.max_iter)):
             self.history.append(self.X)
+            self.X = self.crossover(self.X, personal_best_position, self.c1)
+            self.X = self.crossover(self.X, np.expand_dims(global_best_position, axis=0).repeat(self.pop, axis=0),
+                                    self.c2)
             self.X = self.mutate()
-            self.X = self.crossover(self.X,personal_best_position,self.c1)
-            self.X = self.crossover(self.X,np.expand_dims(global_best_position,axis=0).repeat(self.pop,axis=0),self.c2)
             new_pop_score = self.pop_score()
             for j in range(self.pop):
                 if new_pop_score[j] > pop_score[j]:
@@ -98,27 +120,11 @@ class PSO:
 
         return global_best_position, np.asarray(self.history)
 
+
 if __name__ == '__main__':
-    data = pd.read_excel(r"../datasets/simple.xlsx")
-    pso = PSO(data)
-    solu,history = pso.run()
-    print(solu,history)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    data = pd.read_csv(r"../datasets/Asian.csv")
+    pso = PSO(data,pop=5)
+    solu, history = pso.run()
+    g = DAG()
+    g.from_genome(solu)
+    print(g.edges)
