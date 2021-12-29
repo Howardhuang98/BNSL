@@ -39,7 +39,7 @@ class Linear_acyclic_model:
         the model described in 《A Linear Non-Gaussian Acyclic Model for Causal Discovery》
         :param noise_type:
         :param W:
-        :param n: 生成数据 X(d*n)
+        :param n: 生成数据 X(d*num_of_nodes)
         :return:
 
         """

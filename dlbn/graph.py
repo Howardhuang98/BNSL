@@ -6,14 +6,29 @@
 @Modify Time :    2021/6/25 14:50
 ------------
 """
+import math
 from itertools import permutations
 from multiprocessing import Pool
 
 import networkx as nx
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
+
+def acc(dag, true_dag):
+    """
+
+    :param dag0:
+    :param dag1:
+    :return:
+    """
+    FP = len(set(dag.edges) - set(true_dag.edges))
+    FN = len(set(true_dag.edges) - set(dag.edges))
+    TP = len(set(true_dag.edges) & set(dag.edges))
+    TN = (len(dag.nodes) ** 2 - len(dag.nodes)) - FP - FN - TP
+    return (TP + TN) / (FP + FN + TP + TN)
 
 
 class DAG(nx.DiGraph):
@@ -21,8 +36,8 @@ class DAG(nx.DiGraph):
     inherit class nx.DiGraph
     """
 
-    def __init__(self, incoming_graph_data=None):
-        super(DAG, self).__init__(incoming_graph_data)
+    def __init__(self, incoming_graph_data=None, **kwargs):
+        super(DAG, self).__init__(incoming_graph_data, **kwargs)
         cycle = self._check_cycle()
         if cycle:
             out_str = "Cycles are not allowed in a DAG."
@@ -41,6 +56,9 @@ class DAG(nx.DiGraph):
     def score(self, score_method, data: pd.DataFrame, detail=False):
         score_dict = {}
         score_list = []
+        if len(self.nodes) < len(data.columns):
+            print("Isolated node detected, this function will add nodes")
+            self.add_nodes_from(data.columns)
         for node in self.nodes:
             parents = list(self.predecessors(node))
             s = score_method(data)
@@ -77,7 +95,7 @@ class DAG(nx.DiGraph):
         else:
             raise ValueError("cannot subtract DAG instance with other instance")
 
-    def read_excel(self, path: str):
+    def read(self, path: str, source='source node', target='target node'):
         """
         here we need excel written in this format:
 
@@ -88,11 +106,16 @@ class DAG(nx.DiGraph):
         :param path:
         :return:
         """
-        data = pd.read_excel(path)
+        if path.endswith("xlsx"):
+            data = pd.read_excel(path)
+        elif path.endswith("csv"):
+            data = pd.read_csv(path)
+        else:
+            raise ValueError()
         edge_list = []
         for row_tuple in data.iterrows():
-            u = row_tuple[1]['source node']
-            v = row_tuple[1]['target node']
+            u = row_tuple[1][source]
+            v = row_tuple[1][target]
             edge_list.append((u, v))
         self.add_edges_from(edge_list)
         return self
@@ -129,7 +152,7 @@ class DAG(nx.DiGraph):
 
     def score_delta(self, operation, score_method):
         opera, uv = operation[0], operation[1]
-        u,v = uv[0],uv[1]
+        u, v = uv[0], uv[1]
         s = score_method
         if opera == '+':
             old_parents = list(self.predecessors(v))
@@ -148,10 +171,12 @@ class DAG(nx.DiGraph):
             new_u_parents = old_u_parents + [v]
             new_v_parents = old_v_parents[:]
             new_v_parents.remove(u)
-            score_delta = (s.local_score(v, new_v_parents) + s.local_score(u,new_u_parents) - s.local_score(v, old_v_parents) - s.local_score(u, old_u_parents))
+            score_delta = (s.local_score(v, new_v_parents) + s.local_score(u, new_u_parents) - s.local_score(v,
+                                                                                                             old_v_parents) - s.local_score(
+                u, old_u_parents))
             return score_delta
 
-    def do_operation(self,operation):
+    def do_operation(self, operation):
         if operation[0] == '+':
             self.add_edge(*operation[1])
         if operation[0] == '-':
@@ -162,6 +187,29 @@ class DAG(nx.DiGraph):
             self.add_edge(v, u)
         return None
 
+    @property
+    def adj_matrix(self):
+        return nx.to_numpy_array(self, dtype=int)
+
+    @property
+    def genome(self):
+        return self.adj_matrix.flatten()
+
+    def from_genome(self, genome, node_labels):
+        num_node = int(math.sqrt(len(genome)))
+        adj_matrix = np.reshape(genome, newshape=(num_node, num_node))
+        for i in range(num_node):
+            for j in range(num_node):
+                if i == j:
+                    continue
+                elif adj_matrix[i, j] == 1:
+                    self.add_edge(node_labels[i], node_labels[j])
+                elif adj_matrix[i, j] == 0:
+                    try:
+                        self.remove_edge(node_labels[i], node_labels[j])
+                    except:
+                        continue
+        return self
 
 
 """
@@ -196,7 +244,7 @@ class OrderGraph(DAG):
 
     def generate_order_graph(self):
         """
-        generate order graph. if there is n variable, there will be 2^n-1 states(nodes) in graph
+        generate order graph. if there is num_of_nodes variable, there will be 2^num_of_nodes-1 states(nodes) in graph
         """
         for order in permutations(self.variables):
             previous = []
@@ -307,6 +355,7 @@ class OrderGraph(DAG):
                 u = self.shortest_path[i]
                 v = self.shortest_path[i + 1]
                 cost = self.edges[u, v]['cost']
+                print(u, v, cost)
                 optimal_parents = list(self.edges[u, v]['optimal_parents'])
                 variable = str(list(v - u)[0])
                 if optimal_parents:
@@ -348,5 +397,6 @@ class ParentGraph(OrderGraph):
 
 
 if __name__ == '__main__':
-    pass
-
+    g = DAG()
+    g.from_genome([1, 1, 1, 0],['a','b'])
+    print(g.genome)

@@ -8,12 +8,14 @@
 """
 from datetime import datetime
 
+import matplotlib.pyplot as plt
 
 from dlbn.base import Estimator
+from dlbn.bionics import Genetic
 from dlbn.graph import *
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
-from dlbn.pc import *
 from dlbn.score import *
+from dlbn.pc import *
 
 """
 estimators
@@ -98,37 +100,29 @@ class SA(Estimator):
 class PC(Estimator):
     def __init__(self, data):
         """
-        pc算法，参考代码：
-        https://github.com/Renovamen/pcalg-py
-        :param data: DataFrame
+
+        :param data:
         """
         self.load_data(data)
         self.result_dag = None
         self.show_est()
 
     def run(self):
-        data = self.data
-        labels = data.columns.values
-        columns_count = len(data.columns)
-        p = pc(
-            suffStat={"C": data.corr().values, "n": data.values.shape[0]},
-            alpha=0.05,
-            labels=[str(i) for i in range(columns_count)],
-            indepTest=gauss_ci_test,
-            verbose=False
-        )
+        skl, sep_set = estimate_skeleton(self.data)
+        cpdag = estimate_cpdag(skl, sep_set)
+        cpdag = nx.relabel.relabel_nodes(cpdag, dict(zip(range(len(data.columns)), data.columns)))
+        return cpdag
 
-        # DFS 因果关系链
-        start = 2  # 起始异常节点
-        vis = [0 for i in range(columns_count)]
-        vis[start] = True
-        path = []
-        path.append(start)
-        dfs(p, start, path, vis)
+class GA(Estimator):
+    def __init__(self,data):
+        self.load_data(data)
+        self.result_dag = None
 
-        # 画图
-        g = generate_graph(p, labels)
-        self.result_dag = g
+    def run(self,score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05):
+        pso = Genetic(self.data, score_method=BIC_score, pop=pop, max_iter=max_iter, c1=c1, c2=c2, w=w)
+        solu, history = pso.run()
+        g = DAG()
+        g.from_genome(solu,self.data.columns)
         return g
 
 
@@ -147,16 +141,21 @@ if __name__ == '__main__':
     # est.run()
     # est.show()
 
-    data = pd.read_csv(r"../datasets/Asian.csv", )
-    data[data == 'no'] = 0
-    data[data == 'yes'] = 1
-    data = data.astype(int)
-    ground_truth = DAG()
-    ground_truth.read_excel(r"../datasets/Asian net.xlsx")
-    # expert = Expert(path=r"../experiments/expert-100-4.csv")
-    # random_expert = Expert.random_init(data)
-    hc_est = HC(data, BDeu_score)
-    hc_est.run()
-    hc_est.show()
-    print(hc_est.result_dag-ground_truth)
+    # data = pd.read_csv(r"../datasets/Asian.csv", )
+    # data[data == 'no'] = 0
+    # data[data == 'yes'] = 1
+    # data = data.astype(int)
+    # ground_truth = DAG()
+    # ground_truth.read_excel(r"../datasets/Asian net.xlsx")
+    # # expert = Expert(path=r"../experiments/expert-100-4.csv")
+    # # random_expert = Expert.random_init(data)
+    # hc_est = HC(data, BDeu_score)
+    # hc_est.run()
+    # hc_est.show()
+    # print(hc_est.result_dag-ground_truth)
+    data = pd.read_csv(r"../datasets/Asian.csv")
+    est = GA(data)
+    dag = est.run(max_iter=150)
+    nx.draw_networkx(dag)
+    dag.to_excel()
 

@@ -32,7 +32,7 @@ class Dataset:
         based on linear acyclic model, generate synthesis data.
 
         :param d: 邻接矩阵的维度 M = d*d
-        :param n: 样本数目 n
+        :param n: 样本数目 num_of_nodes
         :param noise_type: 'Gaussian'/'non-Gaussian'
         :param save:
         :return:
