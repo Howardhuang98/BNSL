@@ -109,6 +109,11 @@ class DAG(nx.DiGraph):
         edges_data.to_excel(path)
         return None
 
+    def to_excel_DataFrame(self, path: str):
+        df = nx.to_pandas_adjacency(self)
+        df.to_excel(path)
+        return None
+
     def __sub__(self, other):
         """
         Use structure Hamming Distance (SHD) to subtract.
@@ -152,6 +157,14 @@ class DAG(nx.DiGraph):
             edge_list.append((u, v))
         self.add_edges_from(edge_list)
         return self
+
+    def read_DataFrame_adjacency(self, path: str):
+        df = pd.read_excel(path, index_col=0)
+        self.add_nodes_from(df.columns)
+        edges = ((df.columns[int(e[0])], df.columns[int(e[1])]) for e in zip(*df.values.nonzero()))
+        self.add_edges_from(edges)
+        return self
+
 
     def show(self):
         """

@@ -6,6 +6,8 @@
 @Modify Time :    2021/9/8 14:21  
 ------------      
 """
+import numpy as np
+
 from dlbn.base import Estimator
 from dlbn.bionics import Genetic
 from dlbn.dp import generate_order_graph, generate_parent_graph, order2dag
@@ -101,6 +103,7 @@ class GA(Estimator):
     """
     Genetic algorithm estimator class
     """
+
     def __init__(self, data):
         super(GA, self).__init__()
         self.load_data(data)
@@ -120,6 +123,18 @@ class GA(Estimator):
         solu, history = ga.run()
         self.result.from_genome(solu, self.data.columns)
         return self.result
+
+
+class KBNL(Estimator):
+    def __init__(self, data):
+        self.load_data(data)
+
+    def run(self, expert_matrix_list, c_list):
+        expert_matrix = np.zeros_like(expert_matrix_list[0])
+        if len(expert_matrix_list) != c_list:
+            raise ValueError("number of experts and number of confidence do no match.")
+        for i in range(len(expert_matrix_list)):
+            expert_matrix += c_list[i] * expert_matrix_list[i]
 
 
 if __name__ == '__main__':
