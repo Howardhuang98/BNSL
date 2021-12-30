@@ -7,10 +7,11 @@
 ------------      
 """
 from copy import copy
+
 import networkx as nx
-import numpy as np
 from numpy.random import permutation
 from tqdm import tqdm
+
 from dlbn.graph import DAG
 from dlbn.score import *
 
@@ -41,18 +42,9 @@ class Genetic:
         self.history = []
 
     def generate_gen(self):
-        g = DAG()
-        nodes = permutation(list(self.data.columns))
-        for i in range(len(nodes)):
-            v = nodes[i]
-            num_parents = np.random.randint(0,len(nodes)-i)
-            parent_list = permutation(nodes[i+1:])[:num_parents]
-            for pa in parent_list:
-                g.add_edge(pa,v)
-            if parent_list.size == 0:
-                g.add_node(v)
-        return g.genome
-
+        dag = DAG()
+        dag.random_dag(self.data.columns)
+        return dag.genome
 
     def mutate(self):
         mutated_X = copy(self.X)
@@ -117,11 +109,11 @@ class Genetic:
 
 
 if __name__ == '__main__':
-    data = pd.read_csv(r"../datasets/Asian.csv")
-    pso = Genetic(data, pop=40,max_iter=200)
+    data = pd.read_csv(r"../datasets/asian/Asian.csv")
+    pso = Genetic(data, pop=40, max_iter=200)
     solu, history = pso.run()
     g = DAG()
-    g.from_genome(solu,data.columns)
+    g.from_genome(solu, data.columns)
     print(g.edges)
-    g.show(BIC_score,data)
+    g.show(BIC_score, data)
     print(pso.has_cycle(solu))

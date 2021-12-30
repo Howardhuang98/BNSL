@@ -5,14 +5,16 @@ base class
 from abc import ABC
 from abc import abstractmethod
 
-import networkx as nx
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 
+from dlbn.graph import DAG
 
 
 class Estimator(ABC):
+
+    def __init__(self):
+        self.result = DAG()
 
     def load_data(self, data):
         """
@@ -27,17 +29,12 @@ class Estimator(ABC):
         else:
             raise ValueError("Data loading error")
 
-    def show_est(self):
+    @property
+    def summary(self):
         print("=========Estimator Information=========")
-        print('''
-        ·▄▄▄▄    ▄▄▌    ▄▄▄▄·    ▐ ▄ 
-        ██▪ ██   ██•    ▐█ ▀█▪  •█▌▐█
-        ▐█· ▐█▌  ██▪    ▐█▀▀█▄  ▐█▐▐▌
-        ██. ██   ▐█▌▐▌  ██▄▪▐█  ██▐█▌
-        ▀▀▀▀▀•   .▀▀▀   ·▀▀▀▀   ▀▀ █▪
-        ''')
-        print(self.data.head(5))
+        print(self.data.head(3))
         print("Recover the BN with {} variables".format(len(self.data.columns)))
+        print("result:\n{}".format(self.result.adj_matrix))
 
     @abstractmethod
     def run(self):
@@ -45,12 +42,24 @@ class Estimator(ABC):
         run the estimator
         """
 
-    def show(self,):
-        if self.result_dag:
-            plt.figure()
-            nx.draw_networkx(self.result_dag)
-            plt.title("Bayesian network")
-            plt.show()
+    def show(self):
+        """
+        Show figure of result
+        :return: figure
+        """
+        if self.result:
+            self.result.show()
+        else:
+            raise ValueError("No result obtained")
+
+    def save(self, path: str):
+        """
+
+        :param path: path to save excel file
+        :return: None
+        """
+        if self.result:
+            self.result.to_excel(path)
         else:
             raise ValueError("No result obtained")
 
@@ -88,5 +97,3 @@ class Score(ABC):
         if detail:
             return sum(score_list), score_dict
         return sum(score_list)
-
-

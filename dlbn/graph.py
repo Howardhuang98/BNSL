@@ -8,20 +8,19 @@
 """
 import math
 from itertools import permutations
-from multiprocessing import Pool
 
 import networkx as nx
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from tqdm import tqdm
+from numpy.random import permutation
 
 
 def acc(dag, true_dag):
     """
 
-    :param dag0:
-    :param dag1:
+    :param true_dag:
+    :param dag:
     :return:
     """
     FP = len(set(dag.edges) - set(true_dag.edges))
@@ -33,10 +32,22 @@ def acc(dag, true_dag):
 
 class DAG(nx.DiGraph):
     """
-    inherit class nx.DiGraph
+    The graph class used in this project, inherited class nx.DiGraph.
+    When it is initialized, it has to be acyclic.
     """
 
     def __init__(self, incoming_graph_data=None, **kwargs):
+        """
+
+        :param incoming_graph_data: input graph (optional, default: None). Data to initialize graph. If None (
+        default) an empty graph is created. The data can be any format that is supported by the to_networkx_graph()
+        function, currently including edge list, dict of dicts, dict of lists, NetworkX graph, NumPy matrix or 2d
+        ndarray, SciPy sparse matrix, or PyGraphviz graph.
+        :param kwargs:
+
+        for example:
+        dag = DAG()
+        """
         super(DAG, self).__init__(incoming_graph_data, **kwargs)
         cycle = self._check_cycle()
         if cycle:
@@ -46,6 +57,11 @@ class DAG(nx.DiGraph):
             raise ValueError(out_str)
 
     def _check_cycle(self):
+        """
+        Also known as "has cycle(s)"
+        :return: False if there is no cycle
+                 node list if there is cycle
+        """
         try:
             cycles = list(nx.find_cycle(self))
         except nx.NetworkXNoCycle:
@@ -54,6 +70,13 @@ class DAG(nx.DiGraph):
             return cycles
 
     def score(self, score_method, data: pd.DataFrame, detail=False):
+        """
+
+        :param score_method: score criteria
+        :param data: observed data
+        :param detail: whether return a dictionary containing every local score. Default is False
+        :return: score or (score, dict)
+        """
         score_dict = {}
         score_list = []
         if len(self.nodes) < len(data.columns):
@@ -70,11 +93,19 @@ class DAG(nx.DiGraph):
             return sum(score_list), score_dict
         return sum(score_list)
 
-    def to_excel(self, path: str):
+    def to_excel(self, path: str, source='source node', target='target node'):
+        """
+        Save the edges of DAG in to excel file, notice that this file may lose node(s).
+
+        :param path: the io path to save
+        :param source: column name of source node, default as source node
+        :param target: column name of target node, default as target node
+        :return: None
+        """
         edge_list = self.edges
-        edges_data = pd.DataFrame(columns=['source node', 'target node'])
+        edges_data = pd.DataFrame(columns=[source, target])
         for edge_pair in edge_list:
-            edges_data.loc[edges_data.shape[0]] = {'source node': edge_pair[0], 'target node': edge_pair[1]}
+            edges_data.loc[edges_data.shape[0]] = {source: edge_pair[0], target: edge_pair[1]}
         edges_data.to_excel(path)
         return None
 
@@ -103,8 +134,10 @@ class DAG(nx.DiGraph):
         1       a            b
         2       a            c
        ...       ...          ...
-        :param path:
-        :return:
+        :param path: io path
+        :param source: column name of source node
+        :param target: column name of target node
+        :return: DAG instance
         """
         if path.endswith("xlsx"):
             data = pd.read_excel(path)
@@ -120,17 +153,19 @@ class DAG(nx.DiGraph):
         self.add_edges_from(edge_list)
         return self
 
-    def show(self, score_method, data: pd.DataFrame):
+    def show(self):
+        """
+        draw the figure of DAG
+        :return: None
+        """
         nx.draw_networkx(self)
-        plt.title("Bayesian network with Score={}".format(self.score(score_method, data)))
         plt.show()
         return None
 
     def legal_operations(self):
         """
-        iterator
-        yield all legal operations
-        :return:
+        iterator, yield all legal operations like ('+', (u, v)), ('-', (u, v)), ('flip', (u, v)).
+        :return: iterable, operation ('+', (u, v))
         """
 
         potential_new_edges = (set(permutations(list(self.nodes), 2)) - set(self.edges()) - set(
@@ -211,192 +246,27 @@ class DAG(nx.DiGraph):
                         continue
         return self
 
-
-"""
-OrderGraph class
-ParentGraph class
-
-            workflow:
-
-            OrderGraph
-                |
-            generate order graph
-                |                       |-parent graph
-            add cost on order graph ----|-add cost on parent graph
-                |                       |-find optimal parents
-            find shortest path
-
-
-"""
-
-
-class OrderGraph(DAG):
-    """
-    Order graph class
-    base on a list of variable, initialize an order graph.
-
-    """
-
-    def __init__(self, variables: list):
-        self.variables = variables
-        self.shortest_path = None
-        super(OrderGraph, self).__init__()
-
-    def generate_order_graph(self):
-        """
-        generate order graph. if there is num_of_nodes variable, there will be 2^num_of_nodes-1 states(nodes) in graph
-        """
-        for order in permutations(self.variables):
-            previous = []
-            previous_name = frozenset(previous)
-            self.add_node(previous_name)
-            for node in order:
-                if previous == []:
-                    node_name = frozenset([node])
-                    self.add_node(node_name)
-                    self.add_edge(previous_name, node_name)
-                    previous = [node]
-                    previous_name = frozenset(previous)
-                else:
-                    node_name = frozenset(previous + [node])
-                    self.add_node(node_name)
-                    self.add_edge(previous_name, node_name)
-                    previous = previous + [node]
-                    previous_name = frozenset(previous)
-        return self
-
-    @classmethod
-    def _cost_on_u_v(cls, dic):
-        """
-        required by add_cost function. Because the map() only can pass one argument into function
-        u, v, score_method, data: pd.DataFrame
-        u is a frozenset()
-        v is a frozenset()
-
-        return dict
-        """
-        # get all argument we need
-        u = dic['u']
-        v = dic['v']
-        score_method = dic['score_method']
-        data = dic['data']
-        # store result as networkx format:
-        res = {'u_of_edge': u, 'v_of_edge': v}
-        # new added node: x
-        x = str(list(v - u)[0])
-        # get optimal parents out of u
-
-        pg = ParentGraph(x, list(u))
-        pg.generate_order_graph()
-        pg.add_cost(score_method, data)
-        optimal_parents, cost = pg.find_optimal_parents()
-        res['cost'] = cost
-        res['optimal_parents'] = optimal_parents
-        return res
-
-    def add_cost(self, score_method, data: pd.DataFrame, num_of_workers=4, **kwargs):
-        """
-        use score method to add cost on edges.
-        :param score_method:
-        :param data:
-        :num_of_worker
-        :return:
-        """
-        if not self.edges:
-            raise ValueError("please run generate_order_graph")
-        with Pool(processes=num_of_workers) as pool:
-            arg_list = []
-            for edge in self.edges:
-                arg = {'u': edge[0], 'v': edge[1], 'score_method': score_method, 'data': data}
-                arg_list.append(arg)
-            result = pool.map(self._cost_on_u_v, tqdm(arg_list, desc="Adding cost"))
-            for res in result:
-                self.add_edge(**res)
-        return self
-
-        # 串行方式进行add cost
-        # for edge in tqdm(self.edges, desc="Adding cost", colour='green', miniters=1):
-        #     u = edge[0]
-        #     v = edge[1]
-        #     # new added node: x
-        #     x = str(list(v - u)[0])
-        #     # get optimal parents out of u
-        #     if u:
-        #         pg = ParentGraph(x, list(u))
-        #         pg.generate_order_graph()
-        #         pg.add_cost(score_method, data)
-        #         optimal_parents, cost = pg.find_optimal_parents()
-        #         self.add_edge(u, v, cost=cost, optimal_parents=optimal_parents)
-        #         logging.info("{}->{},cost={},optimal_parents={}".format(u, v, cost, optimal_parents))
-        #     else:
-        #         self.add_edge(u ,v, cost=0, optimal_parents=frozenset())
-        #
-        # return self
-
-    def find_shortest_path(self):
-        start = frozenset()
-        end = frozenset(self.variables)
-        shortest_path = nx.dijkstra_path(self, start, end, weight='cost')
-        self.shortest_path = shortest_path
-        return shortest_path
-
-    def optimal_result(self):
-        """
-        store the optimal result
-        :return:
-        """
-        if not self.shortest_path:
-            raise ValueError("please run find_shortest_path()")
+    def random_dag(self, nodes=None, seed=None):
+        if seed:
+            np.random.seed(seed)
+        if nodes is not None:
+            nodes = permutation(nodes)
         else:
-            result_dag = DAG()
-            cost_list = []
-
-            for i in range(len(self.shortest_path) - 1):
-                u = self.shortest_path[i]
-                v = self.shortest_path[i + 1]
-                cost = self.edges[u, v]['cost']
-                print(u, v, cost)
-                optimal_parents = list(self.edges[u, v]['optimal_parents'])
-                variable = str(list(v - u)[0])
-                if optimal_parents:
-                    for parent in optimal_parents:
-                        result_dag.add_edge(parent, variable)
-                else:
-                    result_dag.add_node(variable)
-                cost_list.append(cost)
-        return result_dag
-
-
-class ParentGraph(OrderGraph):
-
-    def __init__(self, variable: str, potential_parents: list):
-        super(ParentGraph, self).__init__(potential_parents)
-        self.potential_parents = potential_parents
-        self.variable = variable
-
-    def add_cost(self, score_method, data: pd.DataFrame):
-        """
-        edge 的存储形式：(frozenset(), frozenset({'bronc'}), {'cost': 8.517193191416238})
-        :param score_method:
-        :param data:
-        :return:
-        """
-        score = score_method(data)
-        self.generate_order_graph()
-        for node in self.nodes:
-            parents = list(node)
-            cost = score.local_score(self.variable, parents)
-            self.add_node(node, cost=cost)
+            edges = [i for i in self.edges]
+            self.remove_edges_from(edges)
+            nodes = permutation(list(self.nodes))
+        for i in range(len(nodes)):
+            v = nodes[i]
+            num_parents = np.random.randint(0, len(nodes) - i)
+            parent_list = permutation(nodes[i + 1:])[:num_parents]
+            for pa in parent_list:
+                self.add_edge(pa, v)
+            if parent_list.size == 0:
+                self.add_node(v)
         return self
-
-    def find_optimal_parents(self):
-        optimal_tuple = min(self.nodes.data(), key=lambda x: x[1]["cost"])
-        optimal_parents = optimal_tuple[0]
-        cost = optimal_tuple[1]['cost']
-        return optimal_parents, cost
 
 
 if __name__ == '__main__':
     g = DAG()
-    g.from_genome([1, 1, 1, 0],['a','b'])
+    g.from_genome([1, 1, 1, 0], ['a', 'b'])
     print(g.genome)
