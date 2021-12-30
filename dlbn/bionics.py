@@ -8,7 +8,6 @@
 """
 from copy import copy
 import networkx as nx
-import numpy as np
 from numpy.random import permutation
 from tqdm import tqdm
 from dlbn.graph import DAG

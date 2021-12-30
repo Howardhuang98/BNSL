@@ -10,9 +10,13 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
+from dlbn.graph import DAG
 
 
 class Estimator(ABC):
+
+    def __init__(self):
+        self.result = DAG()
 
     def load_data(self, data):
         """
@@ -45,12 +49,18 @@ class Estimator(ABC):
         run the estimator
         """
 
-    def show(self,):
-        if self.result_dag:
+    def show(self):
+        if self.result:
             plt.figure()
-            nx.draw_networkx(self.result_dag)
+            nx.draw_networkx(self.result)
             plt.title("Bayesian network")
             plt.show()
+        else:
+            raise ValueError("No result obtained")
+
+    def save(self, path: str):
+        if self.result:
+            self.result.to_excel(path)
         else:
             raise ValueError("No result obtained")
 
@@ -88,5 +98,3 @@ class Score(ABC):
         if detail:
             return sum(score_list), score_dict
         return sum(score_list)
-
-
