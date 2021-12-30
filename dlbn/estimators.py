@@ -25,6 +25,12 @@ class DP(Estimator):
         self.load_data(data)
 
     def run(self, score_method=MDL_score):
+        """
+        run the dynamic program estimator, an exact algorithm. MDL score is used as the score criteria, it return the
+        dag with minimum score.
+        :param score_method: MDL score
+        :return: the dag with minimum score
+        """
         pg = generate_parent_graph(self.data, score_method)
         og = generate_order_graph(self.data, pg)
         self.result = order2dag(og, self.data)
@@ -33,7 +39,7 @@ class DP(Estimator):
 
 class HC(Estimator):
     """
-    greedy hill climb
+    Greedy hill climb estimator
     """
 
     def __init__(self, data):
@@ -41,6 +47,15 @@ class HC(Estimator):
         self.load_data(data)
 
     def run(self, score_method=BIC_score, direction='up', initial_dag=None, max_iter=10000, restart=1):
+        """
+        run the HC estimator.
+        :param score_method: score method, usually select BIC score or BDeu score
+        :param direction:  try to find the maximum of minimum score
+        :param initial_dag: the initial dag
+        :param max_iter: the number of maximum iteration
+        :param restart: the number of restart times, every restart will random initialize a start DAG
+        :return: an approximate maximum or minimum scored DAG
+        """
         hc = HillClimb(self.data, score_method, initial_dag=initial_dag, max_iter=max_iter,
                        restart=restart)
         self.result = hc.climb(direction)
@@ -83,11 +98,24 @@ class PC(Estimator):
 
 
 class GA(Estimator):
+    """
+    Genetic algorithm estimator class
+    """
     def __init__(self, data):
         super(GA, self).__init__()
         self.load_data(data)
 
     def run(self, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05):
+        """
+        run the genetic algorithm estimator
+        :param score_method: score criteria
+        :param pop: number of population
+        :param max_iter: maximum iteration number
+        :param c1: [0,1] the probability of crossover with personal historical best genome
+        :param c2: [0,1] the probability of crossover with global historical best genome
+        :param w: the probability of mutation
+        :return: the dag with maximum score
+        """
         ga = Genetic(self.data, score_method=BIC_score, pop=pop, max_iter=max_iter, c1=c1, c2=c2, w=w)
         solu, history = ga.run()
         self.result.from_genome(solu, self.data.columns)
