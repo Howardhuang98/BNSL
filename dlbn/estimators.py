@@ -11,12 +11,13 @@ from dlbn.bionics import Genetic
 from dlbn.dp import generate_order_graph, generate_parent_graph, order2dag
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.pc import *
-from dlbn.score import *
+from dlbn.score import BIC_score, MDL_score
 
 
 class DP(Estimator):
-    """
-
+    """ Dynamic program estimator class
+    reference: 《Learning Optimal Bayesian Networks: A Shortest Path Perspective》
+    :param: data, np.array or pd.Dataframe
     """
 
     def __init__(self, data):
@@ -35,15 +36,14 @@ class HC(Estimator):
     greedy hill climb
     """
 
-    def __init__(self, data, score_method, **kwargs):
+    def __init__(self, data):
         super(HC, self).__init__()
         self.load_data(data)
-        self.show_est()
-        self.score_method = score_method(self.data, **kwargs)
 
-    def run(self, **kwargs):
-        hc = HillClimb(self.data, self.score_method)
-        self.result = hc.climb(**kwargs)
+    def run(self, score_method=BIC_score, direction='up', initial_dag=None, max_iter=10000, restart=1):
+        hc = HillClimb(self.data, score_method, initial_dag=initial_dag, max_iter=max_iter,
+                       restart=restart)
+        self.result = hc.climb(direction)
         return self.result
 
 

@@ -236,37 +236,6 @@ class BDeu_score(MDL_score):
         first_term = gammaln(self.equivalent_sample_size/q)-gammaln(Nij + self.equivalent_sample_size/q)
         first_term = np.sum(first_term)
         score = first_term + second_term
-
-
-
-
-        # var_states = self.state_names[variable]
-        # var_cardinality = len(var_states)
-        # state_counts = self.state_count(variable, parents)
-        # if parents:
-        #     num_parents_states = float(state_counts.shape[1])
-        # else:
-        #     num_parents_states = float(1)
-        #
-        # counts = np.asarray(state_counts)
-        # log_gamma_counts = np.zeros_like(counts, dtype=float)
-        # alpha = self.equivalent_sample_size / num_parents_states
-        # beta = self.equivalent_sample_size / counts.size
-        # # Compute log(gamma(counts + beta))
-        # gammaln(counts + beta, out=log_gamma_counts)
-        #
-        # # Compute the log-gamma conditional sample size
-        # log_gamma_conds = np.sum(counts, axis=0, dtype=float)
-        # gammaln(np.array(log_gamma_conds + alpha), out=np.array(log_gamma_conds))
-        # likelihood = log_gamma_counts - log_gamma_conds
-        # likelihood *= counts
-        #
-        #
-        # score = (
-        #         np.sum(likelihood)
-        #         + num_parents_states * lgamma(alpha)
-        #         - counts.size * lgamma(beta)
-        # )
         return score
 
 

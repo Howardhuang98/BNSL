@@ -13,8 +13,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-
-
+from numpy.random import permutation
 
 
 def acc(dag, true_dag):
@@ -245,6 +244,25 @@ class DAG(nx.DiGraph):
                         self.remove_edge(node_labels[i], node_labels[j])
                     except:
                         continue
+        return self
+
+    def random_dag(self, nodes=None, seed=None):
+        if seed:
+            np.random.seed(seed)
+        if nodes is not None:
+            nodes = permutation(nodes)
+        else:
+            edges = [i for i in self.edges]
+            self.remove_edges_from(edges)
+            nodes = permutation(list(self.nodes))
+        for i in range(len(nodes)):
+            v = nodes[i]
+            num_parents = np.random.randint(0, len(nodes) - i)
+            parent_list = permutation(nodes[i + 1:])[:num_parents]
+            for pa in parent_list:
+                self.add_edge(pa, v)
+            if parent_list.size == 0:
+                self.add_node(v)
         return self
 
 
