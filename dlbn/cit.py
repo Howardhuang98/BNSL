@@ -43,5 +43,5 @@ def fisherz(data, X, Y, condition_set, correlation_matrix=None):
 
 
 if __name__ == '__main__':
-    data = pd.read_csv(r"../datasets/Asian.csv")
+    data = pd.read_csv(r"../datasets/asian/Asian.csv")
     fisherz(data.values,0,1,(2,3))

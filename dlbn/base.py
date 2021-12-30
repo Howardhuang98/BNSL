@@ -5,10 +5,8 @@ base class
 from abc import ABC
 from abc import abstractmethod
 
-import networkx as nx
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 
 from dlbn.graph import DAG
 
@@ -31,17 +29,12 @@ class Estimator(ABC):
         else:
             raise ValueError("Data loading error")
 
-    def show_est(self):
+    @property
+    def summary(self):
         print("=========Estimator Information=========")
-        print('''
-        ·▄▄▄▄    ▄▄▌    ▄▄▄▄·    ▐ ▄ 
-        ██▪ ██   ██•    ▐█ ▀█▪  •█▌▐█
-        ▐█· ▐█▌  ██▪    ▐█▀▀█▄  ▐█▐▐▌
-        ██. ██   ▐█▌▐▌  ██▄▪▐█  ██▐█▌
-        ▀▀▀▀▀•   .▀▀▀   ·▀▀▀▀   ▀▀ █▪
-        ''')
-        print(self.data.head(5))
+        print(self.data.head(3))
         print("Recover the BN with {} variables".format(len(self.data.columns)))
+        print("result:\n{}".format(self.result.adj_matrix))
 
     @abstractmethod
     def run(self):
@@ -50,15 +43,21 @@ class Estimator(ABC):
         """
 
     def show(self):
+        """
+        Show figure of result
+        :return: figure
+        """
         if self.result:
-            plt.figure()
-            nx.draw_networkx(self.result)
-            plt.title("Bayesian network")
-            plt.show()
+            self.result.show()
         else:
             raise ValueError("No result obtained")
 
     def save(self, path: str):
+        """
+
+        :param path: path to save excel file
+        :return: None
+        """
         if self.result:
             self.result.to_excel(path)
         else:

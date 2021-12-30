@@ -8,9 +8,26 @@
 """
 from dlbn.base import Estimator
 from dlbn.bionics import Genetic
+from dlbn.dp import generate_order_graph, generate_parent_graph, order2dag
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.pc import *
 from dlbn.score import *
+
+
+class DP(Estimator):
+    """
+
+    """
+
+    def __init__(self, data):
+        super(DP, self).__init__()
+        self.load_data(data)
+
+    def run(self, score_method=MDL_score):
+        pg = generate_parent_graph(self.data, score_method)
+        og = generate_order_graph(self.data, pg)
+        self.result = order2dag(og, self.data)
+        return self.result
 
 
 class HC(Estimator):
@@ -35,11 +52,11 @@ class SA(Estimator):
     
     """
 
-    def __init__(self, data, score_method: BIC_score, **kwargs):
+    def __init__(self, data, score_method=BIC_score, **kwargs):
         super(SA, self).__init__()
         self.load_data(data)
         self.show_est()
-        self.score_method = score_method(data, **kwargs)
+        self.score_method = score_method(data)
 
     def run(self):
         sa = SimulatedAnnealing(self.data, self.score_method)
@@ -71,8 +88,8 @@ class GA(Estimator):
         self.load_data(data)
 
     def run(self, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05):
-        pso = Genetic(self.data, score_method=BIC_score, pop=pop, max_iter=max_iter, c1=c1, c2=c2, w=w)
-        solu, history = pso.run()
+        ga = Genetic(self.data, score_method=BIC_score, pop=pop, max_iter=max_iter, c1=c1, c2=c2, w=w)
+        solu, history = ga.run()
         self.result.from_genome(solu, self.data.columns)
         return self.result
 

@@ -96,6 +96,6 @@ if __name__ == '__main__':
     # }, index=["A", "B", "C", "D"])
     # chen = Expert(data=chen_data)
     # print(chen.think("A", "B"))
-    data = pd.read_csv(r"../datasets/Asian.csv")
+    data = pd.read_csv(r"../datasets/asian/Asian.csv")
     expert = Expert.random_init(data)
     print(expert.data)

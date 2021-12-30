@@ -9,10 +9,15 @@
 import itertools
 
 import networkx as nx
+import pandas as pd
 
 from dlbn.graph import DAG
-from dlbn.score import *
+from dlbn.score import MDL_score
 
+"""
+reference:
+Learning Optimal Bayesian Networks: A Shortest Path Perspective
+"""
 
 def sort_tuple(t: tuple):
     l = list(t)
@@ -20,12 +25,13 @@ def sort_tuple(t: tuple):
     return tuple(l)
 
 
-def generate_parent_graph(data: pd.DataFrame, score_method: Score):
+def generate_parent_graph(data: pd.DataFrame, score_method=MDL_score):
     """
+    generate parent graph for every node.
 
-    :param score_method:
-    :param data:
-    :return:
+    :param score_method: score criteria, default as MDL score. Notice that this method return minimum score.
+    :param data: observed data
+    :return: a dict represent parent graph
     """
     s = score_method(data)
     parent_graph = {}
@@ -85,12 +91,18 @@ def query_best_structure(variable, parents, parent_graph):
 
 
 def order2dag(order_graph, data):
+    """
+
+    :param order_graph:
+    :param data:
+    :return: a DAG instance
+    """
     result_dag = DAG()
     path = nx.shortest_path(order_graph, weight='weight', source=tuple(), target=sort_tuple(tuple(data.columns)))
     for i in range(len(path) - 1):
         u = path[i]
         v = path[i + 1]
-        print(u, v, order_graph.edges[u, v]['weight'], order_graph.edges[u, v]['structure'])
+        # print(u, v, order_graph.edges[u, v]['weight'], order_graph.edges[u, v]['structure'])
         parents = list(order_graph.edges[u, v]['structure'])
         variable = tuple(set(v) - set(u))[0]
         if parents:
@@ -102,11 +114,4 @@ def order2dag(order_graph, data):
 
 
 if __name__ == '__main__':
-    data = pd.read_csv(r"../datasets/Asian.csv")
-    pg = generate_parent_graph(data, MDL_score)
-    og = generate_order_graph(data, pg)
-    dag = order2dag(og, data)
-    print(dag.edges)
-    print(dag.score(MDL_score, data))
-    nx.draw_networkx(dag)
-    plt.show()
+    pass

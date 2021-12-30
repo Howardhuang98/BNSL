@@ -212,7 +212,7 @@ def estimate_cpdag(skel_graph, sep_set):
 
 
 if __name__ == '__main__':
-    data = pd.read_csv(r"../datasets/Asian.csv")
+    data = pd.read_csv(r"../datasets/asian/Asian.csv")
     g, sep = estimate_skeleton(data)
     print(g.edges)
     print(sep)

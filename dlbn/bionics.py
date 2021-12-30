@@ -116,7 +116,7 @@ class Genetic:
 
 
 if __name__ == '__main__':
-    data = pd.read_csv(r"../datasets/Asian.csv")
+    data = pd.read_csv(r"../datasets/asian/Asian.csv")
     pso = Genetic(data, pop=40,max_iter=200)
     solu, history = pso.run()
     g = DAG()

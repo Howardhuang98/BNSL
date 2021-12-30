@@ -6,13 +6,11 @@
 @Modify Time :    2021/9/6 14:56  
 ------------      
 """
-from math import lgamma
-
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from scipy.optimize import fsolve
-from scipy.special import gammaln,gamma
+from scipy.special import gammaln
 
 from dlbn.base import Score
 from dlbn.expert import Expert
@@ -79,15 +77,17 @@ class MDL_score(Score):
         likelihood = np.sum(log_likelihoods)
         return likelihood
 
+
     def local_score(self, x: str, parents: list):
         """
-        calculate local score
-        参考：
+        calculate local score.
+
+        reference:
         pgmpy代码；
         《Learning Optimal Bayesian Networks Using A* Search》
-        :param x:
-        :param parents:
-        :return: score
+        :param x: name of node
+        :param parents: list of parents
+        :return: score(x|parents)
         """
         state_count = self.state_count(x, parents)
         # if the state_count has 0 in the array, it will result numerical error in log(), to
@@ -271,16 +271,4 @@ class BDeu_score(MDL_score):
 
 
 if __name__ == '__main__':
-    data = pd.read_csv(r"../datasets/Asian.csv")
-    expert_data = pd.read_csv(r"../datasets/Asian expert.csv", index_col=0)
-    expert = Expert(expert_data)
-    k = Knowledge_fused_score(data, expert)
-    k.show_act()
-    b = BIC_score(data)
-    bd = BDeu_score(data)
-    #print(k.local_score('smoke', ['bronc']))
-    #print(k.local_score('smoke', ['bronc','lung','xray']))
-    print(b.local_score('lung', ['smoke']))
-    print(b.local_score('smoke', ['lung']))
-    #print(bd.local_score('smoke', []))
-    #print(bd.local_score('smoke', ['bronc']))
+    pass
