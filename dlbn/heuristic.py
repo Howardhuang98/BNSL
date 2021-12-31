@@ -6,18 +6,17 @@
 @Modify Time :    2021/9/9 11:03  
 ------------      
 """
-from itertools import permutations
+import random
+from itertools import permutations, product
 from math import exp
 
 import networkx as nx
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import random
 
 from dlbn.graph import DAG
 from dlbn.score import Score, BIC_score
-
 
 
 class HillClimb:
@@ -30,13 +29,57 @@ class HillClimb:
         self.data = data
         self.Score_method = Score_method
         self.s = self.Score_method(self.data)
-        if not initial_dag:
+        if initial_dag:
+            self.dag = initial_dag
+        else:
             self.dag = DAG()
         self.vars = list(data.columns.values)
         self.dag.add_nodes_from(self.vars)
         self.tabu_list = []
         self.max_iter = max_iter
         self.restart = restart
+
+    def possible_operation(self, node: str):
+        """
+        iterator, yield possible operation for one node.
+        :param: node, the node will be explored
+        :return: possible operation for one node
+        """
+
+        potential_new_edges = set(product([node], self.dag.nodes)) | set(product(self.dag.nodes, [node]))
+        potential_new_edges -= {(node, node)}
+        for u, v in potential_new_edges:
+            if (u, v) in [(a, b) for a, b in self.dag.edges]:
+                operation = ('-', (u, v))
+                if operation not in self.tabu_list:
+                    old_parents = list(self.dag.predecessors(v))
+                    new_parents = old_parents[:]
+                    new_parents.remove(u)
+                    score_delta = self.s.local_score(v, new_parents) - self.s.local_score(v,
+                                                                                          old_parents)
+                    yield operation, score_delta
+
+                if not any(map(lambda path: len(path) > 2, nx.all_simple_paths(self.dag, u, v))):
+                    operation = ('flip', (u, v))
+                    if operation not in self.tabu_list:
+                        old_v_parents = list(self.dag.predecessors(v))
+                        old_u_parents = list(self.dag.predecessors(u))
+                        new_u_parents = old_u_parents + [v]
+                        new_v_parents = old_v_parents[:]
+                        new_v_parents.remove(u)
+                        score_delta = (self.s.local_score(v, new_v_parents) + self.s.local_score(u,
+                                                                                                 new_u_parents) - self.s.local_score(
+                            v, old_v_parents) - self.s.local_score(u, old_u_parents))
+                        yield operation, score_delta
+            else:
+                if not nx.has_path(self.dag, v, u):
+                    operation = ('+', (u, v))
+                    if operation not in self.tabu_list:
+                        old_parents = list(self.dag.predecessors(v))
+                        new_parents = old_parents + [u]
+                        score_delta = self.s.local_score(v, new_parents) - self.s.local_score(v,
+                                                                                              old_parents)
+                        yield operation, score_delta
 
     def legal_operation(self, current_dag: DAG):
 

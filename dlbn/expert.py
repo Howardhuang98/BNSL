@@ -33,7 +33,7 @@ class Expert:
         if data is not None:
             self.data = data
         if path is not None:
-            self.data = pd.read_csv(path, index_col=0)
+            self.data = pd.read_excel(path, index_col=0)
         data = self.data
         self.variables = data.columns
         # 此处最好能做一个检查，确保values[i,j]+values[j,i]<=1
