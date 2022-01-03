@@ -77,7 +77,6 @@ class MDL_score(Score):
         likelihood = np.sum(log_likelihoods)
         return likelihood
 
-
     def local_score(self, x: str, parents: list):
         """
         calculate local score.
@@ -221,7 +220,7 @@ class BDeu_score(MDL_score):
 
         state_count = self.state_count(variable, parents)
         state_count[state_count == 0] = 1
-        counts = np.asarray(state_count,dtype=np.float_)
+        counts = np.asarray(state_count, dtype=np.float_)
         Nij = np.sum(counts, axis=0, dtype=np.float_)
         if parents:
             r = np.float_(len(state_count.index))
@@ -229,11 +228,11 @@ class BDeu_score(MDL_score):
         else:
             r = np.float_(len(state_count))
             q = np.float_(1)
-        second_term = counts + self.equivalent_sample_size/(r*q)
-        second_term = gammaln(second_term)-gammaln(self.equivalent_sample_size/(r*q))
+        second_term = counts + self.equivalent_sample_size / (r * q)
+        second_term = gammaln(second_term) - gammaln(self.equivalent_sample_size / (r * q))
         second_term = np.sum(second_term)
 
-        first_term = gammaln(self.equivalent_sample_size/q)-gammaln(Nij + self.equivalent_sample_size/q)
+        first_term = gammaln(self.equivalent_sample_size / q) - gammaln(Nij + self.equivalent_sample_size / q)
         first_term = np.sum(first_term)
         score = first_term + second_term
         return score

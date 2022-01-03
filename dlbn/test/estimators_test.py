@@ -44,7 +44,7 @@ class Test_estimator(unittest.TestCase):
         dag = DAG()
         score_of_empty_DAG = dag.score(BIC_score, data)
         hc = HC(data)
-        hc.run(restart=5)
+        hc.run(restart=5,explore_num=2)
         print(hc.result.edges)
         self.assertTrue(hc.result.score(BIC_score, data) >= score_of_empty_DAG)
 
@@ -53,7 +53,7 @@ class Test_estimator(unittest.TestCase):
         dag = DAG()
         score_of_empty_DAG = dag.score(BIC_score, data)
         ga = GA(data)
-        ga.run(max_iter=10)
+        ga.run(max_iter=50)
         print(ga.result.edges)
         self.assertTrue(ga.result.score(BIC_score, data) >= score_of_empty_DAG)
 

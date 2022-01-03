@@ -109,6 +109,14 @@ class DAG(nx.DiGraph):
         edges_data.to_excel(path)
         return None
 
+    def to_csv(self, path: str, source='source node', target='target node'):
+        edge_list = self.edges
+        edges_data = pd.DataFrame(columns=[source, target])
+        for edge_pair in edge_list:
+            edges_data.loc[edges_data.shape[0]] = {source: edge_pair[0], target: edge_pair[1]}
+        edges_data.to_csv(path)
+        return None
+
     def to_excel_DataFrame(self, path: str):
         df = nx.to_pandas_adjacency(self)
         df.to_excel(path)
@@ -133,6 +141,7 @@ class DAG(nx.DiGraph):
 
     def read(self, path: str, source='source node', target='target node'):
         """
+        Notice: file only contain edges, the DAG instance may lose isolated nodes.
         here we need excel written in this format:
 
             source node   target node
@@ -165,7 +174,6 @@ class DAG(nx.DiGraph):
         self.add_edges_from(edges)
         return self
 
-
     def show(self):
         """
         draw the figure of DAG
@@ -174,6 +182,21 @@ class DAG(nx.DiGraph):
         nx.draw_networkx(self)
         plt.show()
         return None
+
+    def summary(self):
+        """
+        return a string to describe current dag.
+        :return: a description string
+        """
+        print(
+            """
+            DAG summary:
+            Number of nodes: {},
+            Number of edges: {},
+            Adjacency matrix: {},
+            
+            """.format(len(self.nodes), len(self.edges), self.adj_matrix)
+        )
 
     def legal_operations(self):
         """

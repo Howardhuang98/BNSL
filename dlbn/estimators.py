@@ -48,7 +48,7 @@ class HC(Estimator):
         super(HC, self).__init__()
         self.load_data(data)
 
-    def run(self, score_method=BIC_score, direction='up', initial_dag=None, max_iter=10000, restart=1):
+    def run(self, score_method=BIC_score, direction='up', initial_dag=None, max_iter=10000, restart=1,explore_num=1):
         """
         run the HC estimator.
         :param score_method: score method, usually select BIC score or BDeu score
@@ -59,7 +59,7 @@ class HC(Estimator):
         :return: an approximate maximum or minimum scored DAG
         """
         hc = HillClimb(self.data, score_method, initial_dag=initial_dag, max_iter=max_iter,
-                       restart=restart)
+                       restart=restart,explore_num=explore_num)
         self.result = hc.climb(direction)
         return self.result
 
