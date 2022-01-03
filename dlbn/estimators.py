@@ -108,9 +108,10 @@ class GA(Estimator):
         super(GA, self).__init__()
         self.load_data(data)
 
-    def run(self, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05):
+    def run(self, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05, return_history=False):
         """
         run the genetic algorithm estimator
+        :param return_history:
         :param score_method: score criteria
         :param pop: number of population
         :param max_iter: maximum iteration number
@@ -122,7 +123,10 @@ class GA(Estimator):
         ga = Genetic(self.data, score_method=BIC_score, pop=pop, max_iter=max_iter, c1=c1, c2=c2, w=w)
         solu, history = ga.run()
         self.result.from_genome(solu, self.data.columns)
-        return self.result
+        if return_history:
+            return self.result, history
+        else:
+            return self.result
 
 
 class KBNL(Estimator):

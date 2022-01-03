@@ -57,3 +57,13 @@ class Test_estimator(unittest.TestCase):
         print(ga.result.edges)
         self.assertTrue(ga.result.score(BIC_score, data) >= score_of_empty_DAG)
 
+    def test_ga1(self):
+        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        dag = DAG()
+        score_of_empty_DAG = dag.score(BIC_score, data)
+        ga = GA(data)
+        _, history = ga.run(max_iter=10,return_history=True)
+        print(history)
+        print(ga.result.edges)
+        self.assertTrue(ga.result.score(BIC_score, data) >= score_of_empty_DAG)
+

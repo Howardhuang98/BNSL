@@ -69,6 +69,10 @@ class Genetic:
         return np.asarray(children)
 
     def pop_score(self):
+        """
+        scores of current X
+        :return:
+        """
         scores = []
         for genome in self.X:
             self.dag.from_genome(genome, self.data.columns)
@@ -79,6 +83,10 @@ class Genetic:
     def get_global_best_position(self, pop_score, X):
         idx = np.argmax(pop_score)
         return X[idx]
+
+    def get_global_best_score(self,pop_score):
+        idx = np.argmax(pop_score)
+        return pop_score[idx]
 
     def has_cycle(self, gen):
         g = DAG()
@@ -91,19 +99,28 @@ class Genetic:
 
     def run(self):
         pop_score = self.pop_score()
+        personal_best_score = pop_score
         personal_best_position = self.X
         global_best_position = self.get_global_best_position(pop_score, personal_best_position)
+        global_best_score = 0
         for i in tqdm(range(self.max_iter)):
-            self.history.append(self.X)
+            if i == 0:
+                last_pop_score = pop_score
+            else:
+                last_pop_score = new_pop_score
             self.X = self.crossover(self.X, personal_best_position, self.c1)
             self.X = self.crossover(self.X, np.expand_dims(global_best_position, axis=0).repeat(self.pop, axis=0),
                                     self.c2)
             self.X = self.mutate()
             new_pop_score = self.pop_score()
             for j in range(self.pop):
-                if new_pop_score[j] > pop_score[j]:
+                if new_pop_score[j] > last_pop_score[j]:
                     personal_best_position[j] = self.X[j]
-            global_best_position = self.get_global_best_position(pop_score, personal_best_position)
+                    personal_best_score[j] = new_pop_score[j]
+
+            global_best_position = self.get_global_best_position(new_pop_score, personal_best_position)
+            global_best_score = self.get_global_best_score(personal_best_score)
+            self.history.append(global_best_score)
 
         return global_best_position, np.asarray(self.history)
 
