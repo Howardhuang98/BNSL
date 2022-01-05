@@ -6,14 +6,14 @@
 @Modify Time :    2021/9/8 14:21  
 ------------      
 """
-import numpy as np
 
 from dlbn.base import Estimator
 from dlbn.bionics import Genetic
 from dlbn.dp import generate_order_graph, generate_parent_graph, order2dag
+from dlbn.expert import Expert
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.pc import *
-from dlbn.score import BIC_score, MDL_score
+from dlbn.score import BIC_score, MDL_score, Knowledge_fused_score
 
 
 class DP(Estimator):
@@ -48,7 +48,7 @@ class HC(Estimator):
         super(HC, self).__init__()
         self.load_data(data)
 
-    def run(self, score_method=BIC_score, direction='up', initial_dag=None, max_iter=10000, restart=1,explore_num=1):
+    def run(self, score_method=BIC_score, direction='up', initial_dag=None, max_iter=10000, restart=1, explore_num=1):
         """
         run the HC estimator.
         :param score_method: score method, usually select BIC score or BDeu score
@@ -59,7 +59,7 @@ class HC(Estimator):
         :return: an approximate maximum or minimum scored DAG
         """
         hc = HillClimb(self.data, score_method, initial_dag=initial_dag, max_iter=max_iter,
-                       restart=restart,explore_num=explore_num)
+                       restart=restart, explore_num=explore_num)
         self.result = hc.climb(direction)
         return self.result
 
@@ -130,16 +130,28 @@ class GA(Estimator):
 
 
 class KBNL(Estimator):
-    def __init__(self, data):
+    """
+    KBNL estimator, observed data, expert data and expert confidence are needed to initialize the estimator.
+    """
+    def __init__(self, data, expert_data: list, expert_confidence: list,):
+        super(KBNL, self).__init__()
         self.load_data(data)
+        if isinstance(expert_data[0], pd.DataFrame):
+            self.expert = Expert(expert_data, expert_confidence)
+        if isinstance(expert_data[0], str):
+            self.expert = Expert.read(expert_data, confidence=expert_confidence)
 
-    def run(self, expert_matrix_list, c_list):
-        expert_matrix = np.zeros_like(expert_matrix_list[0])
-        if len(expert_matrix_list) != c_list:
-            raise ValueError("number of experts and number of confidence do no match.")
-        for i in range(len(expert_matrix_list)):
-            expert_matrix += c_list[i] * expert_matrix_list[i]
+    def run(self, initial_dag=None, max_iter=10000, restart=1, explore_num=5):
+        """
+        run the KBNL estimator.
+        :param initial_dag: the initial dag
+        :param max_iter: the number of maximum iteration
+        :param restart: the number of restart times, every restart will random initialize a start DAG
+        :param explore_num:
+        :return: an maximum knowledge fused scored DAG
+        """
 
-
-if __name__ == '__main__':
-    pass
+        hc = HillClimb(self.data, Knowledge_fused_score, initial_dag=initial_dag, max_iter=max_iter,
+                       restart=restart, explore_num=explore_num, expert=self.expert)
+        self.result = hc.climb()
+        return self.result

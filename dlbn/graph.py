@@ -69,7 +69,7 @@ class DAG(nx.DiGraph):
         else:
             return cycles
 
-    def score(self, score_method, data: pd.DataFrame, detail=False):
+    def score(self, score_method, data: pd.DataFrame, detail=False, **kwargs):
         """
 
         :param score_method: score criteria
@@ -84,7 +84,7 @@ class DAG(nx.DiGraph):
             self.add_nodes_from(data.columns)
         for node in self.nodes:
             parents = list(self.predecessors(node))
-            s = score_method(data)
+            s = score_method(data, **kwargs)
             local_score = s.local_score(node, parents)
             score_list.append(local_score)
             if detail:
@@ -119,7 +119,7 @@ class DAG(nx.DiGraph):
 
     def to_excel_DataFrame(self, path: str):
         df = nx.to_pandas_adjacency(self)
-        df.to_excel(path)
+        df.to_csv(path)
         return None
 
     def __sub__(self, other):
@@ -261,6 +261,10 @@ class DAG(nx.DiGraph):
     @property
     def adj_matrix(self):
         return nx.to_numpy_array(self, dtype=int)
+
+    @property
+    def adj_df(self):
+        return nx.to_pandas_adjacency(self)
 
     @property
     def genome(self):

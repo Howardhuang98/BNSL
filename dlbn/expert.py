@@ -22,69 +22,64 @@ D  0.3   0.9  0.1  0
 
 
 class Expert:
-    def __init__(self, data: pd.DataFrame = None, path: str = None):
+    def __init__(self, expert_data=None, expert_confidence=None):
         """
         expert call
-        :param data:
-        :param path:
+        :param expert_data: a list of experts knowledge matrix[pd.DataFrame]
         """
-        if data is None and path is None:
-            raise ValueError("Have to input data or path")
-        if data is not None:
-            self.data = data
-        if path is not None:
-            self.data = pd.read_excel(path, index_col=0)
-        data = self.data
-        self.variables = data.columns
-        # 此处最好能做一个检查，确保values[i,j]+values[j,i]<=1
-        #
-        #     待补充
-        #
-        if data.columns.all() != data.index.all():
-            raise ValueError("Expert matrix is wrong, check column and index!")
-        # force the diagonal element to 0
-        self.data.values[tuple([np.arange(self.data.shape[0])] * 2)] = 0
-        for i in range(len(self.data.columns)):
-            for j in range(i):
-                if self.data.values[i, j] + self.data.values[j, i] > 1:
-                    raise ValueError(
-                        "Opinions added together cannot exceed 1! "
-                        "position: [{},{}] with value:{},{}".format(i, j, self.data.values[i, j],self.data.values[j, i]))
-
+        if expert_confidence is None:
+            expert_confidence = [1]
+        if expert_data is None:
+            expert_data = []
+        assert len(expert_data) == len(expert_confidence)
+        self.expert_data = expert_data
+        self.variables = self.expert_data[0].columns
+        self.num_expert = len(expert_data)
+        # check every matrix in the iterator
+        for e in expert_data:
+            if e.columns.all() != e.index.all():
+                raise ValueError("Expert matrix is wrong, check column and index!")
+            # force the diagonal element to 0
+            e.values[tuple([np.arange(e.shape[0])] * 2)] = 0
+            for i in range(len(e.columns)):
+                for j in range(i):
+                    if e.values[i, j] + e.values[j, i] > 1:
+                        raise ValueError(
+                            "Opinions added together cannot exceed 1! "
+                            "position: [{},{}] with value:{},{}".format(i, j, e.values[i, j],
+                                                                        e.values[j, i]))
+        self.fused_matrix = self.expert_data[0].copy()
+        self.fused_matrix.loc[:, :] = 0
+        for i in range(self.num_expert):
+            for u in self.fused_matrix.columns:
+                for v in self.fused_matrix.columns:
+                    if u == v:
+                        self.fused_matrix.loc[u, v] = 0
+                    else:
+                        self.fused_matrix.loc[u, v] += expert_confidence[i] * self.expert_data[i].loc[u, v]
 
     def think(self, u, v):
         """
-        专家对于u->v，u<-v,u><v的三个概率
-        :param u:
-        :param v:
-        :return:
+        the fused opinion based on fused matrix
+        :param u: string of node
+        :param v: string of node
+        :return: [u->v, u<-v, no edge between u and v]
         """
-        situation1 = self.data.loc[u][v]
-        situation2 = self.data.loc[v][u]
+        situation1 = self.fused_matrix.loc[u, v]
+        situation2 = self.fused_matrix.loc[v, u]
         situation3 = 1 - situation1 - situation2
         return [situation1, situation2, situation3]
 
-    @classmethod
-    def random_init(cls, data: pd.DataFrame):
-        """
-        randomly initialize an expert according to sample data
-        :return: expert instance
-        """
-        columns = data.columns
-        data = np.zeros(shape=(len(columns),len(columns)))
-        for i in range(len(columns)):
-            for j in range(i):
-                data[i, j] = np.random.uniform(0, 1)
-                data[j, i] = np.random.uniform(0, 1-data[i, j])
-                print(data[i, j],data[j, i])
-
-        expert_data = pd.DataFrame(data,columns=columns,index=columns)
-        expert = cls(expert_data)
-        return expert
-
-
-
-
+    @staticmethod
+    def read(path, confidence=None):
+        if isinstance(path, str):
+            df = pd.read_csv(path, index_col=0)
+            return Expert([df], [1])
+        elif isinstance(path, list):
+            df_list = []
+            for path_str in path:
+                df_list.append(pd.read_csv(path_str, index_col=0))
+            return Expert(df_list, confidence)
 
 
 if __name__ == '__main__':

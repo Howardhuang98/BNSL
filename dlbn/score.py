@@ -124,7 +124,7 @@ class BIC_score(Score):
     BIC is minus MDL score
     """
 
-    def __init__(self, data: pd.DataFrame):
+    def __init__(self, data: pd.DataFrame, **kwargs):
         super(BIC_score, self).__init__(data)
         self.mdl = MDL_score(data)
 
@@ -145,30 +145,31 @@ class Knowledge_fused_score(Score):
         self.mdl = MDL_score(data)
         self.expert = expert
         self.activation_parameter = []
+        self.n = data.shape[0]
 
     def local_score(self, x, parents):
-        # likelihood = - self.mdl.likelihood_score(x, parents)
+        # likelihood = self.mdl.likelihood_score(x, parents)
         likelihood = - self.mdl.local_score(x, parents)
-        log_pg = self.activation_function(self.multiply_epsilon(x, parents), activation='else')
+        log_pg = np.log(self.n)*self.activation_function(self.multiply_epsilon(x, parents), activation='else')
         return likelihood + log_pg
 
     def multiply_epsilon(self, x, parents):
         parents = set(parents)
         sample_size = len(self.data)
         # calculate the multiply epsilon
-        E = 1
+        E = 0
         for node in self.data.columns:
             # thinks = [u->v, u<-v, u><v]
-            thinks = self.expert.think(x, node)
+            thinks = self.expert.think(node, x)
             if node == x:
                 continue
             elif node in parents:
-                E += thinks[1]
+                E += thinks[0]
             else:
-                E += thinks[2]
+                E += thinks[2]+thinks[1]
         return E
 
-    def activation_function(self, x, activation="cubic"):
+    def activation_function(self, x, activation="else"):
         if activation == "cubic":
             parameters = self.get_activation_parameter()
             y = parameters[0] * x ** 3 + parameters[1] * (x ** 2) + parameters[2] * x + parameters[3]
@@ -178,7 +179,7 @@ class Knowledge_fused_score(Score):
             if x < zero_point:
                 y = -100
             else:
-                y = 100 * x
+                y = 10 * (x-zero_point)
         return y
 
     def get_activation_parameter(self):

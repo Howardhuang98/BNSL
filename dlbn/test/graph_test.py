@@ -16,9 +16,9 @@ class Test_graph(unittest.TestCase):
     def test_to_excel_DataFrame(self):
         dag = DAG()
         dag.read(r"../../datasets/asian/Asian net.xlsx")
-        dag.to_excel_DataFrame("test_result.xlsx")
+        dag.to_excel_DataFrame("test_result.csv")
 
     def test_read_DataFrame_adjacency(self):
         dag = DAG()
-        dag.read_DataFrame_adjacency("test_result.xlsx")
+        dag.read_DataFrame_adjacency("test_result.csv")
         self.assertEqual(len(dag.edges), 8)

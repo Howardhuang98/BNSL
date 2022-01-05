@@ -25,10 +25,10 @@ class HillClimb:
     """
 
     def __init__(self, data: pd.DataFrame, Score_method: Score = BIC_score, initial_dag: DAG = None, max_iter=10000,
-                 restart=1,explore_num=1):
+                 restart=1,explore_num=1, **kwargs):
         self.data = data
         self.Score_method = Score_method
-        self.s = self.Score_method(self.data)
+        self.s = self.Score_method(self.data, **kwargs)
         if initial_dag:
             self.dag = initial_dag
         else:
@@ -39,6 +39,7 @@ class HillClimb:
         self.max_iter = max_iter
         self.restart = restart
         self.explore_num = explore_num
+        self.kwargs = kwargs
 
     def possible_operation(self, node_list=[]):
         """
@@ -117,7 +118,7 @@ class HillClimb:
                     self.dag.remove_edge(u, v)
                     self.dag.add_edge(v, u)
             result.append(self.dag)
-            score_result.append(self.dag.score(self.Score_method, self.data))
+            score_result.append(self.dag.score(self.Score_method, self.data, expert=self.kwargs.get("expert", None)))
         if direction == 'up':
             self.dag = result[np.argmax(score_result)]
         if direction == 'down':
