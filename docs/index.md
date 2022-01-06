@@ -1,37 +1,40 @@
-## Welcome to GitHub Pages
+# Deep Learning Bayesian Network
 
-You can use the [editor on GitHub](https://github.com/Howardhuang98/DLBN/edit/dev/docs/index.md) to maintain and preview the content for your website in Markdown files.
+A Bayesian network structure learning package based on deep learning. Still developing ...  
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
+## Here you can use:
+* Greedy hill climb
+* Simulated Annealing
+* Dynamic program: shortest path perspective
+* PC algorithm
+* Genetic algorithm 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Easily use
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+All the algorithms have been packed in ```dlbn.estimators```, like HC(Hill Climb). You only need to initialize the estimator with ```pd.Dataframe``` or ```np.ndarray```, then run it!
+```Estimator.run()```will return you an enhanced ```DAG```instance, it inherited all attributions of ```nx.Digraph```, besides it can draw, calculate score criteria. 
+```python
+# import you favorite Estimator, like HC, SA, DP
+from dlbn.estimators import DP
+import pandas as pd
+data = pd.read_excel(r"your data path")
+# use DataFrame initialize the estimator
+dp = DP(data)
+# run it
+dag = dp.run()
+# dag instance stores all feature about the result. 
+dag.show()
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
 
-### Jekyll Themes
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Howardhuang98/DLBN/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+## Acknowledgement
+Any question, feel free to email me!  
+Author: Huang Hao    
+School: Tianjin University, Priceless Lab  
 
-### Support or Contact
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+
+
+
