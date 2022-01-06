@@ -168,7 +168,10 @@ class DAG(nx.DiGraph):
         return self
 
     def read_DataFrame_adjacency(self, path: str):
-        df = pd.read_excel(path, index_col=0)
+        if path.endswith("xlsx"):
+            df = pd.read_excel(path,index_col=0)
+        elif path.endswith("csv"):
+            df = pd.read_csv(path,index_col=0)
         self.add_nodes_from(df.columns)
         edges = ((df.columns[int(e[0])], df.columns[int(e[1])]) for e in zip(*df.values.nonzero()))
         self.add_edges_from(edges)
