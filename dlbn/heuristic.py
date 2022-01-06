@@ -7,6 +7,7 @@
 ------------      
 """
 import random
+from copy import deepcopy
 from itertools import permutations, product
 from math import exp
 
@@ -40,6 +41,7 @@ class HillClimb:
         self.restart = restart
         self.explore_num = explore_num
         self.kwargs = kwargs
+        self.score_result = None
 
     def possible_operation(self, node_list=[]):
         """
@@ -90,7 +92,7 @@ class HillClimb:
         :return: a DAG instance
         """
         result = []
-        score_result = []
+        self.score_result = []
         for i in range(self.restart):
             if i != 0:
                 self.dag.remove_edges_from([e for e in self.dag.edges])
@@ -117,12 +119,12 @@ class HillClimb:
                     u, v = best_operation[1]
                     self.dag.remove_edge(u, v)
                     self.dag.add_edge(v, u)
-            result.append(self.dag)
-            score_result.append(self.dag.score(self.Score_method, self.data, expert=self.kwargs.get("expert", None)))
+            result.append(deepcopy(self.dag))
+            self.score_result.append(self.dag.score(self.Score_method, self.data, expert=self.kwargs.get("expert", None)))
         if direction == 'up':
-            self.dag = result[np.argmax(score_result)]
+            self.dag = result[np.argmax(self.score_result)]
         if direction == 'down':
-            self.dag = result[np.argmin(score_result)]
+            self.dag = result[np.argmin(self.score_result)]
         return self.dag
 
 

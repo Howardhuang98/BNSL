@@ -177,7 +177,7 @@ class Knowledge_fused_score(Score):
             n = len(self.data.columns)
             zero_point = (1 / 3) * (n - 1)
             if x < zero_point:
-                y = -100
+                y = 0
             else:
                 y = 10 * (x-zero_point)
         return y
