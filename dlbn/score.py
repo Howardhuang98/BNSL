@@ -77,7 +77,6 @@ class MDL_score(Score):
         likelihood = np.sum(log_likelihoods)
         return likelihood
 
-
     def local_score(self, x: str, parents: list):
         """
         calculate local score.
@@ -125,7 +124,7 @@ class BIC_score(Score):
     BIC is minus MDL score
     """
 
-    def __init__(self, data: pd.DataFrame):
+    def __init__(self, data: pd.DataFrame, **kwargs):
         super(BIC_score, self).__init__(data)
         self.mdl = MDL_score(data)
 
@@ -146,30 +145,31 @@ class Knowledge_fused_score(Score):
         self.mdl = MDL_score(data)
         self.expert = expert
         self.activation_parameter = []
+        self.n = data.shape[0]
 
     def local_score(self, x, parents):
-        # likelihood = - self.mdl.likelihood_score(x, parents)
+        # likelihood = self.mdl.likelihood_score(x, parents)
         likelihood = - self.mdl.local_score(x, parents)
-        log_pg = self.activation_function(self.multiply_epsilon(x, parents), activation='else')
+        log_pg = np.log(self.n)*self.activation_function(self.multiply_epsilon(x, parents), activation='else')
         return likelihood + log_pg
 
     def multiply_epsilon(self, x, parents):
         parents = set(parents)
         sample_size = len(self.data)
         # calculate the multiply epsilon
-        E = 1
+        E = 0
         for node in self.data.columns:
             # thinks = [u->v, u<-v, u><v]
-            thinks = self.expert.think(x, node)
+            thinks = self.expert.think(node, x)
             if node == x:
                 continue
             elif node in parents:
-                E += thinks[1]
+                E += thinks[0]
             else:
-                E += thinks[2]
+                E += thinks[2]+thinks[1]
         return E
 
-    def activation_function(self, x, activation="cubic"):
+    def activation_function(self, x, activation="else"):
         if activation == "cubic":
             parameters = self.get_activation_parameter()
             y = parameters[0] * x ** 3 + parameters[1] * (x ** 2) + parameters[2] * x + parameters[3]
@@ -177,9 +177,9 @@ class Knowledge_fused_score(Score):
             n = len(self.data.columns)
             zero_point = (1 / 3) * (n - 1)
             if x < zero_point:
-                y = -100
+                y = 0
             else:
-                y = 100 * x
+                y = 10 * (x-zero_point)
         return y
 
     def get_activation_parameter(self):
@@ -221,7 +221,7 @@ class BDeu_score(MDL_score):
 
         state_count = self.state_count(variable, parents)
         state_count[state_count == 0] = 1
-        counts = np.asarray(state_count,dtype=np.float_)
+        counts = np.asarray(state_count, dtype=np.float_)
         Nij = np.sum(counts, axis=0, dtype=np.float_)
         if parents:
             r = np.float_(len(state_count.index))
@@ -229,11 +229,11 @@ class BDeu_score(MDL_score):
         else:
             r = np.float_(len(state_count))
             q = np.float_(1)
-        second_term = counts + self.equivalent_sample_size/(r*q)
-        second_term = gammaln(second_term)-gammaln(self.equivalent_sample_size/(r*q))
+        second_term = counts + self.equivalent_sample_size / (r * q)
+        second_term = gammaln(second_term) - gammaln(self.equivalent_sample_size / (r * q))
         second_term = np.sum(second_term)
 
-        first_term = gammaln(self.equivalent_sample_size/q)-gammaln(Nij + self.equivalent_sample_size/q)
+        first_term = gammaln(self.equivalent_sample_size / q) - gammaln(Nij + self.equivalent_sample_size / q)
         first_term = np.sum(first_term)
         score = first_term + second_term
         return score

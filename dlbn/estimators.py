@@ -6,12 +6,14 @@
 @Modify Time :    2021/9/8 14:21  
 ------------      
 """
+
 from dlbn.base import Estimator
 from dlbn.bionics import Genetic
 from dlbn.dp import generate_order_graph, generate_parent_graph, order2dag
+from dlbn.expert import Expert
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.pc import *
-from dlbn.score import BIC_score, MDL_score
+from dlbn.score import BIC_score, MDL_score, Knowledge_fused_score
 
 
 class DP(Estimator):
@@ -25,6 +27,12 @@ class DP(Estimator):
         self.load_data(data)
 
     def run(self, score_method=MDL_score):
+        """
+        run the dynamic program estimator, an exact algorithm. MDL score is used as the score criteria, it return the
+        dag with minimum score.
+        :param score_method: MDL score
+        :return: the dag with minimum score
+        """
         pg = generate_parent_graph(self.data, score_method)
         og = generate_order_graph(self.data, pg)
         self.result = order2dag(og, self.data)
@@ -33,16 +41,25 @@ class DP(Estimator):
 
 class HC(Estimator):
     """
-    greedy hill climb
+    Greedy hill climb estimator
     """
 
     def __init__(self, data):
         super(HC, self).__init__()
         self.load_data(data)
 
-    def run(self, score_method=BIC_score, direction='up', initial_dag=None, max_iter=10000, restart=1):
+    def run(self, score_method=BIC_score, direction='up', initial_dag=None, max_iter=10000, restart=1, explore_num=1):
+        """
+        run the HC estimator.
+        :param score_method: score method, usually select BIC score or BDeu score
+        :param direction:  try to find the maximum of minimum score
+        :param initial_dag: the initial dag
+        :param max_iter: the number of maximum iteration
+        :param restart: the number of restart times, every restart will random initialize a start DAG
+        :return: an approximate maximum or minimum scored DAG
+        """
         hc = HillClimb(self.data, score_method, initial_dag=initial_dag, max_iter=max_iter,
-                       restart=restart)
+                       restart=restart, explore_num=explore_num)
         self.result = hc.climb(direction)
         return self.result
 
@@ -83,16 +100,58 @@ class PC(Estimator):
 
 
 class GA(Estimator):
+    """
+    Genetic algorithm estimator class
+    """
+
     def __init__(self, data):
         super(GA, self).__init__()
         self.load_data(data)
 
-    def run(self, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05):
+    def run(self, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05, return_history=False):
+        """
+        run the genetic algorithm estimator
+        :param return_history:
+        :param score_method: score criteria
+        :param pop: number of population
+        :param max_iter: maximum iteration number
+        :param c1: [0,1] the probability of crossover with personal historical best genome
+        :param c2: [0,1] the probability of crossover with global historical best genome
+        :param w: the probability of mutation
+        :return: the dag with maximum score
+        """
         ga = Genetic(self.data, score_method=BIC_score, pop=pop, max_iter=max_iter, c1=c1, c2=c2, w=w)
         solu, history = ga.run()
         self.result.from_genome(solu, self.data.columns)
+        if return_history:
+            return self.result, history
+        else:
+            return self.result
+
+
+class KBNL(Estimator):
+    """
+    KBNL estimator, observed data, expert data and expert confidence are needed to initialize the estimator.
+    """
+    def __init__(self, data, expert_data: list, expert_confidence: list,):
+        super(KBNL, self).__init__()
+        self.load_data(data)
+        if isinstance(expert_data[0], pd.DataFrame):
+            self.expert = Expert(expert_data, expert_confidence)
+        if isinstance(expert_data[0], str):
+            self.expert = Expert.read(expert_data, confidence=expert_confidence)
+
+    def run(self, initial_dag=None, max_iter=10000, restart=1, explore_num=5):
+        """
+        run the KBNL estimator.
+        :param initial_dag: the initial dag
+        :param max_iter: the number of maximum iteration
+        :param restart: the number of restart times, every restart will random initialize a start DAG
+        :param explore_num:
+        :return: an maximum knowledge fused scored DAG
+        """
+
+        hc = HillClimb(self.data, Knowledge_fused_score, initial_dag=initial_dag, max_iter=max_iter,
+                       restart=restart, explore_num=explore_num, expert=self.expert)
+        self.result = hc.climb()
         return self.result
-
-
-if __name__ == '__main__':
-    pass

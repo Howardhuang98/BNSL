@@ -69,7 +69,7 @@ class DAG(nx.DiGraph):
         else:
             return cycles
 
-    def score(self, score_method, data: pd.DataFrame, detail=False):
+    def score(self, score_method, data: pd.DataFrame, detail=False, **kwargs):
         """
 
         :param score_method: score criteria
@@ -84,7 +84,7 @@ class DAG(nx.DiGraph):
             self.add_nodes_from(data.columns)
         for node in self.nodes:
             parents = list(self.predecessors(node))
-            s = score_method(data)
+            s = score_method(data, **kwargs)
             local_score = s.local_score(node, parents)
             score_list.append(local_score)
             if detail:
@@ -109,6 +109,19 @@ class DAG(nx.DiGraph):
         edges_data.to_excel(path)
         return None
 
+    def to_csv(self, path: str, source='source node', target='target node'):
+        edge_list = self.edges
+        edges_data = pd.DataFrame(columns=[source, target])
+        for edge_pair in edge_list:
+            edges_data.loc[edges_data.shape[0]] = {source: edge_pair[0], target: edge_pair[1]}
+        edges_data.to_csv(path)
+        return None
+
+    def to_excel_DataFrame(self, path: str):
+        df = nx.to_pandas_adjacency(self)
+        df.to_csv(path)
+        return None
+
     def __sub__(self, other):
         """
         Use structure Hamming Distance (SHD) to subtract.
@@ -128,6 +141,7 @@ class DAG(nx.DiGraph):
 
     def read(self, path: str, source='source node', target='target node'):
         """
+        Notice: file only contain edges, the DAG instance may lose isolated nodes.
         here we need excel written in this format:
 
             source node   target node
@@ -153,6 +167,16 @@ class DAG(nx.DiGraph):
         self.add_edges_from(edge_list)
         return self
 
+    def read_DataFrame_adjacency(self, path: str):
+        if path.endswith("xlsx"):
+            df = pd.read_excel(path,index_col=0)
+        elif path.endswith("csv"):
+            df = pd.read_csv(path,index_col=0)
+        self.add_nodes_from(df.columns)
+        edges = ((df.columns[int(e[0])], df.columns[int(e[1])]) for e in zip(*df.values.nonzero()))
+        self.add_edges_from(edges)
+        return self
+
     def show(self):
         """
         draw the figure of DAG
@@ -161,6 +185,21 @@ class DAG(nx.DiGraph):
         nx.draw_networkx(self)
         plt.show()
         return None
+
+    def summary(self):
+        """
+        return a string to describe current dag.
+        :return: a description string
+        """
+        print(
+            """
+            DAG summary:
+            Number of nodes: {},
+            Number of edges: {},
+            Adjacency matrix: {},
+            
+            """.format(len(self.nodes), len(self.edges), self.adj_matrix)
+        )
 
     def legal_operations(self):
         """
@@ -225,6 +264,10 @@ class DAG(nx.DiGraph):
     @property
     def adj_matrix(self):
         return nx.to_numpy_array(self, dtype=int)
+
+    @property
+    def adj_df(self):
+        return nx.to_pandas_adjacency(self)
 
     @property
     def genome(self):
