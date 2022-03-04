@@ -239,5 +239,14 @@ class BDeu_score(MDL_score):
         return score
 
 
+class K2_score(MDL_score):
+    """
+
+    """
+    def __init__(self,data:pd.DataFrame):
+        super(K2_score, self).__init__(data)
+    def local_score(self, x: str, parents: list):
+        pass
+
 if __name__ == '__main__':
     pass
