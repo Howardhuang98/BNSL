@@ -8,7 +8,6 @@
 """
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 from scipy.optimize import fsolve
 from scipy.special import gammaln
 
@@ -28,94 +27,64 @@ class MDL_score(Score):
     def __init__(self, data: pd.DataFrame):
         super(MDL_score, self).__init__(data)
 
-    def state_count(self, x: str, parents: list):
+    def likelihood(self, Nijk: np.ndarray):
         """
-        count a multi-index table
-        :param x:
-        :param parents:
-        :return:
+
+        Args:
+            Nijk:
+            while there the parent set is not None, Nijk is a table
+                q1  q2  q3
+            r1  10  12  30
+            r2  50  60  17
+            (qi are the states of parents)
+            (ri are the states of variable)
+
+            while the parent is None, Nijk is a 1 dim array
+                r1  r2
+            q   50  60
+
+
+        Returns:
+
         """
-        if parents:
-            parents_states = [self.state_names[parent] for parent in parents]
-            state_count_data = (
-                self.data.groupby([x] + parents).size().unstack(parents)
-            )
-            row_index = self.state_names[x]
-            if len(parents) == 1:
-                column_index = parents_states[0]
-            else:
-                column_index = pd.MultiIndex.from_product(parents_states, names=parents)
-            state_counts = state_count_data.reindex(index=row_index, columns=column_index).fillna(0)
-        else:
-            state_counts = self.data.groupby(x).size()
-        return state_counts
-
-    def likelihood_score(self, x: str, parents: list):
-        state_count = self.state_count(x, parents)
-        # if the state_count has 0 in the array, it will result numerical error in log(), to
-        # avoid this error, add 1 on each 0 value
-        state_count[state_count == 0] = 1
-        counts = np.asarray(state_count)
-
-        sample_size = len(self.data)
-        log_likelihoods = np.zeros_like(counts, dtype=np.float_)
-        # the counts data is different in the condition of parents = [] and other
-        np.log(counts, out=log_likelihoods, where=counts > 0)
-        if parents:
-            num_parents_states = float(state_count.shape[1])
+        # There is parent
+        if Nijk.ndim > 1:
             # the log condition array is an 1 * r
-            log_conditionals = np.sum(counts, axis=0, dtype=np.float_)
-            np.log(log_conditionals, out=log_conditionals, where=log_conditionals > 0)
+            Nij = np.sum(Nijk, axis=0, dtype=np.float_)
+            likelihood = np.sum(np.log(Nijk / Nij) * Nijk)
+        # Parent is None
         else:
-            num_parents_states = 1
-            # the log conditionals is a float
-            log_conditionals = np.log(np.sum(counts, axis=0, dtype=np.float_))
-        log_likelihoods -= log_conditionals
-        log_likelihoods *= counts
-
-        # sum
-        likelihood = np.sum(log_likelihoods)
+            Nij = sum(Nijk)
+            a = Nijk / Nij
+            likelihood = np.sum(np.log(Nijk / Nij) * Nijk)
         return likelihood
 
     def local_score(self, x: str, parents: list):
         """
         calculate local score.
+        MDL score = -Likelihood + log N / 2 * F.
 
         reference:
         pgmpy代码；
         《Learning Optimal Bayesian Networks Using A* Search》
         :param x: name of node
         :param parents: list of parents
-        :return: score(x|parents)
+        :return: score
         """
         state_count = self.state_count(x, parents)
         # if the state_count has 0 in the array, it will result numerical error in log(), to
         # avoid this error, add 1 on each 0 value
         state_count[state_count == 0] = 1
-        counts = np.asarray(state_count)
-
-        sample_size = len(self.data)
-        log_likelihoods = np.zeros_like(counts, dtype=np.float_)
-        # the counts data is different in the condition of parents = [] and other
-        np.log(counts, out=log_likelihoods, where=counts > 0)
-        if parents:
-            num_parents_states = float(state_count.shape[1])
-            # the log condition array is an 1 * r
-            log_conditionals = np.sum(counts, axis=0, dtype=np.float_)
-            np.log(log_conditionals, out=log_conditionals, where=log_conditionals > 0)
+        Nijk = np.asarray(state_count)
+        likelihood = self.likelihood(Nijk)
+        if Nijk.ndim > 1:
+            q = float(Nijk.shape[1])
+            r = float(Nijk.shape[0])
         else:
-            num_parents_states = 1
-            # the log conditionals is a float
-            log_conditionals = np.log(np.sum(counts, axis=0, dtype=np.float_))
-        log_likelihoods -= log_conditionals
-        log_likelihoods *= counts
-        x_cardinality = float(state_count.shape[0])
-
-        # sum
-        H = - np.sum(log_likelihoods)
-        # K
-        K = (x_cardinality - 1) * num_parents_states
-        score = H + np.log(sample_size) / 2 * K
+            q = 1
+            r = float(Nijk.shape[0])
+        F = (r - 1) * q
+        score = -likelihood + np.log(np.sum(Nijk)) / 2 * F
         return score
 
 
@@ -150,7 +119,7 @@ class Knowledge_fused_score(Score):
     def local_score(self, x, parents):
         # likelihood = self.mdl.likelihood_score(x, parents)
         likelihood = - self.mdl.local_score(x, parents)
-        log_pg = np.log(self.n)*self.activation_function(self.multiply_epsilon(x, parents), activation='else')
+        log_pg = np.log(self.n) * self.activation_function(self.multiply_epsilon(x, parents), activation='else')
         return likelihood + log_pg
 
     def multiply_epsilon(self, x, parents):
@@ -166,7 +135,7 @@ class Knowledge_fused_score(Score):
             elif node in parents:
                 E += thinks[0]
             else:
-                E += thinks[2]+thinks[1]
+                E += thinks[2] + thinks[1]
         return E
 
     def activation_function(self, x, activation="else"):
@@ -179,7 +148,7 @@ class Knowledge_fused_score(Score):
             if x < zero_point:
                 y = 0
             else:
-                y = 10 * (x-zero_point)
+                y = 10 * (x - zero_point)
         return y
 
     def get_activation_parameter(self):
@@ -198,12 +167,6 @@ class Knowledge_fused_score(Score):
         r = fsolve(func, x0=[0, 0, 0, 0], args=zero_point)
         return r
 
-    def show_act(self):
-        x = np.arange(0, 1, 0.01)
-        y = self.activation_function(x)
-        plt.plot(x, y)
-        plt.show()
-
 
 class BDeu_score(MDL_score):
     """
@@ -221,15 +184,15 @@ class BDeu_score(MDL_score):
 
         state_count = self.state_count(variable, parents)
         state_count[state_count == 0] = 1
-        counts = np.asarray(state_count, dtype=np.float_)
-        Nij = np.sum(counts, axis=0, dtype=np.float_)
+        Nijk = np.asarray(state_count, dtype=np.float_)
+        Nij = np.sum(Nijk, axis=0, dtype=np.float_)
         if parents:
             r = np.float_(len(state_count.index))
             q = np.float_(len(state_count.columns))
         else:
             r = np.float_(len(state_count))
             q = np.float_(1)
-        second_term = counts + self.equivalent_sample_size / (r * q)
+        second_term = Nijk + self.equivalent_sample_size / (r * q)
         second_term = gammaln(second_term) - gammaln(self.equivalent_sample_size / (r * q))
         second_term = np.sum(second_term)
 
@@ -238,15 +201,6 @@ class BDeu_score(MDL_score):
         score = first_term + second_term
         return score
 
-
-class K2_score(MDL_score):
-    """
-
-    """
-    def __init__(self,data:pd.DataFrame):
-        super(K2_score, self).__init__(data)
-    def local_score(self, x: str, parents: list):
-        pass
 
 if __name__ == '__main__':
     pass
