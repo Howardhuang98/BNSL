@@ -14,6 +14,7 @@ from dlbn.expert import Expert
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.pc import *
 from dlbn.score import BIC_score, MDL_score, Knowledge_fused_score
+from dlbn.k2 import order_to_dag, find_z
 
 
 class DP(Estimator):
@@ -154,4 +155,13 @@ class KBNL(Estimator):
         hc = HillClimb(self.data, Knowledge_fused_score, initial_dag=initial_dag, max_iter=max_iter,
                        restart=restart, explore_num=explore_num, expert=self.expert)
         self.result = hc.climb()
+        return self.result
+
+class K2(Estimator):
+    def __init__(self, data: pd.DataFrame, score_method=BIC_score):
+        self.score_method = score_method(data)
+        self.order = list(data.columns)
+
+    def run(self):
+        self.result = order_to_dag(self.order, 3, self.score_method)
         return self.result

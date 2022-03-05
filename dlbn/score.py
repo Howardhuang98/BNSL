@@ -65,8 +65,8 @@ class MDL_score(Score):
         MDL score = -Likelihood + log N / 2 * F.
 
         reference:
-        pgmpy代码；
-        《Learning Optimal Bayesian Networks Using A* Search》
+        pgmpy;
+        《Learning Optimal Bayesian Networks Using A* Search》.
         :param x: name of node
         :param parents: list of parents
         :return: score

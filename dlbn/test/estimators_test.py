@@ -10,7 +10,7 @@ import unittest
 
 import pandas as pd
 
-from dlbn.estimators import DP, HC, GA, KBNL
+from dlbn.estimators import DP, HC, GA, KBNL, K2
 from dlbn.graph import DAG
 from dlbn.score import MDL_score, BIC_score
 
@@ -85,5 +85,14 @@ class Test_estimator(unittest.TestCase):
         print(kbnl.result.edges)
         print(kbnl.result.score(BIC_score, data))
         self.assertTrue(kbnl.result.score(BIC_score, data) >= score_of_empty_DAG)
+
+    def test_k2(self):
+        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        dag = DAG()
+        score_of_empty_DAG = dag.score(BIC_score, data)
+        k = K2(data)
+        k.run()
+        print(k.result.edges)
+
 
 
