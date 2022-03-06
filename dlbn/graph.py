@@ -14,6 +14,8 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from numpy.random import permutation
+from dlbn.base import Score
+
 
 
 def acc(dag, true_dag):
@@ -69,7 +71,7 @@ class DAG(nx.DiGraph):
         else:
             return cycles
 
-    def score(self, score_method, data: pd.DataFrame, detail=False, **kwargs):
+    def score(self, score_method, detail=False):
         """
 
         :param score_method: score criteria
@@ -79,16 +81,16 @@ class DAG(nx.DiGraph):
         """
         score_dict = {}
         score_list = []
-        if len(self.nodes) < len(data.columns):
-            print("Isolated node detected, this function will add nodes")
-            self.add_nodes_from(data.columns)
+        if not isinstance(score_method, Score):
+            raise ValueError("Input the score method instance")
+        if len(self.nodes) < len(score_method.data.columns):
+            self.add_nodes_from(score_method.data.columns)
         for node in self.nodes:
             parents = list(self.predecessors(node))
-            s = score_method(data, **kwargs)
-            local_score = s.local_score(node, parents)
-            score_list.append(local_score)
+            score = score_method.local_score(node, parents)
+            score_list.append(score)
             if detail:
-                score_dict[node] = local_score
+                score_dict[node] = score
         if detail:
             return sum(score_list), score_dict
         return sum(score_list)
@@ -265,29 +267,17 @@ class DAG(nx.DiGraph):
     def adj_matrix(self):
         return nx.to_numpy_array(self, dtype=int)
 
+    def adj_DataFrame(self, **kwargs):
+        return nx.to_pandas_adjacency(self, **kwargs)
+
     @property
-    def adj_df(self):
-        return nx.to_pandas_adjacency(self)
+    def adj_df(self,**kwargs):
+        return nx.to_pandas_adjacency(self, **kwargs)
 
     @property
     def genome(self):
         return self.adj_matrix.flatten()
 
-    def from_genome(self, genome, node_labels):
-        num_node = int(math.sqrt(len(genome)))
-        adj_matrix = np.reshape(genome, newshape=(num_node, num_node))
-        for i in range(num_node):
-            for j in range(num_node):
-                if i == j:
-                    continue
-                elif adj_matrix[i, j] == 1:
-                    self.add_edge(node_labels[i], node_labels[j])
-                elif adj_matrix[i, j] == 0:
-                    try:
-                        self.remove_edge(node_labels[i], node_labels[j])
-                    except:
-                        continue
-        return self
 
     def random_dag(self, nodes=None, seed=None):
         if seed:
@@ -311,5 +301,5 @@ class DAG(nx.DiGraph):
 
 if __name__ == '__main__':
     g = DAG()
-    g.from_genome([1, 1, 1, 0], ['a', 'b'])
+    g.from_genome([1, 1, 1, 0, 1, 0], ['a', 'b', 'c', 'd'])
     print(g.genome)
