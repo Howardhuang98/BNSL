@@ -7,10 +7,10 @@
 ------------      
 """
 import itertools as it
-from copy import copy
 
 import networkx as nx
 import numpy as np
+import numpy.random
 from numpy.random import permutation
 from tqdm import tqdm
 
@@ -18,7 +18,7 @@ from dlbn.graph import DAG
 from dlbn.score import *
 
 
-def dag_from_genome(genome, node_order):
+def genome_to_dag(genome, node_order):
     """
     generate dag with genome
     #todo improve efficiency, do not need to iterate every element in adjacency matrix
@@ -37,6 +37,7 @@ def dag_from_genome(genome, node_order):
         adj_list += genome[index:index + n]
         index += n
     adj_matrix = np.reshape(np.asarray(adj_list), newshape=(num_nodes, num_nodes))
+    adj_matrix = adj_matrix.astype(int)
     for i in range(num_nodes):
         for j in range(num_nodes):
             if adj_matrix[i, j] == 1:
@@ -51,8 +52,15 @@ def dag_to_genome(dag, node_order):
     adj = dag.adj_DataFrame(nodelist=node_order).values
     adj = adj.astype(np.int32)
     for i in range(len(node_order)):
-        genome += list(adj[i, i+1:])
+        genome += list(adj[i, i + 1:])
     return np.asarray(genome)
+
+
+def genome_to_str(genome):
+    l = ""
+    for g in genome:
+        l += str(g)
+    return l
 
 
 class Genetic:
@@ -90,11 +98,19 @@ class Genetic:
         self.dim_genome = int(self.n * (self.n - 1) / 2)
         # Initialize a population
         self.X = np.random.randint(0, 2, (self.pop, self.dim_genome))
-        self.dag = DAG()
-        self.personal_best_solution = copy(self.X)
-        self.global_best_solution = None
-        self.best_X = copy(self.X)
-        self.history = []
+        self.manager_list = pd.DataFrame(columns=["genome", "score", "rank"])
+
+    def update_manager_list(self):
+        """
+        update manager list
+        :return:
+        """
+        for i in range(len(self.X)):
+            score = genome_to_dag(self.X[i], self.node_order).score(self.score_method)
+            genome = genome_to_str(self.X[i])
+            self.manager_list.loc[i, "genome"] = genome
+            self.manager_list.loc[i, "score"] = score
+        self.manager_list["rank"] = self.manager_list.score.rank(ascending=False)
 
     def local_optimizer(self):
         """
@@ -104,7 +120,7 @@ class Genetic:
         for i in range(len(self.X)):
             genome = self.X[i]
             # for the dag of genome, do local optimization
-            dag = dag_from_genome(genome, self.node_order)
+            dag = genome_to_dag(genome, self.node_order)
             for node in dag.nodes:
                 parents = list(dag.predecessors(node))
                 if len(parents) > self.u:
@@ -125,7 +141,7 @@ class Genetic:
                                 current_score = new_score
                     dag.add_edges_from([(p, node) for p in current_parents])
 
-            new_genome = dag_to_genome(dag,self.node_order)
+            new_genome = dag_to_genome(dag, self.node_order)
             self.X[i] = new_genome
 
     def mutate(self):
@@ -139,84 +155,51 @@ class Genetic:
                 mutation_index = np.random.randint(0, self.dim_genome)
                 self.X[i, mutation_index] = int(self.X[i, mutation_index] ^ 1)
 
-    def crossover(self, X1, X2, r):
+    def select_parents(self, num_parent):
+        selected_list = []
+        probability = (self.pop - self.manager_list["rank"]) / ((self.pop - 1) * self.pop / 2)
+        for i in range(num_parent):
+            selected = numpy.random.choice(self.manager_list.index.values, 2, p=probability)
+            selected_list.append(list(selected))
+        return selected_list
+
+    def produce_children(self, parents_list):
+        child = []
         children = []
-        for i in range(X1.shape[0]):
-            if np.random.rand(1) < r:
-                child = []
-                for j in range(self.dim_genome):
-                    if np.random.rand(1) < 0.5:
-                        child.append(X1[i, j])
-                    else:
-                        child.append(X2[i, j])
-                children.append(np.asarray(child))
-            else:
-                children.append(X1[i])
+        for i, j in parents_list:
+            x = self.X[i]
+            y = self.X[j]
+            for index in range(self.dim_genome):
+                if np.random.rand(1) < 0.5:
+                    child.append(x[index])
+                else:
+                    child.append(y[index])
+            children.append(child)
+            child = []
         return np.asarray(children)
 
-    def pop_score(self):
-        """
-        scores of current X
-        :return:
-        """
-        scores = []
-        for genome in self.X:
-            self.dag.from_genome(genome, self.data.columns)
-            s = self.dag.score(self.score_method, self.data)
-            scores.append(s)
-        return np.asarray(scores)
-
-    def get_global_best_position(self, pop_score, X):
-        idx = np.argmax(pop_score)
-        return X[idx]
-
-    def get_global_best_score(self, pop_score):
-        idx = np.argmax(pop_score)
-        return pop_score[idx]
-
-    def has_cycle(self, gen):
-        g = DAG()
-        g.from_genome(gen, self.data.columns)
-        try:
-            cycles = list(nx.find_cycle(g))
-        except nx.NetworkXNoCycle:
-            return False
-        return True
+    def reduce_population(self):
+        # ensure the manager list is updated
+        assert self.manager_list.shape[0] == self.X.shape[0]
+        self.manager_list.sort_values(by="rank",inplace=True)
+        self.manager_list = self.manager_list[:self.pop]
 
     def run(self):
-        pop_score = self.pop_score()
-        personal_best_score = pop_score
-        personal_best_position = self.X
-        global_best_position = self.get_global_best_position(pop_score, personal_best_position)
-        global_best_score = 0
-        for i in tqdm(range(self.max_iter)):
-            if i == 0:
-                last_pop_score = pop_score
-            else:
-                last_pop_score = new_pop_score
-            self.X = self.crossover(self.X, personal_best_position, self.c1)
-            self.X = self.crossover(self.X, np.expand_dims(global_best_position, axis=0).repeat(self.pop, axis=0),
-                                    self.c2)
-            self.X = self.mutate()
-            new_pop_score = self.pop_score()
-            for j in range(self.pop):
-                if new_pop_score[j] > last_pop_score[j]:
-                    personal_best_position[j] = self.X[j]
-                    personal_best_score[j] = new_pop_score[j]
-
-            global_best_position = self.get_global_best_position(new_pop_score, personal_best_position)
-            global_best_score = self.get_global_best_score(personal_best_score)
-            self.history.append(global_best_score)
-
-        return global_best_position, np.asarray(self.history)
+        # update manager list
+        self.update_manager_list()
+        for i in range(self.max_iter):
+            selected_parents = self.select_parents(int(self.pop / 3))
+            children = self.produce_children(selected_parents)
+            self.mutate()
+            self.local_optimizer()
+            # concat children genome into X
+            self.X = np.vstack((self.X, children))
+            # todo, Inefficient, majority of the manager list is unchanged.
+            self.update_manager_list()
+            self.reduce_population()
+        best_genome = self.manager_list.iloc[0]["genome"]
+        return genome_to_dag(best_genome, self.node_order)
 
 
 if __name__ == '__main__':
-    data = pd.read_csv(r"../datasets/asian/Asian.csv")
-    pso = Genetic(data, pop=40, max_iter=200)
-    solu, history = pso.run()
-    g = DAG()
-    g.from_genome(solu, data.columns)
-    print(g.edges)
-    g.show(BIC_score, data)
-    print(pso.has_cycle(solu))
+    pass
