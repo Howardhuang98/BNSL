@@ -17,7 +17,7 @@ from dlbn.heuristic import HillClimb
 class Test_HillClimb(unittest.TestCase):
 
     def test_possible_operation(self):
-        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
         hc = HillClimb(data)
         po = [i for i in hc.possible_operation(['A'])]
         print(po)

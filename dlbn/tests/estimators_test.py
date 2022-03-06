@@ -22,7 +22,7 @@ class Test_estimator(unittest.TestCase):
     """
 
     def test_dp(self):
-        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
         dag = DAG()
         score = dag.score(MDL_score, data)
         dp = DP(data)
@@ -31,7 +31,7 @@ class Test_estimator(unittest.TestCase):
         self.assertTrue(dp.result.score(MDL_score, data) <= score)
 
     def test_hc(self):
-        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
         dag = DAG()
         score_of_empty_DAG = dag.score(BIC_score, data)
         hc = HC(data)
@@ -40,7 +40,7 @@ class Test_estimator(unittest.TestCase):
         self.assertTrue(hc.result.score(BIC_score, data) >= score_of_empty_DAG)
 
     def test_hc_restart(self):
-        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
         dag = DAG()
         score_of_empty_DAG = dag.score(BIC_score, data)
         hc = HC(data)
@@ -49,7 +49,7 @@ class Test_estimator(unittest.TestCase):
         self.assertTrue(hc.result.score(BIC_score, data) >= score_of_empty_DAG)
 
     def test_ga(self):
-        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
         dag = DAG()
         score_of_empty_DAG = dag.score(BIC_score, data)
         ga = GA(data)
@@ -58,7 +58,7 @@ class Test_estimator(unittest.TestCase):
         self.assertTrue(ga.result.score(BIC_score, data) >= score_of_empty_DAG)
 
     def test_ga1(self):
-        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
         dag = DAG()
         score_of_empty_DAG = dag.score(BIC_score, data)
         ga = GA(data)
@@ -87,7 +87,7 @@ class Test_estimator(unittest.TestCase):
         self.assertTrue(kbnl.result.score(BIC_score, data) >= score_of_empty_DAG)
 
     def test_k2(self):
-        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
         dag = DAG()
         score_of_empty_DAG = dag.score(BIC_score, data)
         k = K2(data)

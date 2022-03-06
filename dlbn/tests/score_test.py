@@ -37,8 +37,8 @@ class Test_Expert(unittest.TestCase):
 
 
     def test_kfs(self):
-        a = pd.read_excel(r"../../dlbn/test/test_result.xlsx", index_col=0)
-        b = pd.read_excel(r"../../dlbn/test/test_expert.xlsx", index_col=0)
+        a = pd.read_excel(r"../../dlbn/tests/test_result.xlsx", index_col=0)
+        b = pd.read_excel(r"../../dlbn/tests/test_expert.xlsx", index_col=0)
         e = Expert([a, b], [1, 0])
         data = pd.read_csv(r"../../datasets/asian/Asian.csv")
         k = Knowledge_fused_score(data, e)

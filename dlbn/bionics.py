@@ -17,8 +17,15 @@ from dlbn.score import *
 
 
 class Genetic:
-    def __init__(self, data: pd.DataFrame, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05):
+    def __init__(self, data: pd.DataFrame, random_order=True, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05):
         """
+        assume there is an order between nodes, e.g., [a, b, c] means a is a root node without parent.
+        the genome is an up triangle matrix.
+            a   b    c
+        a   0   1/0  1/0
+        b   0   0    1/0
+        c   0   0    0
+
         X is a np.array [pop,dim_genome]
                 genome
         pop1    01010101

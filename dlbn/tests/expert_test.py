@@ -16,8 +16,8 @@ from dlbn.expert import Expert
 class Test_Expert(unittest.TestCase):
 
     def test_expert(self):
-        a = pd.read_excel(r"../../dlbn/test/test_result.xlsx", index_col=0)
-        b = pd.read_excel(r"../../dlbn/test/test_expert.xlsx", index_col=0)
+        a = pd.read_excel(r"../../dlbn/tests/test_result.xlsx", index_col=0)
+        b = pd.read_excel(r"../../dlbn/tests/test_expert.xlsx", index_col=0)
         e = Expert([a, b], [0.3, 0.7])
         print(e.think('dysp', 'xray'))
         print(e.fused_matrix)

@@ -14,7 +14,7 @@ from dlbn.expert import Expert
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.pc import *
 from dlbn.score import BIC_score, MDL_score, Knowledge_fused_score
-from dlbn.k2 import order_to_dag, find_z
+from dlbn.k2 import order_to_dag
 
 
 class DP(Estimator):
