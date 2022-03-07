@@ -11,6 +11,7 @@ import itertools as it
 import networkx as nx
 import numpy as np
 import numpy.random
+import pandas as pd
 from numpy.random import permutation
 from tqdm import tqdm
 
@@ -64,7 +65,7 @@ def genome_to_str(genome):
 
 
 class Genetic:
-    def __init__(self, data: pd.DataFrame, num_parent=4, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5,
+    def __init__(self, data: pd.DataFrame, num_parent=25, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5,
                  w=0.05):
         """
         :arg
@@ -77,12 +78,6 @@ class Genetic:
         a   0   1,0  1,0
         b   0   0    1,0
         c   0   0    0
-
-        X is a np.array [pop,dim_genome]
-                genome
-        pop1    01010101
-        pop2
-        pop3
 
         """
         self.data = data
@@ -97,28 +92,33 @@ class Genetic:
         self.u = num_parent
         self.dim_genome = int(self.n * (self.n - 1) / 2)
         # Initialize a population
-        self.X = np.random.randint(0, 2, (self.pop, self.dim_genome))
-        self.manager_list = pd.DataFrame(columns=["genome", "score", "rank"])
 
-    def update_manager_list(self):
+        self.manager_list = pd.DataFrame(columns=["genome", "score", "rank"])
+        self.history = []
+
+    def initialize_manager_list(self):
         """
         update manager list
         :return:
         """
-        for i in range(len(self.X)):
-            score = genome_to_dag(self.X[i], self.node_order).score(self.score_method)
-            genome = genome_to_str(self.X[i])
+        X = np.random.randint(0, 2, (self.pop, self.dim_genome))
+        for i in range(len(X)):
+            score = genome_to_dag(X[i], self.node_order).score(self.score_method)
+            genome = genome_to_str(X[i])
+            self.manager_list.reindex()
             self.manager_list.loc[i, "genome"] = genome
             self.manager_list.loc[i, "score"] = score
         self.manager_list["rank"] = self.manager_list.score.rank(ascending=False)
+        self.manager_list.sort_values(by="rank", inplace=True)
+        self.manager_list.index = range(self.manager_list.shape[0])
 
     def local_optimizer(self):
         """
         input a population, make sure each node's parents do not exceed u.
         :return: a new population
         """
-        for i in range(len(self.X)):
-            genome = self.X[i]
+        for i in range(self.manager_list.shape[0]):
+            genome = self.manager_list.loc[i, "genome"]
             # for the dag of genome, do local optimization
             dag = genome_to_dag(genome, self.node_order)
             for node in dag.nodes:
@@ -141,62 +141,69 @@ class Genetic:
                                 current_score = new_score
                     dag.add_edges_from([(p, node) for p in current_parents])
 
-            new_genome = dag_to_genome(dag, self.node_order)
-            self.X[i] = new_genome
+            new_genome = genome_to_str(dag_to_genome(dag, self.node_order))
+            self.manager_list.loc[i, "genome"] = new_genome
+            self.manager_list.loc[i, "score"] = genome_to_dag(new_genome, self.node_order).score(
+                self.score_method)
 
     def mutate(self):
         """
         randomly mutate on one bit position
         :return:
         """
-        pop = len(self.X)
-        for i in range(pop):
+        for i in range(self.pop):
             if np.random.rand(1) < self.w:
                 mutation_index = np.random.randint(0, self.dim_genome)
                 self.X[i, mutation_index] = int(self.X[i, mutation_index] ^ 1)
 
     def select_parents(self, num_parent):
         selected_list = []
-        probability = (self.pop - self.manager_list["rank"]) / ((self.pop - 1) * self.pop / 2)
+        # probability = (self.pop - self.manager_list["rank"]) / ((self.pop - 1) * self.pop / 2)
         for i in range(num_parent):
-            selected = numpy.random.choice(self.manager_list.index.values, 2, p=probability)
+            selected = numpy.random.choice(self.manager_list.index.values, 2)
             selected_list.append(list(selected))
         return selected_list
 
     def produce_children(self, parents_list):
         child = []
-        children = []
+        children = pd.DataFrame(columns=["genome", "score", "rank"])
         for i, j in parents_list:
-            x = self.X[i]
-            y = self.X[j]
+            x = list(self.manager_list.loc[i, "genome"])
+            y = list(self.manager_list.loc[j, "genome"])
             for index in range(self.dim_genome):
                 if np.random.rand(1) < 0.5:
                     child.append(x[index])
                 else:
                     child.append(y[index])
-            children.append(child)
+            children.loc[children.shape[0], ["genome", "score"]] = [genome_to_str(child),
+                                                                    genome_to_dag(child, self.node_order).score(
+                                                                        self.score_method)]
             child = []
-        return np.asarray(children)
+        self.manager_list = pd.concat([self.manager_list, children])
+        self.manager_list["rank"] = self.manager_list.score.rank(ascending=False)
+        self.manager_list.sort_values(by="rank", inplace=True)
+        self.manager_list.index = range(self.manager_list.shape[0])
 
     def reduce_population(self):
-        # ensure the manager list is updated
-        assert self.manager_list.shape[0] == self.X.shape[0]
-        self.manager_list.sort_values(by="rank",inplace=True)
-        self.manager_list = self.manager_list[:self.pop]
+
+        self.manager_list = self.manager_list.iloc[:self.pop]
+
+    def update_order(self):
+        self.node_order = np.random.permutation(self.node_order)
 
     def run(self):
         # update manager list
-        self.update_manager_list()
-        for i in range(self.max_iter):
+        print("Initializing population...")
+        self.initialize_manager_list()
+        for i in tqdm(range(self.max_iter)):
             selected_parents = self.select_parents(int(self.pop / 3))
-            children = self.produce_children(selected_parents)
-            self.mutate()
-            self.local_optimizer()
-            # concat children genome into X
-            self.X = np.vstack((self.X, children))
-            # todo, Inefficient, majority of the manager list is unchanged.
-            self.update_manager_list()
+            self.produce_children(selected_parents)
+            # self.mutate()
             self.reduce_population()
+            self.local_optimizer()
+            if 15 % (i + 1) == 0:
+                self.update_order()
+            self.history.append(self.manager_list.iloc[0]["score"])
         best_genome = self.manager_list.iloc[0]["genome"]
         return genome_to_dag(best_genome, self.node_order)
 
