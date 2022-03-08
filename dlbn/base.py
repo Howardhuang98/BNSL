@@ -8,13 +8,12 @@ from abc import abstractmethod
 import numpy as np
 import pandas as pd
 
-from dlbn.graph import DAG
 
 
 class Estimator(ABC):
 
     def __init__(self):
-        self.result = DAG()
+        self.result = None
 
 
     def load_data(self, data):

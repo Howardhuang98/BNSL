@@ -8,10 +8,17 @@
 """
 import unittest
 
+import pandas as pd
+
 from dlbn.graph import DAG
+from dlbn.score import BIC_score
 
 
 class Test_graph(unittest.TestCase):
+
+    def setUp(self):
+        dag = DAG()
+        self.asia_net = dag.read(r"../../datasets/asian/Asian_net.csv")
 
     def test_to_excel_DataFrame(self):
         dag = DAG()
@@ -22,3 +29,9 @@ class Test_graph(unittest.TestCase):
         dag = DAG()
         dag.read_DataFrame_adjacency("test_result.csv")
         self.assertEqual(len(dag.edges), 8)
+
+    def test_score(self):
+        data = pd.read_csv(r"../../datasets/asian/Asian.csv")
+        bic = BIC_score(data)
+        print(self.asia_net.score(bic))
+
