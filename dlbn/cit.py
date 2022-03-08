@@ -15,7 +15,7 @@ from scipy.stats import norm
 
 def fisherz(data, X, Y, condition_set, correlation_matrix=None):
     '''
-    Perform an independence test using Fisher-Z's test
+    Perform an independence tests using Fisher-Z's tests
     Parameters
     ----------
     data : data matrices
@@ -26,7 +26,7 @@ def fisherz(data, X, Y, condition_set, correlation_matrix=None):
                          None means without the parameter of correlation matrix
     Returns
     -------
-    p : the p-value of the test
+    p : the p-value of the tests
     '''
     if correlation_matrix is None:
         correlation_matrix = np.corrcoef(data.T)

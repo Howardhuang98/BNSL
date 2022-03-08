@@ -9,6 +9,7 @@ A Bayesian network structure learning package based on deep learning. Still deve
 * Dynamic program: shortest path perspective
 * PC algorithm
 * Genetic algorithm
+* K2 algorithm
 
 ## Easily use
 ### Observed data
@@ -46,8 +47,8 @@ dag.show()
 
 ## Acknowledgement
 Any question, feel free to email me!  
-Author: Huang Hao    
-School: Tianjin University, Priceless Lab  
+Author: Huang Hao.    
+School: Tianjin University, Priceless Lab.  
 
 
 

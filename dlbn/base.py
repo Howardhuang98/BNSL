@@ -8,13 +8,13 @@ from abc import abstractmethod
 import numpy as np
 import pandas as pd
 
-from dlbn.graph import DAG
 
 
 class Estimator(ABC):
 
     def __init__(self):
-        self.result = DAG()
+        self.result = None
+
 
     def load_data(self, data):
         """
@@ -74,7 +74,34 @@ class Score(ABC):
         self.state_names = {}
         for var in list(data.columns.values):
             self.state_names[var] = sorted(list(self.data.loc[:, var].unique()))
-        self.contingency_table = None
+
+
+    def state_count(self, x: str, parents: list):
+        """
+        count a multi-index table.
+
+            r1  r2  r3
+        q1
+        q2
+
+        :param x: variable name
+        :param parents: list include str
+        :return:
+        """
+        if parents:
+            parents_states = [self.state_names[parent] for parent in parents]
+            state_count_data = (
+                self.data.groupby([x] + parents).size().unstack(parents)
+            )
+            row_index = self.state_names[x]
+            if len(parents) == 1:
+                column_index = parents_states[0]
+            else:
+                column_index = pd.MultiIndex.from_product(parents_states, names=parents)
+            state_counts = state_count_data.reindex(index=row_index, columns=column_index).fillna(0)
+        else:
+            state_counts = self.data.groupby(x).size()
+        return state_counts
 
     @abstractmethod
     def local_score(self, x, parents):

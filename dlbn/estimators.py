@@ -14,6 +14,7 @@ from dlbn.expert import Expert
 from dlbn.heuristic import HillClimb, SimulatedAnnealing
 from dlbn.pc import *
 from dlbn.score import BIC_score, MDL_score, Knowledge_fused_score
+from dlbn.k2 import order_to_dag
 
 
 class DP(Estimator):
@@ -107,8 +108,10 @@ class GA(Estimator):
     def __init__(self, data):
         super(GA, self).__init__()
         self.load_data(data)
+        self.history = None
 
-    def run(self, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5, w=0.05, return_history=False):
+    def run(self, num_parent=5, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5,
+                 w=0.05, patience=20, return_history = False):
         """
         run the genetic algorithm estimator
         :param return_history:
@@ -120,11 +123,12 @@ class GA(Estimator):
         :param w: the probability of mutation
         :return: the dag with maximum score
         """
-        ga = Genetic(self.data, score_method=BIC_score, pop=pop, max_iter=max_iter, c1=c1, c2=c2, w=w)
-        solu, history = ga.run()
-        self.result.from_genome(solu, self.data.columns)
+        ga = Genetic(self.data, num_parent=num_parent, score_method=score_method, pop=pop, max_iter=max_iter, c1=c1, c2=c2,
+                 w=w, patience=patience)
+        self.result = ga.run()
+        self.history = ga.history
         if return_history:
-            return self.result, history
+            return self.result, self.history
         else:
             return self.result
 
@@ -154,4 +158,13 @@ class KBNL(Estimator):
         hc = HillClimb(self.data, Knowledge_fused_score, initial_dag=initial_dag, max_iter=max_iter,
                        restart=restart, explore_num=explore_num, expert=self.expert)
         self.result = hc.climb()
+        return self.result
+
+class K2(Estimator):
+    def __init__(self, data: pd.DataFrame, score_method=BIC_score):
+        self.score_method = score_method(data)
+        self.order = list(data.columns)
+
+    def run(self):
+        self.result = order_to_dag(self.order, 3, self.score_method)
         return self.result

@@ -10,7 +10,7 @@ import unittest
 
 import pandas as pd
 
-from dlbn.estimators import DP, HC, GA, KBNL
+from dlbn.estimators import DP, HC, GA, KBNL, K2
 from dlbn.graph import DAG
 from dlbn.score import MDL_score, BIC_score
 
@@ -22,7 +22,7 @@ class Test_estimator(unittest.TestCase):
     """
 
     def test_dp(self):
-        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
         dag = DAG()
         score = dag.score(MDL_score, data)
         dp = DP(data)
@@ -31,7 +31,7 @@ class Test_estimator(unittest.TestCase):
         self.assertTrue(dp.result.score(MDL_score, data) <= score)
 
     def test_hc(self):
-        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
         dag = DAG()
         score_of_empty_DAG = dag.score(BIC_score, data)
         hc = HC(data)
@@ -40,7 +40,7 @@ class Test_estimator(unittest.TestCase):
         self.assertTrue(hc.result.score(BIC_score, data) >= score_of_empty_DAG)
 
     def test_hc_restart(self):
-        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
         dag = DAG()
         score_of_empty_DAG = dag.score(BIC_score, data)
         hc = HC(data)
@@ -50,22 +50,14 @@ class Test_estimator(unittest.TestCase):
 
     def test_ga(self):
         data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        bic = BIC_score(data)
         dag = DAG()
-        score_of_empty_DAG = dag.score(BIC_score, data)
+        score_of_empty_DAG = dag.score(bic)
         ga = GA(data)
         ga.run(max_iter=50)
         print(ga.result.edges)
-        self.assertTrue(ga.result.score(BIC_score, data) >= score_of_empty_DAG)
 
-    def test_ga1(self):
-        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
-        dag = DAG()
-        score_of_empty_DAG = dag.score(BIC_score, data)
-        ga = GA(data)
-        _, history = ga.run(max_iter=150,return_history=True)
-        print(history)
-        print(ga.result.edges)
-        self.assertTrue(ga.result.score(BIC_score, data) >= score_of_empty_DAG)
+
 
     def test_kbnl(self):
         data = pd.read_csv(r"../../datasets/asian/Asian.csv")
@@ -85,5 +77,14 @@ class Test_estimator(unittest.TestCase):
         print(kbnl.result.edges)
         print(kbnl.result.score(BIC_score, data))
         self.assertTrue(kbnl.result.score(BIC_score, data) >= score_of_empty_DAG)
+
+    def test_k2(self):
+        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
+        dag = DAG()
+        score_of_empty_DAG = dag.score(BIC_score, data)
+        k = K2(data)
+        k.run()
+        print(k.result.edges)
+
 
 
