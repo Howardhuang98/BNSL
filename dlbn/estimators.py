@@ -111,9 +111,11 @@ class GA(Estimator):
         self.history = None
 
     def run(self, num_parent=5, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5,
-                 w=0.05, patience=20, return_history = False):
+            w=0.05, patience=20, return_history=False):
         """
         run the genetic algorithm estimator
+        :param patience:
+        :param num_parent:
         :param return_history:
         :param score_method: score criteria
         :param pop: number of population
@@ -123,8 +125,9 @@ class GA(Estimator):
         :param w: the probability of mutation
         :return: the dag with maximum score
         """
-        ga = Genetic(self.data, num_parent=num_parent, score_method=score_method, pop=pop, max_iter=max_iter, c1=c1, c2=c2,
-                 w=w, patience=patience)
+        ga = Genetic(self.data, num_parent=num_parent, score_method=score_method, pop=pop, max_iter=max_iter, c1=c1,
+                     c2=c2,
+                     w=w, patience=patience)
         self.result = ga.run()
         self.history = ga.history
         if return_history:
@@ -137,7 +140,8 @@ class KBNL(Estimator):
     """
     KBNL estimator, observed data, expert data and expert confidence are needed to initialize the estimator.
     """
-    def __init__(self, data, expert_data: list, expert_confidence: list,):
+
+    def __init__(self, data, expert_data: list, expert_confidence: list, ):
         super(KBNL, self).__init__()
         self.load_data(data)
         if isinstance(expert_data[0], pd.DataFrame):
@@ -159,6 +163,7 @@ class KBNL(Estimator):
                        restart=restart, explore_num=explore_num, expert=self.expert)
         self.result = hc.climb()
         return self.result
+
 
 class K2(Estimator):
     def __init__(self, data: pd.DataFrame, score_method=BIC_score):

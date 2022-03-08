@@ -120,7 +120,7 @@ class HillClimb:
                     self.dag.remove_edge(u, v)
                     self.dag.add_edge(v, u)
             result.append(deepcopy(self.dag))
-            self.score_result.append(self.dag.score(self.Score_method, self.data, expert=self.kwargs.get("expert", None)))
+            self.score_result.append(self.dag.score(self.s))
         if direction == 'up':
             self.dag = result[np.argmax(self.score_result)]
         if direction == 'down':

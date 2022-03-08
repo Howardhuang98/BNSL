@@ -121,7 +121,7 @@ class DAG(nx.DiGraph):
         edges_data.to_csv(path)
         return None
 
-    def to_excel_DataFrame(self, path: str):
+    def to_csv_adj(self, path: str):
         df = nx.to_pandas_adjacency(self)
         df.to_csv(path)
         return None
