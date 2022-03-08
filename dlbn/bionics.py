@@ -97,6 +97,7 @@ class Genetic:
         self.manager_list = pd.DataFrame(columns=["genome", "score", "rank"])
         self.patience = patience
         self.history = []
+        self.result = None
 
     def initialize_manager_list(self):
         """
@@ -230,7 +231,10 @@ class Genetic:
                     break
             self.history.append(self.manager_list.iloc[0]["score"])
         best_genome = self.manager_list.iloc[0]["genome"]
-        return genome_to_dag(best_genome, self.node_order)
+        self.result = genome_to_dag(best_genome, self.node_order)
+        # avoid missing isolated node
+        self.result.add_nodes_from(self.data.columns)
+        return self.result
 
 
 if __name__ == '__main__':
