@@ -139,7 +139,7 @@ class Genetic:
                     current_parents = []
                     current_score = 0
                     # this iteration will have C_n^u times
-                    for legal_parents in self.legal_parents_iter(parents, 50):
+                    for legal_parents in self.legal_parents_iter(parents, self.pop):
                         legal_parents = list(legal_parents)
                         # first running:
                         if not current_parents:

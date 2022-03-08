@@ -49,23 +49,15 @@ class Test_estimator(unittest.TestCase):
         self.assertTrue(hc.result.score(BIC_score, data) >= score_of_empty_DAG)
 
     def test_ga(self):
-        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
+        data = pd.read_excel(r"../../datasets/test/sample0.xlsx")
+        bic = BIC_score(data)
         dag = DAG()
-        score_of_empty_DAG = dag.score(BIC_score, data)
+        score_of_empty_DAG = dag.score(bic)
         ga = GA(data)
         ga.run(max_iter=50)
         print(ga.result.edges)
-        self.assertTrue(ga.result.score(BIC_score, data) >= score_of_empty_DAG)
 
-    def test_ga1(self):
-        data = pd.read_excel(r"../../datasets/tests/sample0.xlsx")
-        dag = DAG()
-        score_of_empty_DAG = dag.score(BIC_score, data)
-        ga = GA(data)
-        _, history = ga.run(max_iter=150,return_history=True)
-        print(history)
-        print(ga.result.edges)
-        self.assertTrue(ga.result.score(BIC_score, data) >= score_of_empty_DAG)
+
 
     def test_kbnl(self):
         data = pd.read_csv(r"../../datasets/asian/Asian.csv")
