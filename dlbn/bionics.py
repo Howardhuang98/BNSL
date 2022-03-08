@@ -7,6 +7,7 @@
 ------------      
 """
 import itertools as it
+import sys
 
 import networkx as nx
 import numpy as np
@@ -65,8 +66,8 @@ def genome_to_str(genome):
 
 
 class Genetic:
-    def __init__(self, data: pd.DataFrame, num_parent=25, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5,
-                 w=0.05):
+    def __init__(self, data: pd.DataFrame, num_parent=5, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5,
+                 w=0.05, patience=20):
         """
         :arg
         :param data: pd.DataFrame
@@ -94,6 +95,7 @@ class Genetic:
         # Initialize a population
 
         self.manager_list = pd.DataFrame(columns=["genome", "score", "rank"])
+        self.patience = patience
         self.history = []
 
     def initialize_manager_list(self):
@@ -103,14 +105,23 @@ class Genetic:
         """
         X = np.random.randint(0, 2, (self.pop, self.dim_genome))
         for i in range(len(X)):
-            score = genome_to_dag(X[i], self.node_order).score(self.score_method)
+            print("\rInitializing population...{}/{}".format(i, self.pop), end="")
+            sys.stdout.flush()
             genome = genome_to_str(X[i])
             self.manager_list.reindex()
             self.manager_list.loc[i, "genome"] = genome
-            self.manager_list.loc[i, "score"] = score
+        self.local_optimizer()
         self.manager_list["rank"] = self.manager_list.score.rank(ascending=False)
         self.manager_list.sort_values(by="rank", inplace=True)
         self.manager_list.index = range(self.manager_list.shape[0])
+
+    def legal_parents_iter(self,parents,n):
+        n = len(parents)
+        num_com = n*(n-1)/2
+        count = 0
+        while count < n and count <= num_com:
+            count += 1
+            yield next(it.combinations(parents, self.u))
 
     def local_optimizer(self):
         """
@@ -128,7 +139,7 @@ class Genetic:
                     current_parents = []
                     current_score = 0
                     # this iteration will have C_n^u times
-                    for legal_parents in it.combinations(parents, self.u):
+                    for legal_parents in self.legal_parents_iter(parents, 50):
                         legal_parents = list(legal_parents)
                         # first running:
                         if not current_parents:
@@ -193,9 +204,16 @@ class Genetic:
 
     def run(self):
         # update manager list
-        print("Initializing population...")
+        print("Initializing population...", end="")
+        sys.stdout.flush()
         self.initialize_manager_list()
-        for i in tqdm(range(self.max_iter)):
+        print("\rInitializing population---------->Done")
+        sys.stdout.flush()
+        best_score = -float('inf')
+        count = 0
+        for i in range(self.max_iter):
+            print("\rIterating with best score: {}---------->{}/{}".format(best_score, i, self.max_iter), end="")
+            sys.stdout.flush()
             selected_parents = self.select_parents(int(self.pop / 3))
             self.produce_children(selected_parents)
             # self.mutate()
@@ -203,6 +221,13 @@ class Genetic:
             self.local_optimizer()
             if 15 % (i + 1) == 0:
                 self.update_order()
+            current_score = self.manager_list.iloc[0]["score"]
+            if current_score > best_score:
+                best_score = current_score
+            else:
+                count += 1
+                if count > self.patience:
+                    break
             self.history.append(self.manager_list.iloc[0]["score"])
         best_genome = self.manager_list.iloc[0]["genome"]
         return genome_to_dag(best_genome, self.node_order)
