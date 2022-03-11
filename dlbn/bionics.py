@@ -163,10 +163,7 @@ class Genetic:
         randomly mutate on one bit position
         :return:
         """
-        for i in range(self.pop):
-            if np.random.rand(1) < self.w:
-                mutation_index = np.random.randint(0, self.dim_genome)
-                self.X[i, mutation_index] = int(self.X[i, mutation_index] ^ 1)
+        pass
 
     def select_parents(self, num_parent):
         selected_list = []

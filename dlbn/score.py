@@ -71,7 +71,7 @@ class MDL_score(Score):
         :return: score
         """
         state_count = self.state_count(x, parents)
-        # if the state_count has 0 in the array, it will result numerical error in log(), to
+        # if the state_count has 0 in the array, it will old_result numerical error in log(), to
         # avoid this error, add 1 on each 0 value
         state_count[state_count == 0] = 1
         Nijk = np.asarray(state_count)

@@ -6,6 +6,9 @@
 @Modify Time :    2021/9/8 14:21  
 ------------      
 """
+from multiprocessing import Pool
+
+import numpy as np
 
 from dlbn.base import Estimator
 from dlbn.bionics import Genetic
@@ -49,9 +52,10 @@ class HC(Estimator):
         super(HC, self).__init__()
         self.load_data(data)
 
-    def run(self, score_method=BIC_score, direction='up', initial_dag=None, max_iter=10000, restart=1, explore_num=1):
+    def run(self, score_method=BIC_score, direction='up', initial_dag=None, max_iter=10000, restart=1, explore_num=5,**kwargs):
         """
         run the HC estimator.
+        :param explore_num:
         :param score_method: score method, usually select BIC score or BDeu score
         :param direction:  try to find the maximum of minimum score
         :param initial_dag: the initial dag
@@ -59,10 +63,34 @@ class HC(Estimator):
         :param restart: the number of restart times, every restart will random initialize a start DAG
         :return: an approximate maximum or minimum scored DAG
         """
-        hc = HillClimb(self.data, score_method, initial_dag=initial_dag, max_iter=max_iter,
+        s = score_method(self.data, **kwargs)
+        hc = HillClimb(self.data, s, initial_dag=initial_dag, max_iter=max_iter,
                        restart=restart, explore_num=explore_num)
         self.result = hc.climb(direction)
         return self.result
+
+    def run_parallel(self, worker=4, **kwargs):
+        """
+        :return:
+        """
+        kwargs["instance"] = self
+        arguments = [kwargs for i in range(worker)]
+        with Pool(processes=worker) as pool:
+            result = pool.map(_process, arguments)
+        i = np.argmax([dag.calculated_score for dag in result])
+        self.result = result[i]
+        return self.result
+
+
+def _process(arguments):
+    result = arguments["instance"].run(**arguments)
+    return result
+
+
+
+
+
+
 
 
 class SA(Estimator):
@@ -149,7 +177,7 @@ class KBNL(Estimator):
         if isinstance(expert_data[0], str):
             self.expert = Expert.read(expert_data, confidence=expert_confidence)
 
-    def run(self, initial_dag=None, max_iter=10000, restart=1, explore_num=5):
+    def run(self, initial_dag=None, max_iter=10000, restart=5, explore_num=5,**kwargs):
         """
         run the KBNL estimator.
         :param initial_dag: the initial dag
@@ -158,15 +186,28 @@ class KBNL(Estimator):
         :param explore_num:
         :return: an maximum knowledge fused scored DAG
         """
-
-        hc = HillClimb(self.data, Knowledge_fused_score, initial_dag=initial_dag, max_iter=max_iter,
-                       restart=restart, explore_num=explore_num, expert=self.expert)
+        s = Knowledge_fused_score(self.data, self.expert)
+        hc = HillClimb(self.data, s, initial_dag=initial_dag, max_iter=max_iter,
+                       restart=restart, explore_num=explore_num)
         self.result = hc.climb()
         return self.result
 
+    def run_parallel(self, worker=4, **kwargs):
+        """
+        :return:
+        """
+        kwargs["instance"] = self
+        arguments = [kwargs for i in range(worker)]
+        with Pool(processes=worker) as pool:
+            result = pool.map(_process, arguments)
+        print([dag.calculated_score for dag in result])
+        i = np.argmax([dag.calculated_score for dag in result])
+        self.result = result[i]
+        return self.result
 
 class K2(Estimator):
     def __init__(self, data: pd.DataFrame, score_method=BIC_score):
+        super(K2).__init__()
         self.score_method = score_method(data)
         self.order = list(data.columns)
 

@@ -39,7 +39,7 @@ data = pd.read_excel(r"your data path")
 dp = DP(data)
 # run it
 dag = dp.run()
-# dag instance stores all feature about the result. 
+# dag instance stores all feature about the old_result. 
 dag.show()
 ```
 
