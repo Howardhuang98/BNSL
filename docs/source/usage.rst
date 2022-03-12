@@ -14,10 +14,11 @@ To use Lumache, first install it using pip:
 
 Load DataFrame
 --------------
-.. autofunction:: bnsl.estimators.HC.run
+.. autofunction:: bnsl.estimators.HC
 
 
-Creating Etimator
+
+Creating Estimator
 ----------------
 
 To retrieve a list of random ingredients,
@@ -31,67 +32,5 @@ will raise an exception.
 
 .. autoexception:: lumache.InvalidKindError
 
-For example:
 
->>> import lumachefrom docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>> import lumachefrom docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>> import lumache
-from docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>> import lumache
-from docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>> import lumache
-from docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>> import lumache
-from docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>>
-from docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>>
-from docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>>
-from docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>>
-from docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>>
-from docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>>
-from docs import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
-
->>> import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
 

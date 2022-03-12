@@ -2,8 +2,8 @@
 import os
 import pathlib
 import sys
-
-sys.path.insert(0, os.path.abspath('..'))
+print(sys.path)
+sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
 print(sys.path)
 
 # -- Project information
