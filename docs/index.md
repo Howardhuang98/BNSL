@@ -47,9 +47,7 @@ dag.show()
 
 
 ## Acknowledgement
-Any question, feel free to email me!  
-Author: Huang Hao.    
-School: Tianjin University, Priceless Lab.  
+  
 
 
 

@@ -11,10 +11,24 @@ how to :ref:`installation` the project.
 
    This project is under active development.
 
-Contents
---------
-
 .. toctree::
 
    usage
    api
+
+
+Contents
+--------
+* Hill climb
+* Simulated annealing
+* Dynamic program: shortest path perspective
+* PC algorithm
+* Genetic algorithm
+* K2 algorithm
+
+Acknowledgement
+------
+Any question, feel free to email me!
+Author: Huang Hao.
+School: Tianjin University, Priceless Lab.
+

@@ -14,12 +14,15 @@ To use Lumache, first install it using pip:
 
 Load DataFrame
 --------------
+use pandas
+
+Choose your favorite estimator
+------------------------------
+
 .. autofunction:: bnsl.estimators.HC
 
-
-
 Creating Estimator
-----------------
+-----------------------------
 
 To retrieve a list of random ingredients,
 you can use the ``lumache.get_random_ingredients()`` function:
