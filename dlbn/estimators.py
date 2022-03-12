@@ -188,7 +188,7 @@ class KBNL(Estimator):
         """
         s = Knowledge_fused_score(self.data, self.expert)
         hc = HillClimb(self.data, s, initial_dag=initial_dag, max_iter=max_iter,
-                       restart=restart, explore_num=explore_num)
+                       restart=restart, explore_num=explore_num, **kwargs)
         self.result = hc.climb()
         return self.result
 
