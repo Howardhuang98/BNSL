@@ -1,9 +1,12 @@
 # Configuration file for the Sphinx documentation builder.
+import pathlib
+import sys
+sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
 
 # -- Project information
 
 project = 'BNSL'
-copyright = '2021, Hao Huang'
+copyright = '2021, BNSL'
 author = 'Hao Huang'
 
 release = '0.1'
