@@ -10,8 +10,8 @@ import unittest
 
 import pandas as pd
 
-from dlbn.expert import Expert
-from dlbn.score import Knowledge_fused_score, BIC_score, MDL_score
+from bnsl.expert import Expert
+from bnsl.score import Knowledge_fused_score, BIC_score, MDL_score
 
 
 class Test_Expert(unittest.TestCase):

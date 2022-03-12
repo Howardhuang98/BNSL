@@ -7,8 +7,8 @@
 ------------      
 """
 import pandas as pd
-from dlbn.graph import DAG
-from dlbn.base import Score
+from bnsl.graph import DAG
+from bnsl.base import Score
 
 
 def order_to_dag(order, u: int, score_method: Score):

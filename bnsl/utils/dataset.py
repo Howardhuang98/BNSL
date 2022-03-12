@@ -8,7 +8,7 @@
 """
 import pandas as pd
 
-from dlbn.utils.models import *
+from bnsl.utils.models import *
 
 
 class Dataset:

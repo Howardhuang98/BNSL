@@ -16,8 +16,8 @@ import pandas as pd
 from numpy.random import permutation
 from tqdm import tqdm
 
-from dlbn.graph import DAG
-from dlbn.score import *
+from bnsl.graph import DAG
+from bnsl.score import *
 
 
 def genome_to_dag(genome, node_order):

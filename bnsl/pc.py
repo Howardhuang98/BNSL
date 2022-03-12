@@ -11,7 +11,7 @@ from itertools import combinations, permutations
 import networkx as nx
 import pandas as pd
 
-from dlbn.cit import fisherz
+from bnsl.cit import fisherz
 
 
 def create_complete_graph(node_ids):

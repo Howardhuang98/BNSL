@@ -10,8 +10,8 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import fsolve
 from scipy.special import gammaln
-from dlbn.base import Score
-from dlbn.expert import Expert
+from bnsl.base import Score
+from bnsl.expert import Expert
 
 
 class MDL_score(Score):

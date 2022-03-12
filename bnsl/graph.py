@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 from numpy.random import permutation
 from tqdm import tqdm
 
-from dlbn.base import Score
+from bnsl.base import Score
 
 
 def acc(dag, true_dag):

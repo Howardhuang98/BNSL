@@ -9,7 +9,7 @@
 import numpy as np
 from tqdm import tqdm
 
-from dlbn.dp import *
+from bnsl.dp import *
 
 """
 5-10-15-20 个变量数

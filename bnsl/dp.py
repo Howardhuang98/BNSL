@@ -11,8 +11,8 @@ import itertools
 import networkx as nx
 import pandas as pd
 
-from dlbn.graph import DAG
-from dlbn.score import MDL_score
+from bnsl.graph import DAG
+from bnsl.score import MDL_score
 
 """
 reference:

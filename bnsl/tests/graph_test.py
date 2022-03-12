@@ -10,8 +10,8 @@ import unittest
 
 import pandas as pd
 
-from dlbn.graph import DAG
-from dlbn.score import BIC_score
+from bnsl.graph import DAG
+from bnsl.score import BIC_score
 
 
 class Test_graph(unittest.TestCase):

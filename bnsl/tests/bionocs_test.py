@@ -10,9 +10,9 @@ import unittest
 
 import pandas as pd
 
-from dlbn.graph import DAG
-from dlbn.score import BIC_score
-from dlbn.bionics import Genetic
+from bnsl.graph import DAG
+from bnsl.score import BIC_score
+from bnsl.bionics import Genetic
 
 
 class Test_genetic(unittest.TestCase):

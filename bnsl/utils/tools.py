@@ -6,7 +6,7 @@
 @Modify Time :    2021/11/30 22:39  
 ------------      
 """
-from dlbn.graph import DAG
+from bnsl.graph import DAG
 
 
 def edge2adj(edge_path, nodes, adj_path):

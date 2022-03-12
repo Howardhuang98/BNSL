@@ -11,9 +11,9 @@ import unittest
 
 import pandas as pd
 
-from dlbn.estimators import DP, HC, GA, KBNL, K2
-from dlbn.graph import DAG
-from dlbn.score import MDL_score, BIC_score
+from bnsl.estimators import DP, HC, GA, KBNL, K2
+from bnsl.graph import DAG
+from bnsl.score import MDL_score, BIC_score
 
 
 class Test_estimator(unittest.TestCase):
