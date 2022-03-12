@@ -16,8 +16,8 @@ import pandas as pd
 from numpy.random import permutation
 from tqdm import tqdm
 
-from dlbn.graph import DAG
-from dlbn.score import *
+from bnsl.graph import DAG
+from bnsl.score import *
 
 
 def genome_to_dag(genome, node_order):
@@ -97,6 +97,7 @@ class Genetic:
         self.manager_list = pd.DataFrame(columns=["genome", "score", "rank"])
         self.patience = patience
         self.history = []
+        self.result = None
 
     def initialize_manager_list(self):
         """
@@ -162,10 +163,7 @@ class Genetic:
         randomly mutate on one bit position
         :return:
         """
-        for i in range(self.pop):
-            if np.random.rand(1) < self.w:
-                mutation_index = np.random.randint(0, self.dim_genome)
-                self.X[i, mutation_index] = int(self.X[i, mutation_index] ^ 1)
+        pass
 
     def select_parents(self, num_parent):
         selected_list = []
@@ -230,7 +228,10 @@ class Genetic:
                     break
             self.history.append(self.manager_list.iloc[0]["score"])
         best_genome = self.manager_list.iloc[0]["genome"]
-        return genome_to_dag(best_genome, self.node_order)
+        self.result = genome_to_dag(best_genome, self.node_order)
+        # avoid missing isolated node
+        self.result.add_nodes_from(self.data.columns)
+        return self.result
 
 
 if __name__ == '__main__':

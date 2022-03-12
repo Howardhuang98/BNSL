@@ -29,17 +29,18 @@ more methods please check source code.
 
 ### Run your favorite estimator
 All the algorithms have been packed in ```dlbn.estimators```, like HC(Hill Climb). You only need to initialize the estimator with ```pd.Dataframe``` or ```np.ndarray```, then run it!
-```Estimator.run()```will return you an enhanced ```DAG```instance, it inherited all attributions of ```nx.Digraph```, besides it can draw, calculate score criteria. 
+```Estimator.run()```will return you an enhanced ```DAG```instance, it inherited all attributions of ```nx.Digraph```, besides it can draw, calculate score criteria.
+
 ```python
 # import you favorite Estimator, like HC, SA, DP
-from dlbn.estimators import DP
+from bnsl.estimators import DP
 import pandas as pd
 data = pd.read_excel(r"your data path")
 # use DataFrame initialize the estimator
 dp = DP(data)
 # run it
 dag = dp.run()
-# dag instance stores all feature about the result. 
+# dag instance stores all feature about the old_result. 
 dag.show()
 ```
 

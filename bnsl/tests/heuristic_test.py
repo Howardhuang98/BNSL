@@ -10,8 +10,8 @@ import unittest
 
 import pandas as pd
 
-from dlbn.graph import DAG
-from dlbn.heuristic import HillClimb
+from bnsl.graph import DAG
+from bnsl.heuristic import HillClimb
 
 
 class Test_HillClimb(unittest.TestCase):

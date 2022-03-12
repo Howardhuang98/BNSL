@@ -1,5 +1,5 @@
-![log](https://github.com/Howardhuang98/DLBN/blob/master/images/logo.png)
-# Deep Learning Bayesian Network
+![](./images/log.png)
+# Bayesian Network Structure Learning 
 
 A Bayesian network structure learning package based on deep learning. Still developing ...  
 
@@ -13,7 +13,7 @@ A Bayesian network structure learning package based on deep learning. Still deve
 * K2 algorithm 
 
 ## How to use:
-Please check [document](https://howardhuang98.github.io/DLBN/).
+Please check [document](https://howardhuang98.github.io/BNSL/).
 
 
 

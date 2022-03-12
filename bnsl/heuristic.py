@@ -7,8 +7,9 @@
 ------------      
 """
 import random
+import sys
 from copy import deepcopy
-from itertools import permutations, product
+from itertools import product
 from math import exp
 
 import networkx as nx
@@ -16,8 +17,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from dlbn.graph import DAG
-from dlbn.score import Score, BIC_score
+from bnsl.graph import DAG
+from bnsl.score import Score, BIC_score
 
 
 class HillClimb:
@@ -25,11 +26,12 @@ class HillClimb:
     Hill climb search class
     """
 
-    def __init__(self, data: pd.DataFrame, Score_method: Score = BIC_score, initial_dag: DAG = None, max_iter=10000,
-                 restart=1,explore_num=1, **kwargs):
+    def __init__(self, data: pd.DataFrame, Score_method: Score = BIC_score, initial_dag: DAG = None, max_iter=100,
+                 restart=1, explore_num=1, num_parents=5, **kwargs):
         self.data = data
-        self.Score_method = Score_method
-        self.s = self.Score_method(self.data, **kwargs)
+        if not isinstance(Score_method, Score):
+            raise ValueError("Score method has to be Score instance")
+        self.s = Score_method
         if initial_dag:
             self.dag = initial_dag
         else:
@@ -41,6 +43,7 @@ class HillClimb:
         self.restart = restart
         self.explore_num = explore_num
         self.kwargs = kwargs
+        self.num_parents = num_parents
         self.score_result = None
 
     def possible_operation(self, node_list=[]):
@@ -96,11 +99,15 @@ class HillClimb:
         for i in range(self.restart):
             if i != 0:
                 self.dag.remove_edges_from([e for e in self.dag.edges])
-                self.dag.random_dag()
-            for _ in tqdm(range(self.max_iter), desc="Hill climbing"):
+                self.dag.random_dag(num_parents=self.num_parents)
+            for _ in range(self.max_iter):
                 # randomly select a node list
-                node_list = random.sample(list(self.dag.nodes),self.explore_num)
+                node_list = random.sample(list(self.dag.nodes), self.explore_num)
+                sys.stdout.write(f"\r {_}-th hill climbing")
+                sys.stdout.flush()
                 if direction == 'up':
+                    sys.stdout.write(f"\r {_}-th hill climbing: exploring {node_list}")
+                    sys.stdout.flush()
                     best_operation, score_delta = max(self.possible_operation(node_list), key=lambda x: x[1])
                     if score_delta < 0:
                         break
@@ -120,7 +127,9 @@ class HillClimb:
                     self.dag.remove_edge(u, v)
                     self.dag.add_edge(v, u)
             result.append(deepcopy(self.dag))
-            self.score_result.append(self.dag.score(self.Score_method, self.data, expert=self.kwargs.get("expert", None)))
+            score = result[-1].score(self.s)
+            print(f"\r {i}-th restarting found dag with score: {score}")
+            self.score_result.append(score)
         if direction == 'up':
             self.dag = result[np.argmax(self.score_result)]
         if direction == 'down':

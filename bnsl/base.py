@@ -34,7 +34,7 @@ class Estimator(ABC):
         print("=========Estimator Information=========")
         print(self.data.head(3))
         print("Recover the BN with {} variables".format(len(self.data.columns)))
-        print("result:\n{}".format(self.result.adj_matrix))
+        print("old_result:\n{}".format(self.result.adj_matrix))
 
     @abstractmethod
     def run(self):
@@ -44,13 +44,13 @@ class Estimator(ABC):
 
     def show(self):
         """
-        Show figure of result
+        Show figure of old_result
         :return: figure
         """
         if self.result:
             self.result.show()
         else:
-            raise ValueError("No result obtained")
+            raise ValueError("No old_result obtained")
 
     def save(self, path: str):
         """
@@ -61,7 +61,7 @@ class Estimator(ABC):
         if self.result:
             self.result.to_excel(path)
         else:
-            raise ValueError("No result obtained")
+            raise ValueError("No old_result obtained")
 
 
 class Score(ABC):

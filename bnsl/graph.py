@@ -16,8 +16,7 @@ from matplotlib import pyplot as plt
 from numpy.random import permutation
 from tqdm import tqdm
 
-from dlbn.base import Score
-
+from bnsl.base import Score
 
 
 def acc(dag, true_dag):
@@ -59,6 +58,7 @@ class DAG(nx.DiGraph):
             out_str += "\nEdges indicating the path taken for a loop: "
             out_str += "".join([f"({u},{v}) " for (u, v) in cycle])
             raise ValueError(out_str)
+        self.calculated_score = None
 
     def _check_cycle(self):
         """
@@ -72,6 +72,7 @@ class DAG(nx.DiGraph):
             return False
         else:
             return cycles
+
 
     def score(self, score_method, detail=False):
         """
@@ -93,9 +94,10 @@ class DAG(nx.DiGraph):
             score_list.append(score)
             if detail:
                 score_dict[node] = score
+        self.calculated_score = sum(score_list)
         if detail:
-            return sum(score_list), score_dict
-        return sum(score_list)
+            return self.calculated_score, score_dict
+        return self.calculated_score
 
     def to_excel(self, path: str, source='source node', target='target node'):
         """
@@ -121,7 +123,7 @@ class DAG(nx.DiGraph):
         edges_data.to_csv(path)
         return None
 
-    def to_excel_DataFrame(self, path: str):
+    def to_csv_adj(self, path: str):
         df = nx.to_pandas_adjacency(self)
         df.to_csv(path)
         return None
@@ -173,9 +175,9 @@ class DAG(nx.DiGraph):
 
     def read_DataFrame_adjacency(self, path: str):
         if path.endswith("xlsx"):
-            df = pd.read_excel(path,index_col=0)
+            df = pd.read_excel(path, index_col=0)
         elif path.endswith("csv"):
-            df = pd.read_csv(path,index_col=0)
+            df = pd.read_csv(path, index_col=0)
         self.add_nodes_from(df.columns)
         edges = ((df.columns[int(e[0])], df.columns[int(e[1])]) for e in zip(*df.values.nonzero()))
         self.add_edges_from(edges)
@@ -273,26 +275,27 @@ class DAG(nx.DiGraph):
         return nx.to_pandas_adjacency(self, **kwargs)
 
     @property
-    def adj_df(self,**kwargs):
+    def adj_df(self, **kwargs):
         return nx.to_pandas_adjacency(self, **kwargs)
 
     @property
     def genome(self):
         return self.adj_matrix.flatten()
 
-
-    def random_dag(self, nodes=None, seed=None):
+    def random_dag(self, nodes=None, seed=None, num_parents=None):
+        if not num_parents:
+            num_parents = len(self.nodes)
         if seed:
             np.random.seed(seed)
         if nodes is not None:
             nodes = permutation(nodes)
+            num_parents = len(nodes)
         else:
-            edges = [i for i in self.edges]
-            self.remove_edges_from(edges)
+            self.remove_edges_from([i for i in self.edges])
             nodes = permutation(list(self.nodes))
         for i in range(len(nodes)):
             v = nodes[i]
-            num_parents = np.random.randint(0, len(nodes) - i)
+            num_parents = np.random.randint(0, num_parents + 1)
             parent_list = permutation(nodes[i + 1:])[:num_parents]
             for pa in parent_list:
                 self.add_edge(pa, v)
