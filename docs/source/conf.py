@@ -1,7 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
+import os
 import pathlib
 import sys
-sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
+
+sys.path.insert(0, os.path.abspath('..'))
+print(sys.path)
 
 # -- Project information
 
