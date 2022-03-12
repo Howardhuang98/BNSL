@@ -45,7 +45,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#load-dataframe">Load DataFrame</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#choose-your-favorite-estimator">Choose your favorite estimator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#creating-estimator">Creating Estimator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
@@ -90,20 +89,24 @@
 </section>
 <section id="choose-your-favorite-estimator">
 <h2>Choose your favorite estimator<a class="headerlink" href="#choose-your-favorite-estimator" title="Permalink to this headline"></a></h2>
-<dl class="py function">
+<p><strong>Hill climb search estimator</strong>. It greedily search possible operations based on hill climb strategy. It is the most common used
+score-based algorithm.</p>
+<dl class="py class">
 <dt class="sig sig-object py" id="bnsl.estimators.HC">
-<span class="sig-prename descclassname"><span class="pre">bnsl.estimators.</span></span><span class="sig-name descname"><span class="pre">HC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.HC" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.estimators.</span></span><span class="sig-name descname"><span class="pre">HC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.HC" title="Permalink to this definition"></a></dt>
 <dd><p>Greedy hill climb estimator</p>
 </dd></dl>
 
-</section>
-<section id="creating-estimator">
-<h2>Creating Estimator<a class="headerlink" href="#creating-estimator" title="Permalink to this headline"></a></h2>
-<p>To retrieve a list of random ingredients,
-you can use the <code class="docutils literal notranslate"><span class="pre">lumache.get_random_ingredients()</span></code> function:</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">kind</span></code> parameter should be either <code class="docutils literal notranslate"><span class="pre">&quot;meat&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;fish&quot;</span></code>,
-or <code class="docutils literal notranslate"><span class="pre">&quot;veggies&quot;</span></code>. Otherwise, <code class="xref py py-func docutils literal notranslate"><span class="pre">lumache.get_random_ingredients()</span></code>
-will raise an exception.</p>
+<p><strong>Dynamic planning estimator</strong>. It exhaustively searches every state graph, then uses shortest path algorithm to find optimal order,
+finally recover the optimal DAG from order.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.estimators.DP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.estimators.</span></span><span class="sig-name descname"><span class="pre">DP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.DP" title="Permalink to this definition"></a></dt>
+<dd><p>Dynamic program estimator class
+reference: 《Learning Optimal Bayesian Networks: A Shortest Path Perspective》
+:param: data, np.array or pd.Dataframe</p>
+</dd></dl>
+
 </section>
 </section>
 

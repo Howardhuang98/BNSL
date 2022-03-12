@@ -13,27 +13,22 @@ To use Lumache, first install it using pip:
    (.venv) $ git clone https://github.com/Howardhuang98/BNSL-doc.git
 
 Load DataFrame
---------------
+-----------------
 use pandas
 
 Choose your favorite estimator
 ------------------------------
+**Hill climb search estimator**. It greedily search possible operations based on hill climb strategy. It is the most common used
+score-based algorithm.
 
-.. autofunction:: bnsl.estimators.HC
+.. autoclass:: bnsl.estimators.HC
 
-Creating Estimator
------------------------------
+**Dynamic planning estimator**. It exhaustively searches every state graph, then uses shortest path algorithm to find optimal order,
+finally recover the optimal DAG from order.
 
-To retrieve a list of random ingredients,
-you can use the ``lumache.get_random_ingredients()`` function:
+.. autoclass:: bnsl.estimators.DP
 
-.. autofunction:: lumache.get_random_ingredients
 
-The ``kind`` parameter should be either ``"meat"``, ``"fish"``,
-or ``"veggies"``. Otherwise, :py:func:`lumache.get_random_ingredients`
-will raise an exception.
-
-.. autoexception:: lumache.InvalidKindError
 
 
 
