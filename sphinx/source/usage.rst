@@ -6,31 +6,57 @@ Usage
 Installation
 ------------
 
-To use Lumache, first install it using pip:
+To use BNSL, first download it using git:
 
 .. code-block:: console
 
-   (.venv) $ git clone https://github.com/Howardhuang98/BNSL-doc.git
+   (.venv) $ git clone https://github.com/Howardhuang98/BNSL.git
 
-Load DataFrame
+Load Data
 -----------------
-use pandas
+`Pandas <https://pandas.pydata.org/>`_ is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool, we use pandas to manipulate data. 
+
+.. tip:: In the whole library, we use **pd.DataFrame** as data input, don't change it into any other format. 
+
+.. code-block:: python
+
+    import pandas as pd
+    data = pd.read_csv(r"./datasets/asian/Asian.csv")
+
 
 Choose your favorite estimator
 ------------------------------
-**Hill climb search estimator**. It greedily search possible operations based on hill climb strategy. It is the most common used
+BNSL provides several up-to-dated Bayesian network structure learning estimator, e.g., Hill climb, genetic algorithm... Let's take **Hill climb estimator** for example. it greedily search possible operations based on hill climb strategy. It is the most common used
 score-based algorithm.
 
-.. autoclass:: bnsl.estimators.HC
+.. code-block:: python
 
-**Dynamic planning estimator**. It exhaustively searches every state graph, then uses shortest path algorithm to find optimal order,
-finally recover the optimal DAG from order.
+    from bnsl.estimators import HC
+    hc = HC(data)
 
-.. autoclass:: bnsl.estimators.DP
+Congratulations, you have initialized an estimator.
 
-.. autoclass:: bnsl.estimators.GA
+Run the estimator
+------------------
 
-.. autoclass:: bnsl.estimators.PC
+Every estiamtor has function ``run()``, use it straightly with default configuration.  
+
+.. code-block:: python
+
+    hc.run()
+    print("Structure learning Done!")
+  
+
+Visualize and store dag result
+-------------------------------
+
+After running, the estimator will save the ``DAG`` instance in ``hc.result``. Then you can use ``show()`` to visualize the dag, and ``to_csv()`` to story the dag.  
+
+.. code-block:: python
+
+    dag = hc.result
+    dag.show()
+    dag.to_csv(path=r"./asian_dag.csv")
 
 
 
