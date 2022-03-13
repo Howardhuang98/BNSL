@@ -28,6 +28,12 @@ finally recover the optimal DAG from order.
 
 .. autoclass:: bnsl.estimators.DP
 
+.. autoclass:: bnsl.estimators.GA
+
+.. autoclass:: bnsl.estimators.PC
+
+
+
 
 
 

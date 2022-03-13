@@ -6,7 +6,7 @@ build:
     python: "3.8"
 
 python:
-  # Install our python package before building the docs
+  # Install our python package before building the sphinx
   install:
     - method: pip
       path: .
