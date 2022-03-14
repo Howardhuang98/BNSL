@@ -1,5 +1,5 @@
 """
-base class
+The base module defined Estimator, Score classes base, and it is only for development use.
 """
 
 from abc import ABC
@@ -9,16 +9,28 @@ import numpy as np
 import pandas as pd
 
 
-
 class Estimator(ABC):
+    """The base class of Estimator.
+
+    Attributes:
+        result: the estimated result.
+
+
+
+    """
 
     def __init__(self):
         self.result = None
 
-
     def load_data(self, data):
         """
-        加载数据
+        Load data.
+
+        args:
+            data: the observed data.
+
+        return:
+            None
         """
 
         if isinstance(data, pd.DataFrame):
@@ -31,6 +43,19 @@ class Estimator(ABC):
 
     @property
     def summary(self):
+        """
+        Summarize the estimator information.
+
+        Print the information about estimator, for example:
+
+        =========Estimator Information=========
+        Recover the BN with 8 variables
+        old_result:
+
+        Returns:
+            None
+
+        """
         print("=========Estimator Information=========")
         print(self.data.head(3))
         print("Recover the BN with {} variables".format(len(self.data.columns)))
@@ -44,7 +69,8 @@ class Estimator(ABC):
 
     def show(self):
         """
-        Show figure of old_result
+        Show figure by matplotlib.
+
         :return: figure
         """
         if self.result:
@@ -54,9 +80,7 @@ class Estimator(ABC):
 
     def save(self, path: str):
         """
-
-        :param path: path to save excel file
-        :return: None
+        Save result.
         """
         if self.result:
             self.result.to_excel(path)
@@ -74,7 +98,6 @@ class Score(ABC):
         self.state_names = {}
         for var in list(data.columns.values):
             self.state_names[var] = sorted(list(self.data.loc[:, var].unique()))
-
 
     def state_count(self, x: str, parents: list):
         """

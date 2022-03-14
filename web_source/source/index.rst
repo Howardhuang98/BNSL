@@ -12,6 +12,7 @@ how to :ref:`installation` the project.
    This project is under active development.
 
 .. toctree::
+    :maxdepth: 2
 
     Bayesian network
     usage

@@ -36,6 +36,8 @@ bnsl.dp module
    :undoc-members:
    :show-inheritance:
 
+.. _estimators_api:
+
 bnsl.estimators module
 ----------------------
 

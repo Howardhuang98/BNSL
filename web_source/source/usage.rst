@@ -23,7 +23,6 @@ Load Data
     import pandas as pd
     data = pd.read_csv(r"./datasets/asian/Asian.csv")
 
-
 Choose your favorite estimator
 ------------------------------
 BNSL provides several up-to-dated Bayesian network structure learning estimator, e.g., Hill climb, genetic algorithm... Let's take **Hill climb estimator** for example. it greedily search possible operations based on hill climb strategy. It is the most common used
@@ -35,6 +34,8 @@ score-based algorithm.
     hc = HC(data)
 
 Congratulations, you have initialized an estimator.
+
+Please check :ref:`estimators_api` for more estimators.
 
 Run the estimator
 ------------------
