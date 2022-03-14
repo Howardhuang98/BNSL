@@ -1,7 +1,7 @@
 ![](./images/log.png)
 # Bayesian Network Structure Learning 
 
-A Bayesian network structure learning package based on deep learning. Still developing ...  
+ 
 
 
 ## Here you can use:
@@ -14,9 +14,6 @@ A Bayesian network structure learning package based on deep learning. Still deve
 
 ## How to use:
 Please check [document](https://howardhuang98.github.io/BNSL/).
-
-
-
 
 
 ## Acknowledgement
