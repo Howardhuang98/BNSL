@@ -15,7 +15,7 @@ how to :ref:`installation` the project.
 
     Bayesian network
     usage
-    api/modules
+    modules
 
 
 .. _available-estimators:
