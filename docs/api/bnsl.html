@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bnsl package &mdash; BNSL 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="bnsl" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> BNSL
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Bayesian%20network.html">Bayesian network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">bnsl</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">bnsl package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl.base">bnsl.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl.bionics">bnsl.bionics module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl.cit">bnsl.cit module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl.dp">bnsl.dp module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl.estimators">bnsl.estimators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl.expert">bnsl.expert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl.graph">bnsl.graph module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl.heuristic">bnsl.heuristic module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl.k2">bnsl.k2 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl.pc">bnsl.pc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl.score">bnsl.score module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bnsl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">BNSL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">bnsl</a> &raquo;</li>
+      <li>bnsl package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/bnsl.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bnsl-package">
+<h1>bnsl package<a class="headerlink" href="#bnsl-package" title="Permalink to this headline"></a></h1>
+<p>BNSL package consists of several modules, the core module is <code class="docutils literal notranslate"><span class="pre">bnsl.estimators</span></code> that packages all modules together.</p>
+<section id="module-bnsl.base">
+<span id="bnsl-base-module"></span><h2>bnsl.base module<a class="headerlink" href="#module-bnsl.base" title="Permalink to this headline"></a></h2>
+<p>base class</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.base.Estimator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.base.</span></span><span class="sig-name descname"><span class="pre">Estimator</span></span><a class="headerlink" href="#bnsl.base.Estimator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.base.Estimator.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.base.Estimator.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>加载数据</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.base.Estimator.run">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.base.Estimator.run" title="Permalink to this definition"></a></dt>
+<dd><p>run the estimator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.base.Estimator.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.base.Estimator.save" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – path to save excel file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.base.Estimator.show">
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.base.Estimator.show" title="Permalink to this definition"></a></dt>
+<dd><p>Show figure of old_result
+:return: figure</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bnsl.base.Estimator.summary">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">summary</span></span><a class="headerlink" href="#bnsl.base.Estimator.summary" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.base.Score">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.base.</span></span><span class="sig-name descname"><span class="pre">Score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.base.Score" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+<p>Score base class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.base.Score.all_score">
+<span class="sig-name descname"><span class="pre">all_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.base.Score.all_score" title="Permalink to this definition"></a></dt>
+<dd><p>return score on the DAG</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.base.Score.local_score">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">local_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.base.Score.local_score" title="Permalink to this definition"></a></dt>
+<dd><p>return local score</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.base.Score.state_count">
+<span class="sig-name descname"><span class="pre">state_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.base.Score.state_count" title="Permalink to this definition"></a></dt>
+<dd><p>count a multi-index table.</p>
+<blockquote>
+<div><p>r1  r2  r3</p>
+</div></blockquote>
+<p>q1
+q2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – variable name</p></li>
+<li><p><strong>parents</strong> – list include str</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bnsl.bionics">
+<span id="bnsl-bionics-module"></span><h2>bnsl.bionics module<a class="headerlink" href="#module-bnsl.bionics" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   bionics.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/12/27 22:14  
+————</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.bionics.Genetic">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.bionics.</span></span><span class="sig-name descname"><span class="pre">Genetic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_parent=5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_method=&lt;class</span> <span class="pre">'bnsl.score.BIC_score'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop=40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter=150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c1=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c2=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w=0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience=20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.Genetic" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.bionics.Genetic.initialize_manager_list">
+<span class="sig-name descname"><span class="pre">initialize_manager_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.Genetic.initialize_manager_list" title="Permalink to this definition"></a></dt>
+<dd><p>update manager list
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.bionics.Genetic.legal_parents_iter">
+<span class="sig-name descname"><span class="pre">legal_parents_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.Genetic.legal_parents_iter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.bionics.Genetic.local_optimizer">
+<span class="sig-name descname"><span class="pre">local_optimizer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.Genetic.local_optimizer" title="Permalink to this definition"></a></dt>
+<dd><p>input a population, make sure each node’s parents do not exceed u.
+:return: a new population</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.bionics.Genetic.mutate">
+<span class="sig-name descname"><span class="pre">mutate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.Genetic.mutate" title="Permalink to this definition"></a></dt>
+<dd><p>randomly mutate on one bit position
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.bionics.Genetic.produce_children">
+<span class="sig-name descname"><span class="pre">produce_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.Genetic.produce_children" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.bionics.Genetic.reduce_population">
+<span class="sig-name descname"><span class="pre">reduce_population</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.Genetic.reduce_population" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.bionics.Genetic.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.Genetic.run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.bionics.Genetic.select_parents">
+<span class="sig-name descname"><span class="pre">select_parents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_parent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.Genetic.select_parents" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.bionics.Genetic.update_order">
+<span class="sig-name descname"><span class="pre">update_order</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.Genetic.update_order" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.bionics.dag_to_genome">
+<span class="sig-prename descclassname"><span class="pre">bnsl.bionics.</span></span><span class="sig-name descname"><span class="pre">dag_to_genome</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.dag_to_genome" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.bionics.genome_to_dag">
+<span class="sig-prename descclassname"><span class="pre">bnsl.bionics.</span></span><span class="sig-name descname"><span class="pre">genome_to_dag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genome</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.genome_to_dag" title="Permalink to this definition"></a></dt>
+<dd><p>generate dag with genome
+#todo improve efficiency, do not need to iterate every element in adjacency matrix
+:param genome:
+:param node_order:
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.bionics.genome_to_str">
+<span class="sig-prename descclassname"><span class="pre">bnsl.bionics.</span></span><span class="sig-name descname"><span class="pre">genome_to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genome</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.genome_to_str" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.bionics.permutation">
+<span class="sig-prename descclassname"><span class="pre">bnsl.bionics.</span></span><span class="sig-name descname"><span class="pre">permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.bionics.permutation" title="Permalink to this definition"></a></dt>
+<dd><p>Randomly permute a sequence, or return a permuted range.</p>
+<p>If <cite>x</cite> is a multi-dimensional array, it is only shuffled along its
+first index.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New code should use the <code class="docutils literal notranslate"><span class="pre">permutation</span></code> method of a <code class="docutils literal notranslate"><span class="pre">default_rng()</span></code>
+instance instead; please see the <span class="xref std std-ref">random-quick-start</span>.</p>
+</div>
+<dl class="simple">
+<dt>x<span class="classifier">int or array_like</span></dt><dd><p>If <cite>x</cite> is an integer, randomly permute <code class="docutils literal notranslate"><span class="pre">np.arange(x)</span></code>.
+If <cite>x</cite> is an array, make a copy and shuffle the elements
+randomly.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>out<span class="classifier">ndarray</span></dt><dd><p>Permuted sequence or array range.</p>
+</dd>
+</dl>
+<p>Generator.permutation: which should be used for new code.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">array([1, 7, 4, 3, 0, 9, 2, 5, 8, 6]) # random</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
+<span class="go">array([15,  1,  9,  4, 12]) # random</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+<span class="go">array([[6, 7, 8], # random</span>
+<span class="go">       [0, 1, 2],</span>
+<span class="go">       [3, 4, 5]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-bnsl.cit">
+<span id="bnsl-cit-module"></span><h2>bnsl.cit module<a class="headerlink" href="#module-bnsl.cit" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   cit.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/12/25 18:29  
+————</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.cit.fisherz">
+<span class="sig-prename descclassname"><span class="pre">bnsl.cit.</span></span><span class="sig-name descname"><span class="pre">fisherz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.cit.fisherz" title="Permalink to this definition"></a></dt>
+<dd><p>Perform an independence tests using Fisher-Z’s tests
+Parameters
+———-
+data : data matrices
+X: int
+Y: int
+condition_set: set
+correlation_matrix : correlation matrix;</p>
+<blockquote>
+<div><p>None means without the parameter of correlation matrix</p>
+</div></blockquote>
+<p>p : the p-value of the tests</p>
+</dd></dl>
+
+</section>
+<section id="module-bnsl.dp">
+<span id="bnsl-dp-module"></span><h2>bnsl.dp module<a class="headerlink" href="#module-bnsl.dp" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   dp.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/11/30 13:20  
+————</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.dp.calculate_best_score">
+<span class="sig-prename descclassname"><span class="pre">bnsl.dp.</span></span><span class="sig-name descname"><span class="pre">calculate_best_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_parent_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_instance</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.dp.calculate_best_score" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.dp.generate_order_graph">
+<span class="sig-prename descclassname"><span class="pre">bnsl.dp.</span></span><span class="sig-name descname"><span class="pre">generate_order_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_graph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.dp.generate_order_graph" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.dp.generate_parent_graph">
+<span class="sig-prename descclassname"><span class="pre">bnsl.dp.</span></span><span class="sig-name descname"><span class="pre">generate_parent_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_method=&lt;class</span> <span class="pre">'bnsl.score.MDL_score'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.dp.generate_parent_graph" title="Permalink to this definition"></a></dt>
+<dd><p>generate parent graph for every node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>score_method</strong> – score criteria, default as MDL score. Notice that this method return minimum score.</p></li>
+<li><p><strong>data</strong> – observed data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dict represent parent graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.dp.order2dag">
+<span class="sig-prename descclassname"><span class="pre">bnsl.dp.</span></span><span class="sig-name descname"><span class="pre">order2dag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.dp.order2dag" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>order_graph</strong> – </p></li>
+<li><p><strong>data</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a DAG instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.dp.query_best_structure">
+<span class="sig-prename descclassname"><span class="pre">bnsl.dp.</span></span><span class="sig-name descname"><span class="pre">query_best_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_graph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.dp.query_best_structure" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.dp.sort_tuple">
+<span class="sig-prename descclassname"><span class="pre">bnsl.dp.</span></span><span class="sig-name descname"><span class="pre">sort_tuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><span class="pre">tuple</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.dp.sort_tuple" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bnsl.estimators">
+<span id="bnsl-estimators-module"></span><h2>bnsl.estimators module<a class="headerlink" href="#module-bnsl.estimators" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   estimators.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/9/8 14:21  
+————</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.estimators.DP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.estimators.</span></span><span class="sig-name descname"><span class="pre">DP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.DP" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bnsl.base.Estimator" title="bnsl.base.Estimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bnsl.base.Estimator</span></code></a></p>
+<p>Dynamic program estimator class
+reference: 《Learning Optimal Bayesian Networks: A Shortest Path Perspective》
+:param: data, np.array or pd.Dataframe</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.estimators.DP.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score_method=&lt;class</span> <span class="pre">'bnsl.score.MDL_score'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.DP.run" title="Permalink to this definition"></a></dt>
+<dd><p>run the dynamic program estimator, an exact algorithm. MDL score is used as the score criteria, it return the
+dag with minimum score.
+:param score_method: MDL score
+:return: the dag with minimum score</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.estimators.GA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.estimators.</span></span><span class="sig-name descname"><span class="pre">GA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.GA" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bnsl.base.Estimator" title="bnsl.base.Estimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bnsl.base.Estimator</span></code></a></p>
+<p>Genetic algorithm estimator class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.estimators.GA.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_parent=5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_method=&lt;class</span> <span class="pre">'bnsl.score.BIC_score'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop=40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter=150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c1=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c2=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w=0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience=20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_history=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.GA.run" title="Permalink to this definition"></a></dt>
+<dd><p>run the genetic algorithm estimator
+:param patience:
+:param num_parent:
+:param return_history:
+:param score_method: score criteria
+:param pop: number of population
+:param max_iter: maximum iteration number
+:param c1: [0,1] the probability of crossover with personal historical best genome
+:param c2: [0,1] the probability of crossover with global historical best genome
+:param w: the probability of mutation
+:return: the dag with maximum score</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.estimators.HC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.estimators.</span></span><span class="sig-name descname"><span class="pre">HC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.HC" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bnsl.base.Estimator" title="bnsl.base.Estimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bnsl.base.Estimator</span></code></a></p>
+<p>Greedy hill climb estimator</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.estimators.HC.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score_method=&lt;class</span> <span class="pre">'bnsl.score.BIC_score'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction='up'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_dag=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter=10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explore_num=5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.HC.run" title="Permalink to this definition"></a></dt>
+<dd><p>run the HC estimator.
+:param explore_num:
+:param score_method: score method, usually select BIC score or BDeu score
+:param direction:  try to find the maximum of minimum score
+:param initial_dag: the initial dag
+:param max_iter: the number of maximum iteration
+:param restart: the number of restart times, every restart will random initialize a start DAG
+:return: an approximate maximum or minimum scored DAG</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.estimators.HC.run_parallel">
+<span class="sig-name descname"><span class="pre">run_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.HC.run_parallel" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.estimators.K2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.estimators.</span></span><span class="sig-name descname"><span class="pre">K2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_method=&lt;class</span> <span class="pre">'bnsl.score.BIC_score'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.K2" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bnsl.base.Estimator" title="bnsl.base.Estimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bnsl.base.Estimator</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.estimators.K2.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.K2.run" title="Permalink to this definition"></a></dt>
+<dd><p>run the estimator</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.estimators.KBNL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.estimators.</span></span><span class="sig-name descname"><span class="pre">KBNL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expert_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">expert_confidence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.KBNL" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bnsl.base.Estimator" title="bnsl.base.Estimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bnsl.base.Estimator</span></code></a></p>
+<p>KBNL estimator, observed data, expert data and expert confidence are needed to initialize the estimator.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.estimators.KBNL.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_dag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explore_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.KBNL.run" title="Permalink to this definition"></a></dt>
+<dd><p>run the KBNL estimator.
+:param initial_dag: the initial dag
+:param max_iter: the number of maximum iteration
+:param restart: the number of restart times, every restart will random initialize a start DAG
+:param explore_num:
+:return: an maximum knowledge fused scored DAG</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.estimators.KBNL.run_parallel">
+<span class="sig-name descname"><span class="pre">run_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.KBNL.run_parallel" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.estimators.PC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.estimators.</span></span><span class="sig-name descname"><span class="pre">PC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.PC" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bnsl.base.Estimator" title="bnsl.base.Estimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bnsl.base.Estimator</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.estimators.PC.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.PC.run" title="Permalink to this definition"></a></dt>
+<dd><p>run the estimator</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.estimators.SA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.estimators.</span></span><span class="sig-name descname"><span class="pre">SA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_method=&lt;class</span> <span class="pre">'bnsl.score.BIC_score'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.SA" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bnsl.base.Estimator" title="bnsl.base.Estimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bnsl.base.Estimator</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.estimators.SA.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.estimators.SA.run" title="Permalink to this definition"></a></dt>
+<dd><p>run the estimator</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bnsl.expert">
+<span id="bnsl-expert-module"></span><h2>bnsl.expert module<a class="headerlink" href="#module-bnsl.expert" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   expert.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/11/1 19:07  
+————</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.expert.Expert">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.expert.</span></span><span class="sig-name descname"><span class="pre">Expert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expert_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expert_confidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.expert.Expert" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.expert.Expert.read">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.expert.Expert.read" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.expert.Expert.think">
+<span class="sig-name descname"><span class="pre">think</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.expert.Expert.think" title="Permalink to this definition"></a></dt>
+<dd><p>the fused opinion based on fused matrix
+:param u: string of node
+:param v: string of node
+:return: [u-&gt;v, u&lt;-v, no edge between u and v]</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bnsl.graph">
+<span id="bnsl-graph-module"></span><h2>bnsl.graph module<a class="headerlink" href="#module-bnsl.graph" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   data.py
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/6/25 14:50
+————</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.graph.DAG">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.graph.</span></span><span class="sig-name descname"><span class="pre">DAG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incoming_graph_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">networkx.classes.digraph.DiGraph</span></code></p>
+<p>The graph class used in this project, inherited class nx.DiGraph.
+When it is initialized, it has to be acyclic.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.adj_DataFrame">
+<span class="sig-name descname"><span class="pre">adj_DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.adj_DataFrame" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.adj_df">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adj_df</span></span><a class="headerlink" href="#bnsl.graph.DAG.adj_df" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.adj_matrix">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adj_matrix</span></span><a class="headerlink" href="#bnsl.graph.DAG.adj_matrix" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.do_operation">
+<span class="sig-name descname"><span class="pre">do_operation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.do_operation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.genome">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">genome</span></span><a class="headerlink" href="#bnsl.graph.DAG.genome" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.legal_operations">
+<span class="sig-name descname"><span class="pre">legal_operations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.legal_operations" title="Permalink to this definition"></a></dt>
+<dd><p>iterator, yield all legal operations like (‘+’, (u, v)), (‘-’, (u, v)), (‘flip’, (u, v)).
+:return: iterable, operation (‘+’, (u, v))</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.random_dag">
+<span class="sig-name descname"><span class="pre">random_dag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.random_dag" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'source</span> <span class="pre">node'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'target</span> <span class="pre">node'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.read" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><p>Notice: file only contain edges, the DAG instance may lose isolated nodes.
+here we need excel written in this format:</p>
+<blockquote>
+<div><p>source node   target node</p>
+</div></blockquote>
+<p>1       a            b
+2       a            c</p>
+</div></blockquote>
+<dl class="simple">
+<dt>…       …          …</dt><dd><dl class="field-list simple">
+<dt class="field-odd">param path</dt>
+<dd class="field-odd"><p>io path</p>
+</dd>
+<dt class="field-even">param source</dt>
+<dd class="field-even"><p>column name of source node</p>
+</dd>
+<dt class="field-odd">param target</dt>
+<dd class="field-odd"><p>column name of target node</p>
+</dd>
+<dt class="field-even">return</dt>
+<dd class="field-even"><p>DAG instance</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.read_DataFrame_adjacency">
+<span class="sig-name descname"><span class="pre">read_DataFrame_adjacency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.read_DataFrame_adjacency" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.score">
+<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.score" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>score_method</strong> – score criteria</p></li>
+<li><p><strong>data</strong> – observed data</p></li>
+<li><p><strong>detail</strong> – whether return a dictionary containing every local score. Default is False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>score or (score, dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.score_delta">
+<span class="sig-name descname"><span class="pre">score_delta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_method</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.score_delta" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.show">
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.show" title="Permalink to this definition"></a></dt>
+<dd><p>draw the figure of DAG
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.summary" title="Permalink to this definition"></a></dt>
+<dd><p>return a string to describe current dag.
+:return: a description string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.to_csv">
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'source</span> <span class="pre">node'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'target</span> <span class="pre">node'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.to_csv" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.to_csv_adj">
+<span class="sig-name descname"><span class="pre">to_csv_adj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.to_csv_adj" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.graph.DAG.to_excel">
+<span class="sig-name descname"><span class="pre">to_excel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'source</span> <span class="pre">node'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'target</span> <span class="pre">node'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.DAG.to_excel" title="Permalink to this definition"></a></dt>
+<dd><p>Save the edges of DAG in to excel file, notice that this file may lose node(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the io path to save</p></li>
+<li><p><strong>source</strong> – column name of source node, default as source node</p></li>
+<li><p><strong>target</strong> – column name of target node, default as target node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.graph.acc">
+<span class="sig-prename descclassname"><span class="pre">bnsl.graph.</span></span><span class="sig-name descname"><span class="pre">acc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_dag</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.acc" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>true_dag</strong> – </p></li>
+<li><p><strong>dag</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.graph.permutation">
+<span class="sig-prename descclassname"><span class="pre">bnsl.graph.</span></span><span class="sig-name descname"><span class="pre">permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.graph.permutation" title="Permalink to this definition"></a></dt>
+<dd><p>Randomly permute a sequence, or return a permuted range.</p>
+<p>If <cite>x</cite> is a multi-dimensional array, it is only shuffled along its
+first index.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New code should use the <code class="docutils literal notranslate"><span class="pre">permutation</span></code> method of a <code class="docutils literal notranslate"><span class="pre">default_rng()</span></code>
+instance instead; please see the <span class="xref std std-ref">random-quick-start</span>.</p>
+</div>
+<dl class="simple">
+<dt>x<span class="classifier">int or array_like</span></dt><dd><p>If <cite>x</cite> is an integer, randomly permute <code class="docutils literal notranslate"><span class="pre">np.arange(x)</span></code>.
+If <cite>x</cite> is an array, make a copy and shuffle the elements
+randomly.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>out<span class="classifier">ndarray</span></dt><dd><p>Permuted sequence or array range.</p>
+</dd>
+</dl>
+<p>Generator.permutation: which should be used for new code.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">array([1, 7, 4, 3, 0, 9, 2, 5, 8, 6]) # random</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
+<span class="go">array([15,  1,  9,  4, 12]) # random</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+<span class="go">array([[6, 7, 8], # random</span>
+<span class="go">       [0, 1, 2],</span>
+<span class="go">       [3, 4, 5]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-bnsl.heuristic">
+<span id="bnsl-heuristic-module"></span><h2>bnsl.heuristic module<a class="headerlink" href="#module-bnsl.heuristic" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   heuristic.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/9/9 11:03  
+————</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.heuristic.HillClimb">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.heuristic.</span></span><span class="sig-name descname"><span class="pre">HillClimb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Score_method:</span> <span class="pre">bnsl.base.Score</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'bnsl.score.BIC_score'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_dag:</span> <span class="pre">typing.Optional[bnsl.graph.DAG]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter=100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explore_num=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_parents=5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.heuristic.HillClimb" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Hill climb search class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.heuristic.HillClimb.climb">
+<span class="sig-name descname"><span class="pre">climb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'up'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.heuristic.HillClimb.climb" title="Permalink to this definition"></a></dt>
+<dd><p>execute hill climb search
+:param direction: the direction of search, up or down
+:return: a DAG instance</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.heuristic.HillClimb.possible_operation">
+<span class="sig-name descname"><span class="pre">possible_operation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.heuristic.HillClimb.possible_operation" title="Permalink to this definition"></a></dt>
+<dd><p>iterator, yield possible operation for a node list.
+:param: node_list, the node list will be explored
+:return: possible operation for one node</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.heuristic.SimulatedAnnealing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.heuristic.</span></span><span class="sig-name descname"><span class="pre">SimulatedAnnealing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#bnsl.graph.DAG" title="bnsl.graph.DAG"><span class="pre">bnsl.graph.DAG</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.heuristic.SimulatedAnnealing" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.heuristic.SimulatedAnnealing.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.heuristic.SimulatedAnnealing.run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bnsl.k2">
+<span id="bnsl-k2-module"></span><h2>bnsl.k2 module<a class="headerlink" href="#module-bnsl.k2" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   k2.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/12/29 20:24  
+————</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.k2.find_z">
+<span class="sig-prename descclassname"><span class="pre">bnsl.k2.</span></span><span class="sig-name descname"><span class="pre">find_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bnsl.base.Score" title="bnsl.base.Score"><span class="pre">bnsl.base.Score</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.k2.find_z" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.k2.order_to_dag">
+<span class="sig-prename descclassname"><span class="pre">bnsl.k2.</span></span><span class="sig-name descname"><span class="pre">order_to_dag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bnsl.base.Score" title="bnsl.base.Score"><span class="pre">bnsl.base.Score</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.k2.order_to_dag" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bnsl.pc">
+<span id="bnsl-pc-module"></span><h2>bnsl.pc module<a class="headerlink" href="#module-bnsl.pc" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   pc.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/12/25 21:25  
+————</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.pc.create_complete_graph">
+<span class="sig-prename descclassname"><span class="pre">bnsl.pc.</span></span><span class="sig-name descname"><span class="pre">create_complete_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.pc.create_complete_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Create a complete graph from the list of node ids.
+Args:</p>
+<blockquote>
+<div><p>node_ids: a list of node ids</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>An undirected graph (as a networkx.Graph)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.pc.estimate_cpdag">
+<span class="sig-prename descclassname"><span class="pre">bnsl.pc.</span></span><span class="sig-name descname"><span class="pre">estimate_cpdag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skel_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep_set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.pc.estimate_cpdag" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate a CPDAG from the skeleton graph and separation sets
+returned by the estimate_skeleton() function.
+Args:</p>
+<blockquote>
+<div><p>skel_graph: A skeleton graph (an undirected networkx.Graph).
+sep_set: An 2D-array of separation set.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>The contents look like something like below.</dt><dd><p>sep_set[i][j] = set([k, l, m])</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>An estimated DAG.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.pc.estimate_skeleton">
+<span class="sig-prename descclassname"><span class="pre">bnsl.pc.</span></span><span class="sig-name descname"><span class="pre">estimate_skeleton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha=0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indep_test_func=&lt;function</span> <span class="pre">fisherz&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.pc.estimate_skeleton" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate a skeleton graph
+Returns:</p>
+<blockquote>
+<div><p>g: a skeleton graph (as a networkx.Graph).
+sep_set: a separation set (as an 2D-array of set()).</p>
+</div></blockquote>
+<p>[Colombo2014] Diego Colombo and Marloes H Maathuis. Order-independent
+constraint-based causal structure learning. In The Journal of Machine
+Learning Research, Vol. 15, pp. 3741-3782, 2014.</p>
+</dd></dl>
+
+</section>
+<section id="module-bnsl.score">
+<span id="bnsl-score-module"></span><h2>bnsl.score module<a class="headerlink" href="#module-bnsl.score" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   score.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/9/6 14:56  
+————</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.score.BDeu_score">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.score.</span></span><span class="sig-name descname"><span class="pre">BDeu_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equivalent_sample_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.BDeu_score" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bnsl.score.MDL_score" title="bnsl.score.MDL_score"><code class="xref py py-class docutils literal notranslate"><span class="pre">bnsl.score.MDL_score</span></code></a></p>
+<p>reference pgmpy code
+<a class="reference external" href="https://pgmpy.org/_modules/pgmpy/estimators/StructureScore.html#BDsScore">https://pgmpy.org/_modules/pgmpy/estimators/StructureScore.html#BDsScore</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.score.BDeu_score.local_score">
+<span class="sig-name descname"><span class="pre">local_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.BDeu_score.local_score" title="Permalink to this definition"></a></dt>
+<dd><p>Computes a score that measures how much a         given variable is “influenced” by a given list of potential parents.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.score.BIC_score">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.score.</span></span><span class="sig-name descname"><span class="pre">BIC_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.BIC_score" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bnsl.base.Score" title="bnsl.base.Score"><code class="xref py py-class docutils literal notranslate"><span class="pre">bnsl.base.Score</span></code></a></p>
+<p>BIC is minus MDL score</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.score.BIC_score.local_score">
+<span class="sig-name descname"><span class="pre">local_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.BIC_score.local_score" title="Permalink to this definition"></a></dt>
+<dd><p>return local score</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.score.Knowledge_fused_score">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.score.</span></span><span class="sig-name descname"><span class="pre">Knowledge_fused_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bnsl.expert.Expert" title="bnsl.expert.Expert"><span class="pre">bnsl.expert.Expert</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.Knowledge_fused_score" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bnsl.base.Score" title="bnsl.base.Score"><code class="xref py py-class docutils literal notranslate"><span class="pre">bnsl.base.Score</span></code></a></p>
+<p>Knowledge fused score
+score = likelihood + log p(G|E)
+where E is fused expert matrix</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.score.Knowledge_fused_score.activation_function">
+<span class="sig-name descname"><span class="pre">activation_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'else'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.Knowledge_fused_score.activation_function" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.score.Knowledge_fused_score.get_activation_parameter">
+<span class="sig-name descname"><span class="pre">get_activation_parameter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.Knowledge_fused_score.get_activation_parameter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.score.Knowledge_fused_score.local_score">
+<span class="sig-name descname"><span class="pre">local_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.Knowledge_fused_score.local_score" title="Permalink to this definition"></a></dt>
+<dd><p>return local score</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.score.Knowledge_fused_score.multiply_epsilon">
+<span class="sig-name descname"><span class="pre">multiply_epsilon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.Knowledge_fused_score.multiply_epsilon" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.score.MDL_score">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.score.</span></span><span class="sig-name descname"><span class="pre">MDL_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.MDL_score" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bnsl.base.Score" title="bnsl.base.Score"><code class="xref py py-class docutils literal notranslate"><span class="pre">bnsl.base.Score</span></code></a></p>
+<p>MDL score, it must be a positive number. A optimal network is the network with lowest MDL score!</p>
+<p>reference:
+Lam, W., &amp; Bacchus, F. (1994). Learning Bayesian belief networks: An approach based on the MDL principle. Computational intelligence, 10(3), 269-293.
+Yuan, C., Malone, B., &amp; Wu, X. (2011, June). Learning optimal Bayesian networks using A* search. In Twenty-Second International Joint Conference on Artificial Intelligence.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.score.MDL_score.likelihood">
+<span class="sig-name descname"><span class="pre">likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Nijk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.MDL_score.likelihood" title="Permalink to this definition"></a></dt>
+<dd><dl>
+<dt>Args:</dt><dd><p>Nijk:
+while there the parent set is not None, Nijk is a table</p>
+<blockquote>
+<div><p>q1  q2  q3</p>
+</div></blockquote>
+<p>r1  10  12  30
+r2  50  60  17
+(qi are the states of parents)
+(ri are the states of variable)</p>
+<dl class="simple">
+<dt>while the parent is None, Nijk is a 1 dim array</dt><dd><p>r1  r2</p>
+</dd>
+</dl>
+<p>q   50  60</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.score.MDL_score.local_score">
+<span class="sig-name descname"><span class="pre">local_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.score.MDL_score.local_score" title="Permalink to this definition"></a></dt>
+<dd><p>calculate local score.
+MDL score = -Likelihood + log N / 2 * F.</p>
+<p>reference:
+pgmpy;
+《Learning Optimal Bayesian Networks Using A* Search》.
+:param x: name of node
+:param parents: list of parents
+:return: score</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bnsl">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bnsl" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="bnsl" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, BNSL.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

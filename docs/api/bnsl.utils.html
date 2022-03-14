@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bnsl.utils package &mdash; BNSL 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="bnsl package" href="bnsl.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> BNSL
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Bayesian%20network.html">Bayesian network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">bnsl</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="bnsl.html">bnsl package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="bnsl.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">bnsl.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl.base">bnsl.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl.bionics">bnsl.bionics module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl.cit">bnsl.cit module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl.dp">bnsl.dp module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl.estimators">bnsl.estimators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl.expert">bnsl.expert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl.graph">bnsl.graph module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl.heuristic">bnsl.heuristic module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl.k2">bnsl.k2 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl.pc">bnsl.pc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl.score">bnsl.score module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnsl.html#module-bnsl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">bnsl.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bnsl.utils.dataset">bnsl.utils.dataset module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bnsl.utils.generators">bnsl.utils.generators module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bnsl.utils.models">bnsl.utils.models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bnsl.utils.tools">bnsl.utils.tools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bnsl.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">BNSL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">bnsl</a> &raquo;</li>
+          <li><a href="bnsl.html">bnsl package</a> &raquo;</li>
+      <li>bnsl.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/bnsl.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bnsl-utils-package">
+<h1>bnsl.utils package<a class="headerlink" href="#bnsl-utils-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-bnsl.utils.dataset">
+<span id="bnsl-utils-dataset-module"></span><h2>bnsl.utils.dataset module<a class="headerlink" href="#module-bnsl.utils.dataset" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   dataset.py
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/11/2 12:27  
+————</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.utils.dataset.Dataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.utils.dataset.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.utils.dataset.Dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.utils.dataset.Dataset.generate_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.utils.dataset.Dataset.generate_data" title="Permalink to this definition"></a></dt>
+<dd><p>based on linear acyclic model, generate synthesis data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – 邻接矩阵的维度 M = d*d</p></li>
+<li><p><strong>n</strong> – 样本数目 num_of_nodes</p></li>
+<li><p><strong>noise_type</strong> – ‘Gaussian’/’non-Gaussian’</p></li>
+<li><p><strong>save</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+<p><a class="reference external" href="data:pd.DataFrame">data:pd.DataFrame</a>
+dag:np.ndarray</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.utils.dataset.Dataset.load_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.utils.dataset.Dataset.load_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bnsl.utils.generators">
+<span id="bnsl-utils-generators-module"></span><h2>bnsl.utils.generators module<a class="headerlink" href="#module-bnsl.utils.generators" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   generators.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/12/1 14:55  
+————</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.utils.generators.data_augment">
+<span class="sig-prename descclassname"><span class="pre">bnsl.utils.generators.</span></span><span class="sig-name descname"><span class="pre">data_augment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aug_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.utils.generators.data_augment" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – </p></li>
+<li><p><strong>y</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.utils.generators.dp_generate">
+<span class="sig-prename descclassname"><span class="pre">bnsl.utils.generators.</span></span><span class="sig-name descname"><span class="pre">dp_generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_of_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.utils.generators.dp_generate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.utils.generators.generator">
+<span class="sig-prename descclassname"><span class="pre">bnsl.utils.generators.</span></span><span class="sig-name descname"><span class="pre">generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.utils.generators.generator" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bnsl.utils.models">
+<span id="bnsl-utils-models-module"></span><h2>bnsl.utils.models module<a class="headerlink" href="#module-bnsl.utils.models" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   models.py
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/10/24 12:22  
+————</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bnsl.utils.models.Linear_acyclic_model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bnsl.utils.models.</span></span><span class="sig-name descname"><span class="pre">Linear_acyclic_model</span></span><a class="headerlink" href="#bnsl.utils.models.Linear_acyclic_model" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.utils.models.Linear_acyclic_model.generate_W">
+<span class="sig-name descname"><span class="pre">generate_W</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.utils.models.Linear_acyclic_model.generate_W" title="Permalink to this definition"></a></dt>
+<dd><p>随机生成一个邻接矩阵
+:param d:
+:param prob:
+:param low:
+:param high:
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.utils.models.Linear_acyclic_model.generate_data">
+<span class="sig-name descname"><span class="pre">generate_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permutate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.utils.models.Linear_acyclic_model.generate_data" title="Permalink to this definition"></a></dt>
+<dd><p>x = Wx+e
+the model described in 《A Linear Non-Gaussian Acyclic Model for Causal Discovery》
+:param noise_type:
+:param W:
+:param n: 生成数据 X(d*num_of_nodes)
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bnsl.utils.models.Linear_acyclic_model.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.utils.models.Linear_acyclic_model.run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bnsl.utils.tools">
+<span id="bnsl-utils-tools-module"></span><h2>bnsl.utils.tools module<a class="headerlink" href="#module-bnsl.utils.tools" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   tools.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/11/30 22:39  
+————</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="bnsl.utils.tools.edge2adj">
+<span class="sig-prename descclassname"><span class="pre">bnsl.utils.tools.</span></span><span class="sig-name descname"><span class="pre">edge2adj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adj_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bnsl.utils.tools.edge2adj" title="Permalink to this definition"></a></dt>
+<dd><p>convert edge csv file into adj xlsx file
+:param edge_path:
+:param nodes:
+:param adj_path:
+:return:</p>
+</dd></dl>
+
+</section>
+<section id="module-bnsl.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bnsl.utils" title="Permalink to this headline"></a></h2>
+<p>&#64;File    :   __init__.py.py    
+&#64;Contact :   <a class="reference external" href="mailto:huanghoward&#37;&#52;&#48;foxmail&#46;com">huanghoward<span>&#64;</span>foxmail<span>&#46;</span>com</a>
+&#64;Modify Time :    2021/11/2 12:27  
+————</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="bnsl.html" class="btn btn-neutral float-left" title="bnsl package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, BNSL.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
