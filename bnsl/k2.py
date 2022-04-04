@@ -38,7 +38,7 @@ def find_z(node:str,parents:list,pre:list,score_method:Score):
     score = score_method.local_score(node, parents)
     score_updated = False
     for z in possible_set:
-        new_parents = parents + list(z)
+        new_parents = parents + [z]
         s = score_method.local_score(node, new_parents)
         if s >= score:
             score = s

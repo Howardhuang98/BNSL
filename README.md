@@ -6,7 +6,7 @@ BNSL is a python library aiming help data scientists and researchers infer Bayes
 ## Here you can use:
 * Greedy hill climb
 * Simulated Annealing
-* Dynamic planning: shortest path perspective
+* Dynamic programming: shortest path perspective
 * PC algorithm
 * Genetic algorithm 
 * K2 algorithm 
