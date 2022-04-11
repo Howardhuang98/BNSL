@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 import warnings
 
+from bnsl.graph import DAG
+
 """
 用表格的方式来记录专家知识
 专家知识的表达形式：
@@ -25,8 +27,11 @@ D  0.3   0.9  0.1  0
 class Expert:
     def __init__(self, expert_data=None, expert_confidence=None):
         """
-        expert call
-        :param expert_data: a list of experts knowledge matrix[pd.DataFrame]
+        Expert class
+
+        Args:
+            expert_data: a list of experts knowledge matrix[pd.DataFrame].
+            expert_confidence: a list of confidence.
         """
         if expert_confidence is None:
             expert_confidence = [1]
@@ -52,7 +57,6 @@ class Expert:
                         e.values[j, i] = 1 / 3
 
         self.fused_matrix = self.expert_data[0].copy()
-        self.fused_matrix.loc[:, :] = 0
         for i in range(self.num_expert):
             for u in self.fused_matrix.columns:
                 for v in self.fused_matrix.columns:
@@ -73,16 +77,19 @@ class Expert:
         situation3 = 1 - situation1 - situation2
         return [situation1, situation2, situation3]
 
-    @staticmethod
-    def read(path, confidence=None):
-        if isinstance(path, str):
-            df = pd.read_csv(path, index_col=0)
-            return Expert([df], [1])
-        elif isinstance(path, list):
-            df_list = []
-            for path_str in path:
-                df_list.append(pd.read_csv(path_str, index_col=0))
-            return Expert(df_list, confidence)
+    def accuracy(self, ground_truth: DAG):
+        """
+        Calculate the accuracy of the expert's fused matrix.
+
+        Args:
+            ground_truth: the ground truth DAG instance.
+
+        Returns:
+            Accuracy value.
+
+        """
+        diff = self.fused_matrix.values - ground_truth.adj_matrix.values
+        return np.sum(diff * diff) / (diff.shape[0] ** 2)
 
 
 if __name__ == '__main__':
