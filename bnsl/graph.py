@@ -6,7 +6,6 @@
 @Modify Time :    2021/6/25 14:50
 ------------
 """
-import math
 from itertools import permutations
 
 import networkx as nx
@@ -72,14 +71,18 @@ class DAG(nx.DiGraph):
         else:
             return cycles
 
-
     def score(self, score_method, detail=False):
         """
+        Calculate the score of the DAG.
 
-        :param score_method: score criteria
-        :param data: observed data
-        :param detail: whether return a dictionary containing every local score. Default is False
-        :return: score or (score, dict)
+        Args:
+
+            score_method: score criteria instance
+            detail: return a dictionary containing every local score. Default is False.
+
+        Returns:
+            score of the DAG (or score, dict)
+
         """
         score_dict = {}
         score_list = []
@@ -100,12 +103,15 @@ class DAG(nx.DiGraph):
 
     def to_excel(self, path: str, source='source node', target='target node'):
         """
-        Save the edges of DAG in to excel file, notice that this file may lose node(s).
+        Save the DAG into excel file, notice that this file may lose node(s).
 
-        :param path: the io path to save
-        :param source: column name of source node, default as source node
-        :param target: column name of target node, default as target node
-        :return: None
+        Args:
+            path: file path.
+            source: column name of source node, default as source node.
+            target: column name of target node, default as target node.
+
+        Returns:
+            None
         """
         edge_list = self.edges
         edges_data = pd.DataFrame(columns=[source, target])
@@ -115,6 +121,18 @@ class DAG(nx.DiGraph):
         return None
 
     def to_csv(self, path: str, source='source node', target='target node'):
+        """
+        Save the DAG into csv file, notice that this file may lose node(s).
+
+        Args:
+            path: file path.
+            source: column name of source node, default as source node.
+            target: column name of target node, default as target node.
+
+        Returns:
+            None
+
+        """
         edge_list = self.edges
         edges_data = pd.DataFrame(columns=[source, target])
         for edge_pair in edge_list:
@@ -123,6 +141,15 @@ class DAG(nx.DiGraph):
         return None
 
     def to_csv_adj(self, path: str):
+        """
+        Save the DAG in format of the adjacent matrix into csv file .
+
+        Args:
+            path: file path.
+
+        Returns:
+            None
+        """
         df = nx.to_pandas_adjacency(self)
         df.to_csv(path)
         return None
@@ -133,8 +160,14 @@ class DAG(nx.DiGraph):
         SHD = FP + FN
         FP: The number of edges discovered in the learned graph that do not exist in the true graph(other)
         FN: The number of direct independence discovered in the learned graph that do not exist in the true graph.
-        :param other:
-        :return:
+
+        Args:
+
+            other: DAG
+
+        Returns:
+
+            SHD value
         """
         if isinstance(self, type(other)):
             FP = len(set(self.edges) - set(other.edges))
@@ -153,10 +186,12 @@ class DAG(nx.DiGraph):
         1       a            b
         2       a            c
        ...       ...          ...
-        :param path: io path
-        :param source: column name of source node
-        :param target: column name of target node
-        :return: DAG instance
+
+       Args:
+           path: file path.
+           source: the source node column.
+           target: the target node column.
+
         """
         if path.endswith("xlsx"):
             data = pd.read_excel(path)
@@ -184,8 +219,8 @@ class DAG(nx.DiGraph):
 
     def show(self):
         """
-        draw the figure of DAG
-        :return: None
+        Draw the figure of DAG
+
         """
         nx.draw_networkx(self)
         plt.show()
@@ -193,8 +228,7 @@ class DAG(nx.DiGraph):
 
     def summary(self):
         """
-        return a string to describe current dag.
-        :return: a description string
+        Print a summary to describe current dag.
         """
         print(
             """
@@ -208,8 +242,10 @@ class DAG(nx.DiGraph):
 
     def legal_operations(self):
         """
-        iterator, yield all legal operations like ('+', (u, v)), ('-', (u, v)), ('flip', (u, v)).
-        :return: iterable, operation ('+', (u, v))
+        Iterator, yield all legal operations like ('+', (u, v)), ('-', (u, v)), ('flip', (u, v)).
+
+        Yields:
+            operation ('+', (u, v))
         """
 
         potential_new_edges = (set(permutations(list(self.nodes), 2)) - set(self.edges()) - set(
@@ -228,32 +264,6 @@ class DAG(nx.DiGraph):
             if not any(map(lambda path: len(path) > 2, nx.all_simple_paths(self, u, v))):
                 operation = ('flip', (u, v))
                 yield operation
-
-    # def score_delta(self, operation, score_method):
-    #     opera, uv = operation[0], operation[1]
-    #     u, v = uv[0], uv[1]
-    #     s = score_method
-    #     if opera == '+':
-    #         old_parents = list(self.predecessors(v))
-    #         new_parents = old_parents + [u]
-    #         score_delta = s.local_score(v, new_parents) - s.local_score(v, old_parents)
-    #         return score_delta
-    #     if opera == '-':
-    #         old_parents = list(self.predecessors(v))
-    #         new_parents = old_parents[:]
-    #         new_parents.remove(u)
-    #         score_delta = s.local_score(v, new_parents) - s.local_score(v, old_parents)
-    #         return score_delta
-    #     if opera == 'flip':
-    #         old_v_parents = list(self.predecessors(v))
-    #         old_u_parents = list(self.predecessors(u))
-    #         new_u_parents = old_u_parents + [v]
-    #         new_v_parents = old_v_parents[:]
-    #         new_v_parents.remove(u)
-    #         score_delta = (s.local_score(v, new_v_parents) + s.local_score(u, new_u_parents) - s.local_score(v,
-    #                                                                                                          old_v_parents) - s.local_score(
-    #             u, old_u_parents))
-    #         return score_delta
 
     def do_operation(self, operation):
         if operation[0] == '+':

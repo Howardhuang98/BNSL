@@ -163,8 +163,8 @@ class GA(Estimator):
     Genetic algorithm uses genome to represent DAG, and genomes can crossover and mutate. Every iteration simulates the
     nature revolutionary process to select DAG with highest score.
 
-    References:
-        Larrañaga, P., & Poza, M. (1994). Structure learning of Bayesian networks by genetic algorithms. In New Approaches in Classification and Data Analysis (pp. 300-307). Springer, Berlin, Heidelberg.
+    References: Larrañaga, P., & Poza, M. (1994). Structure learning of Bayesian networks by genetic algorithms. In
+    New Approaches in Classification and Data Analysis (pp. 300-307). Springer, Berlin, Heidelberg.
 
     Attributes:
         history: the evolutionary history.
