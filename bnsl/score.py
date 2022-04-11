@@ -6,6 +6,8 @@
 @Modify Time :    2021/9/6 14:56  
 ------------      
 """
+from functools import lru_cache
+
 import numpy as np
 import pandas as pd
 from scipy.optimize import fsolve
@@ -58,7 +60,7 @@ class MDL_score(Score):
             likelihood = np.sum(np.log(Nijk / Nij) * Nijk)
         return likelihood
 
-    def local_score(self, x: str, parents: list):
+    def local_score(self, x: str, parents: tuple):
         """
         calculate local score.
         MDL score = -Likelihood + log N / 2 * F.
@@ -70,7 +72,7 @@ class MDL_score(Score):
         :param parents: list of parents
         :return: score
         """
-        state_count = self.state_count(x, parents)
+        state_count = self.state_count(x, list(parents))
         # if the state_count has 0 in the array, it will old_result numerical error in log(), to
         # avoid this error, add 1 on each 0 value
         state_count[state_count == 0] = 1
@@ -115,8 +117,9 @@ class Knowledge_fused_score(Score):
         self.activation_parameter = []
         self.n = data.shape[0]
 
-    def local_score(self, x, parents):
-        # likelihood = self.mdl.likelihood_score(x, parents)
+    @lru_cache(int(1e5))
+    def local_score(self, x: str, parents: tuple):
+        parents = list(parents)
         likelihood = - self.mdl.local_score(x, parents)
         log_pg = np.log(self.n) * self.activation_function(self.multiply_epsilon(x, parents), activation='else')
         return likelihood + log_pg

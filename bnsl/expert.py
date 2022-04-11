@@ -8,6 +8,7 @@
 """
 import numpy as np
 import pandas as pd
+import warnings
 
 """
 用表格的方式来记录专家知识
@@ -43,11 +44,13 @@ class Expert:
             e.values[tuple([np.arange(e.shape[0])] * 2)] = 0
             for i in range(len(e.columns)):
                 for j in range(i):
-                    if e.values[i, j] + e.values[j, i] > 1:
-                        raise ValueError(
-                            "Opinions added together cannot exceed 1! "
-                            "position: [{},{}] with value:{},{}".format(i, j, e.values[i, j],
-                                                                        e.values[j, i]))
+                    if e.values[i, j] + e.values[i, j] > 1:
+                        warnings.warn("Opinions added together cannot exceed 1! "
+                                      f"position: [{i},{j}] with value:{e.values[i, j]},{e.values[i, j]}, all of them "
+                                      f"will be corrected into 1/3")
+                        e.iloc[i, j] = 1 / 3
+                        e.values[j, i] = 1 / 3
+
         self.fused_matrix = self.expert_data[0].copy()
         self.fused_matrix.loc[:, :] = 0
         for i in range(self.num_expert):

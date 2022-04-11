@@ -14,7 +14,6 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from numpy.random import permutation
-from tqdm import tqdm
 
 from bnsl.base import Score
 
@@ -89,7 +88,7 @@ class DAG(nx.DiGraph):
         if len(self.nodes) < len(score_method.data.columns):
             self.add_nodes_from(score_method.data.columns)
         for node in self.nodes:
-            parents = list(self.predecessors(node))
+            parents = tuple(self.predecessors(node))
             score = score_method.local_score(node, parents)
             score_list.append(score)
             if detail:
@@ -230,31 +229,31 @@ class DAG(nx.DiGraph):
                 operation = ('flip', (u, v))
                 yield operation
 
-    def score_delta(self, operation, score_method):
-        opera, uv = operation[0], operation[1]
-        u, v = uv[0], uv[1]
-        s = score_method
-        if opera == '+':
-            old_parents = list(self.predecessors(v))
-            new_parents = old_parents + [u]
-            score_delta = s.local_score(v, new_parents) - s.local_score(v, old_parents)
-            return score_delta
-        if opera == '-':
-            old_parents = list(self.predecessors(v))
-            new_parents = old_parents[:]
-            new_parents.remove(u)
-            score_delta = s.local_score(v, new_parents) - s.local_score(v, old_parents)
-            return score_delta
-        if opera == 'flip':
-            old_v_parents = list(self.predecessors(v))
-            old_u_parents = list(self.predecessors(u))
-            new_u_parents = old_u_parents + [v]
-            new_v_parents = old_v_parents[:]
-            new_v_parents.remove(u)
-            score_delta = (s.local_score(v, new_v_parents) + s.local_score(u, new_u_parents) - s.local_score(v,
-                                                                                                             old_v_parents) - s.local_score(
-                u, old_u_parents))
-            return score_delta
+    # def score_delta(self, operation, score_method):
+    #     opera, uv = operation[0], operation[1]
+    #     u, v = uv[0], uv[1]
+    #     s = score_method
+    #     if opera == '+':
+    #         old_parents = list(self.predecessors(v))
+    #         new_parents = old_parents + [u]
+    #         score_delta = s.local_score(v, new_parents) - s.local_score(v, old_parents)
+    #         return score_delta
+    #     if opera == '-':
+    #         old_parents = list(self.predecessors(v))
+    #         new_parents = old_parents[:]
+    #         new_parents.remove(u)
+    #         score_delta = s.local_score(v, new_parents) - s.local_score(v, old_parents)
+    #         return score_delta
+    #     if opera == 'flip':
+    #         old_v_parents = list(self.predecessors(v))
+    #         old_u_parents = list(self.predecessors(u))
+    #         new_u_parents = old_u_parents + [v]
+    #         new_v_parents = old_v_parents[:]
+    #         new_v_parents.remove(u)
+    #         score_delta = (s.local_score(v, new_v_parents) + s.local_score(u, new_u_parents) - s.local_score(v,
+    #                                                                                                          old_v_parents) - s.local_score(
+    #             u, old_u_parents))
+    #         return score_delta
 
     def do_operation(self, operation):
         if operation[0] == '+':

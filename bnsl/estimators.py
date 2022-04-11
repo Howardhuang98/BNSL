@@ -247,7 +247,6 @@ class KBNL(Estimator):
         arguments = [kwargs for i in range(worker)]
         with Pool(processes=worker) as pool:
             result = pool.map(_process, arguments)
-        print([dag.calculated_score for dag in result])
         i = np.argmax([dag.calculated_score for dag in result])
         self.result = result[i]
         return self.result

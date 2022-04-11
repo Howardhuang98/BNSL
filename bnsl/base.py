@@ -126,11 +126,11 @@ class Score(ABC):
             state_counts = self.data.groupby(x).size()
         return state_counts
 
-    @abstractmethod
     def local_score(self, x, parents):
         """
         return local score
         """
+        pass
 
     def all_score(self, dag, detail=True):
         """

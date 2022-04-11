@@ -62,8 +62,8 @@ class HillClimb:
                         old_parents = list(self.dag.predecessors(v))
                         new_parents = old_parents[:]
                         new_parents.remove(u)
-                        score_delta = self.s.local_score(v, new_parents) - self.s.local_score(v,
-                                                                                              old_parents)
+                        score_delta = self.s.local_score(v, tuple(new_parents)) - self.s.local_score(v,
+                                                                                                     tuple(old_parents))
                         yield operation, score_delta
 
                     if not any(map(lambda path: len(path) > 2, nx.all_simple_paths(self.dag, u, v))):
@@ -74,9 +74,9 @@ class HillClimb:
                             new_u_parents = old_u_parents + [v]
                             new_v_parents = old_v_parents[:]
                             new_v_parents.remove(u)
-                            score_delta = (self.s.local_score(v, new_v_parents) + self.s.local_score(u,
-                                                                                                     new_u_parents) - self.s.local_score(
-                                v, old_v_parents) - self.s.local_score(u, old_u_parents))
+                            score_delta = (self.s.local_score(v, tuple(new_v_parents)) + self.s.local_score(u,
+                                                                                                     tuple(new_u_parents)) - self.s.local_score(
+                                v, tuple(old_v_parents)) - self.s.local_score(u, tuple(old_u_parents)))
                             yield operation, score_delta
                 else:
                     if not nx.has_path(self.dag, v, u):
@@ -84,8 +84,8 @@ class HillClimb:
                         if operation not in self.tabu_list:
                             old_parents = list(self.dag.predecessors(v))
                             new_parents = old_parents + [u]
-                            score_delta = self.s.local_score(v, new_parents) - self.s.local_score(v,
-                                                                                                  old_parents)
+                            score_delta = self.s.local_score(v, tuple(new_parents)) - self.s.local_score(v,
+                                                                                                  tuple(old_parents))
                             yield operation, score_delta
 
     def climb(self, direction='up'):
