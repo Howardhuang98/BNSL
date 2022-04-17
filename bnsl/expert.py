@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import warnings
 
-from bnsl.graph import DAG
+from .graph import DAG
 
 """
 用表格的方式来记录专家知识

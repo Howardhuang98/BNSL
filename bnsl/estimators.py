@@ -10,14 +10,14 @@ from multiprocessing import Pool
 
 import numpy as np
 
-from bnsl.base import Estimator
-from bnsl.bionics import Genetic
-from bnsl.dp import generate_order_graph, generate_parent_graph, order2dag
-from bnsl.expert import Expert
-from bnsl.heuristic import HillClimb, SimulatedAnnealing
-from bnsl.pc import *
-from bnsl.score import BIC_score, MDL_score, Knowledge_fused_score
-from bnsl.k2 import order_to_dag
+from .base import Estimator
+from .bionics import Genetic
+from .dp import generate_order_graph, generate_parent_graph, order2dag
+from .expert import Expert
+from .heuristic import HillClimb, SimulatedAnnealing
+from .pc import *
+from .score import BIC_score, MDL_score, Knowledge_fused_score
+from .k2 import order_to_dag
 
 
 class DP(Estimator):

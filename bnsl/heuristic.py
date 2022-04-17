@@ -17,8 +17,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from bnsl.graph import DAG
-from bnsl.score import Score, BIC_score
+from .graph import DAG
+from .score import Score, BIC_score
 
 
 class HillClimb:

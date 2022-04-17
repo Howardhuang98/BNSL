@@ -14,7 +14,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from numpy.random import permutation
 
-from bnsl.base import Score
+from .base import Score
 
 
 def acc(dag, true_dag):
