@@ -35,3 +35,5 @@ class Test_graph(unittest.TestCase):
         bic = BIC_score(data)
         print(self.asia_net.score(bic))
 
+
+

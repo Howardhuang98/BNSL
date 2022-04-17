@@ -25,7 +25,7 @@ D  0.3   0.9  0.1  0
 
 
 class Expert:
-    def __init__(self, expert_data=None, expert_confidence=None):
+    def __init__(self, expert_data=[pd.DataFrame], expert_confidence=None):
         """
         Expert class
 
@@ -49,14 +49,15 @@ class Expert:
             e.values[tuple([np.arange(e.shape[0])] * 2)] = 0
             for i in range(len(e.columns)):
                 for j in range(i):
-                    if e.values[i, j] + e.values[i, j] > 1:
+                    if e.values[i, j] + e.values[j, i] > 1:
                         warnings.warn("Opinions added together cannot exceed 1! "
-                                      f"position: [{i},{j}] with value:{e.values[i, j]},{e.values[i, j]}, all of them "
+                                      f"position: [{i},{j}] [{j},{i}]with value:{e.values[i, j]},{e.values[i, j]}, all of them "
                                       f"will be corrected into 1/3")
                         e.iloc[i, j] = 1 / 3
-                        e.values[j, i] = 1 / 3
+                        e.iloc[j, i] = 1 / 3
 
         self.fused_matrix = self.expert_data[0].copy()
+        self.fused_matrix.iloc[:] = 0
         for i in range(self.num_expert):
             for u in self.fused_matrix.columns:
                 for v in self.fused_matrix.columns:
@@ -77,7 +78,7 @@ class Expert:
         situation3 = 1 - situation1 - situation2
         return [situation1, situation2, situation3]
 
-    def accuracy(self, ground_truth: DAG):
+    def norm_distance(self, ground_truth: DAG):
         """
         Calculate the accuracy of the expert's fused matrix.
 
@@ -88,19 +89,41 @@ class Expert:
             Accuracy value.
 
         """
-        diff = self.fused_matrix.values - ground_truth.adj_matrix.values
-        return np.sum(diff * diff) / (diff.shape[0] ** 2)
+        diff = self.fused_matrix.values - ground_truth.adj_matrix
+        return np.linalg.norm(diff)
 
 
 if __name__ == '__main__':
-    # chen_data = pd.DataFrame({
-    #     "A": [0, 0.8, 0.7, 0.3],
-    #     "B": [0.1, 0, 0.9, 0.9],
-    #     "C": [0.3, 0.05, 0, 0.1],
-    #     "D": [0.3, 0.1, 0.1, 0]
-    # }, index=["A", "B", "C", "D"])
-    # chen = Expert(data=chen_data)
-    # print(chen.think("A", "B"))
-    data = pd.read_csv(r"../datasets/asian/Asian.csv")
-    expert = Expert.random_init(data)
-    print(expert.data)
+    a = np.matrix([
+        [0, 1, 1],
+        [0, 0, 1],
+        [0, 0, 0]]
+    )
+    a1 = np.matrix([
+        [0, 0, 1],
+        [0, 0, 0],
+        [0, 0, 0]]
+    )
+    a2 = np.matrix([
+        [0, 0, 1/3],
+        [0, 0, 0],
+        [0, 0, 0]]
+    )
+    b = np.matrix([
+        [0, 1 / 3, 1 / 3],
+        [1 / 3, 0, 1 / 3],
+        [1 / 3, 1 / 3, 0]]
+    )
+    c = np.matrix([
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]]
+    )
+    d = np.array([1, 0, 0])
+    e = np.array([1 / 3, 1 / 3, 1 / 3])
+    f = np.array([0, 0, 1])
+    print(np.sum((a-c)*(a-c)))
+    print(np.linalg.norm(a1 - c))
+    print(np.linalg.norm(a2 - c))
+    print(np.linalg.norm(b-c))
+    print(np.linalg.norm(c-c))

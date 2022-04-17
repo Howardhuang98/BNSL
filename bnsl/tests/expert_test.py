@@ -8,20 +8,20 @@
 """
 import unittest
 
-import pandas as pd
-
 from bnsl.expert import Expert
+from bnsl.graph import DAG
 
 
 class Test_Expert(unittest.TestCase):
+    def setUp(self) -> None:
+        self.g = DAG()
+        self.g.read("./test_data/Asian_net.csv")
+        self.truth = self.g.adj_DataFrame()
 
-    def test_expert(self):
-        a = pd.read_excel(r"../../bnsl/tests/test_result.xlsx", index_col=0)
-        b = pd.read_excel(r"../../bnsl/tests/test_expert.xlsx", index_col=0)
-        e = Expert([a, b], [0.3, 0.7])
-        print(e.think('dysp', 'xray'))
-        print(e.fused_matrix)
-
-    def test_read_excel(self):
-        e = Expert.read_excel([r"test_result.xlsx", r"test_expert.xlsx"], [0.3, 0.7])
-        print(e.fused_matrix)
+    def test_read(self):
+        e = Expert([self.truth], [1])
+        print(e.accuracy(self.g))
+        self.truth = self.truth.applymap(lambda x: 0)
+        print(self.truth)
+        e = Expert([self.truth], [1])
+        print(e.accuracy(self.g))

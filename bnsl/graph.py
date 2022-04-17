@@ -31,6 +31,11 @@ def acc(dag, true_dag):
     return (TP + TN) / (FP + FN + TP + TN)
 
 
+def norm_distance(dag, true_dag):
+    diff = dag.adj_matrix - true_dag.adj_matrix
+    return np.linalg.norm(diff)
+
+
 class DAG(nx.DiGraph):
     """
     The graph class used in this project, inherited class nx.DiGraph.
