@@ -9,8 +9,8 @@
 import itertools
 from typing import List
 
-from BNSL.bnsl.base import Score
-from BNSL.bnsl.graph import DAG
+from ..base import Score
+from ..graph import DAG
 
 
 def order2graph(order: List, score_method: Score):
