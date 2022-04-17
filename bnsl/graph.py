@@ -44,15 +44,17 @@ class DAG(nx.DiGraph):
 
     def __init__(self, incoming_graph_data=None, **kwargs):
         """
-
-        :param incoming_graph_data: input graph (optional, default: None). Data to initialize graph. If None (
-        default) an empty graph is created. The data can be any format that is supported by the to_networkx_graph()
-        function, currently including edge list, dict of dicts, dict of lists, NetworkX graph, NumPy matrix or 2d
-        ndarray, SciPy sparse matrix, or PyGraphviz graph.
-        :param kwargs:
+        Initialize a DAG instance.
 
         for example:
         dag = DAG()
+
+        Args:
+            incoming_graph_data: input graph (optional, default: None). Data to initialize graph. If None (
+            default) an empty graph is created. The data can be any format that is supported by the to_networkx_graph()
+            function, currently including edge list, dict of dicts, dict of lists, NetworkX graph, NumPy matrix or 2d
+            ndarray, SciPy sparse matrix, or PyGraphviz graph.
+            **kwargs:
         """
         super(DAG, self).__init__(incoming_graph_data, **kwargs)
         cycle = self._check_cycle()
@@ -63,11 +65,13 @@ class DAG(nx.DiGraph):
             raise ValueError(out_str)
         self.calculated_score = None
 
-    def _check_cycle(self):
+    def _check_cycle(self) -> bool:
         """
-        Also known as "has cycle(s)"
-        :return: False if there is no cycle
-                 node list if there is cycle
+        Check cycles.
+
+        Returns:
+            False if there is no cycle, node list if there is cycle
+
         """
         try:
             cycles = list(nx.find_cycle(self))
@@ -316,6 +320,7 @@ class DAG(nx.DiGraph):
             if parent_list.size == 0:
                 self.add_node(v)
         return self
+
 
 
 if __name__ == '__main__':
