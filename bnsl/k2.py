@@ -7,11 +7,23 @@
 ------------      
 """
 import pandas as pd
-from bnsl.graph import DAG
-from bnsl.base import Score
+from .graph import DAG
+from .base import Score
 
 
 def order_to_dag(order, u: int, score_method: Score):
+    """
+    Convert a order list into DAG.
+
+    Args:
+        order: an order list of nodes.
+        u: upper bond of number of parents
+        score_method: score instance
+
+    Returns:
+        a DAG.
+
+    """
     dag = DAG()
     for i in range(len(order)):
         node = order[i]
@@ -23,7 +35,7 @@ def order_to_dag(order, u: int, score_method: Score):
             parents = []
             while flag and len(parents) <= u:
                 try:
-                    parents = find_z(node,parents,pre,score_method)
+                    parents = find_z(node, parents, pre, score_method)
                 except ValueError:
                     flag = False
             if parents:
@@ -32,10 +44,9 @@ def order_to_dag(order, u: int, score_method: Score):
     return dag
 
 
-
-def find_z(node:str,parents:list,pre:list,score_method:Score):
-    possible_set = set(pre)-set(parents)
-    score = score_method.local_score(node, parents)
+def find_z(node: str, parents: list, pre: list, score_method: Score):
+    possible_set = set(pre) - set(parents)
+    score = score_method.local_score(node, tuple(parents))
     score_updated = False
     for z in possible_set:
         new_parents = parents + [z]
@@ -48,9 +59,3 @@ def find_z(node:str,parents:list,pre:list,score_method:Score):
         return parents
     else:
         raise ValueError
-
-
-
-
-
-

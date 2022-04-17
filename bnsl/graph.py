@@ -322,8 +322,3 @@ class DAG(nx.DiGraph):
         return self
 
 
-
-if __name__ == '__main__':
-    g = DAG()
-    g.from_genome([1, 1, 1, 0, 1, 0], ['a', 'b', 'c', 'd'])
-    print(g.genome)
