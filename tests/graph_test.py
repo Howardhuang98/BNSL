@@ -8,14 +8,14 @@
 """
 import copy
 import unittest
-from bnsl.graph import DAG, compare
-from bnsl.score import BIC_score
+import bnsl
+from bnsl.graph import compare, random_dag
 
 
 class Test_graph(unittest.TestCase):
 
     def setUp(self):
-        self.Asian = DAG()
+        self.Asian = bnsl.DAG()
         self.Asian.read(r"../datasets/asian/Asian_net.csv")
         self.Asian.summary()
 
@@ -24,13 +24,16 @@ class Test_graph(unittest.TestCase):
         self.Asian.save(r"./test_data/test_save_adjacent_matrix.csv", mode='adjacent_matrix')
 
     def test_read(self):
-        g = DAG()
+        g = bnsl.DAG()
         g.read(r"./test_data/test_save_adjacent_matrix.csv", mode='adjacent_matrix')
         g.summary()
 
-    def test_compare(self):
+    def test_compare_and_random_dag(self):
         other = copy.deepcopy(self.Asian)
         other.remove_edge('asia', 'tub')
         metrics = compare(self.Asian, other)
         print(metrics)
-
+        node_list = list(self.Asian.nodes)
+        dag = random_dag(node_list)
+        metrics = compare(self.Asian, dag)
+        print(metrics)

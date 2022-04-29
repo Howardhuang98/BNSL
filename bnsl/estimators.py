@@ -19,44 +19,6 @@ from .pc import *
 from .score import BIC_score, MDL_score, Knowledge_fused_score
 from .k2 import order_to_dag
 
-
-class DP(Estimator):
-    """ Dynamic planning estimator.
-
-    Dynamic planning algorithm is an exact algorithm, might consume long time.
-    reference: 《Learning Optimal Bayesian Networks: A Shortest Path Perspective》
-
-    Attributes:
-        data: observed data.
-
-    """
-
-    def __init__(self, data):
-        """
-        Initialize the DP estimator.
-
-        Args:
-            data: observed data.
-        """
-        super(DP, self).__init__()
-        self.load_data(data)
-
-    def run(self, score_method=MDL_score):
-        """
-        Run the dynamic program estimator.
-
-        Args:
-            score_method: score function.
-
-        Returns:
-            A DAG instance.
-        """
-        pg = generate_parent_graph(self.data, score_method)
-        og = generate_order_graph(self.data, pg)
-        self.result = order2dag(og, self.data)
-        return self.result
-
-
 class HC(Estimator):
     """
     Greedy hill climb estimator.
@@ -115,6 +77,44 @@ class HC(Estimator):
         i = np.argmax([dag.calculated_score for dag in result])
         self.result = result[i]
         return self.result
+
+
+class DP(Estimator):
+    """ Dynamic planning estimator.
+
+    Dynamic planning algorithm is an exact algorithm, might consume long time.
+    reference: 《Learning Optimal Bayesian Networks: A Shortest Path Perspective》
+
+    Attributes:
+        data: observed data.
+
+    """
+
+    def __init__(self, data):
+        """
+        Initialize the DP estimator.
+
+        Args:
+            data: observed data.
+        """
+        super(DP, self).__init__()
+        self.load_data(data)
+
+    def run(self, score_method=MDL_score):
+        """
+        Run the dynamic program estimator.
+
+        Args:
+            score_method: score function.
+
+        Returns:
+            A DAG instance.
+        """
+        pg = generate_parent_graph(self.data, score_method)
+        og = generate_order_graph(self.data, pg)
+        self.result = order2dag(og, self.data)
+        return self.result
+
 
 
 def _process(arguments):

@@ -6,6 +6,7 @@
 @Modify Time :    2021/6/25 14:50
 ------------
 """
+import random
 from itertools import permutations
 
 import networkx as nx
@@ -34,9 +35,33 @@ def compare(dag, true_dag):
     accuracy = (TP + TN) / (FP + FN + TP + TN)
     precision = TP / (TP + FP)
     recall = TP / (TP + FN)
-    SHD = np.sum(np.absolute(dag.adj_np - true_dag.adj_np))
-    norm = np.linalg.norm(dag.adj_np - true_dag.adj_np)
+    node_list = dag.nodes
+    SHD = np.sum(np.absolute(dag.adj_np(node_list=node_list) - true_dag.adj_np(node_list=node_list)))
+    norm = np.linalg.norm(dag.adj_np(node_list=node_list) - true_dag.adj_np(node_list=node_list))
     return {'accuracy': accuracy, 'precision': precision, 'recall': recall, 'SHD': SHD, 'norm': norm}
+
+
+def random_dag(node_list):
+    """
+    Randomly generate DAG instance.
+
+    Args:
+        node_list: node list.
+
+    Returns:
+        A dag
+    """
+    dag = DAG()
+    random.shuffle(node_list)
+    for i in range(1, len(node_list)):
+        num_par = np.random.randint(0, i + 1)
+        par = random.sample(node_list[:i], num_par)
+        if not par:
+            dag.add_node(node_list[i])
+        else:
+            for p in par:
+                dag.add_edge(p, node_list[i])
+    return dag
 
 
 class DAG(nx.DiGraph):
@@ -199,7 +224,7 @@ class DAG(nx.DiGraph):
                 for u, v in self.edges:
                     f.write(str(u) + "," + str(v) + "\n")
         elif mode == 'adjacent_matrix':
-            self.adj_df.to_csv(path)
+            self.adj_df().to_csv(path)
 
     def show(self):
         """
@@ -252,29 +277,26 @@ class DAG(nx.DiGraph):
             self.add_edge(v, u)
         return None
 
-    @property
-    def adj_np(self):
+    def adj_np(self, node_list=None):
         """
         The adjacent matrix in the form of np.array of DAG.
 
         Returns:
             np.array
         """
-        return nx.to_numpy_array(self, dtype=int)
+        return nx.to_numpy_array(self, dtype=int, nodelist=node_list)
 
-    @property
-    def adj_df(self, **kwargs):
+    def adj_df(self, node_list=None):
         """
         The adjacent matrix in the form of pd.Dataframe of DAG.
         Args:
-            **kwargs:
+            node_list:
 
         Returns:
             pd.Dataframe
         """
-        return nx.to_pandas_adjacency(self, **kwargs,dtype=int)
+        return nx.to_pandas_adjacency(self, dtype=int, nodelist=node_list)
 
-    @property
     def genome(self):
         """
         The genome of DAG

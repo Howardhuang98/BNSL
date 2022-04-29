@@ -8,6 +8,7 @@
 """
 import random
 import sys
+import warnings
 from copy import deepcopy
 from itertools import product
 from math import exp
@@ -19,6 +20,7 @@ from tqdm import tqdm
 
 from .graph import DAG
 from .score import Score, BIC_score
+from .graph import random_dag
 
 
 class HillClimb:
@@ -27,50 +29,56 @@ class HillClimb:
     """
 
     def __init__(self, data: pd.DataFrame, Score_method: Score = BIC_score, initial_dag: DAG = None, max_iter=100,
-                 restart=1, explore_num=1, num_parents=5, **kwargs):
+                 restart=1, explore_num=3, num_parents=5):
+        """
+        Hill climb search in score-based algorithm.
+        """
         self.data = data
+        self.nodes = list(data.columns.values)
+        self.n_samples = len(data)
+
         if not isinstance(Score_method, Score):
             raise ValueError("Score method has to be Score instance")
         self.s = Score_method
+
         if initial_dag:
             self.dag = initial_dag
         else:
-            self.dag = DAG()
-        self.vars = list(data.columns.values)
-        self.dag.add_nodes_from(self.vars)
+            self.dag = random_dag(self.nodes)
         self.tabu_list = []
         self.max_iter = max_iter
         self.restart = restart
         self.explore_num = explore_num
-        self.kwargs = kwargs
+        if explore_num > len(self.nodes):
+            warnings.warn("Explore number exceeds the node number")
         self.num_parents = num_parents
-        self.score_result = None
+        self.history = []
 
-    def possible_operation(self, node_list=[]):
+    def possible_operation(self, dag, node_list):
         """
         iterator, yield possible operation for a node list.
         :param: node_list, the node list will be explored
         :return: possible operation for one node
         """
         for node in node_list:
-            potential_new_edges = set(product([node], self.dag.nodes)) | set(product(self.dag.nodes, [node]))
+            potential_new_edges = set(product([node], dag.nodes)) | set(product(dag.nodes, [node]))
             potential_new_edges -= {(node, node)}
             for u, v in potential_new_edges:
-                if (u, v) in [(a, b) for a, b in self.dag.edges]:
+                if (u, v) in [(a, b) for a, b in dag.edges]:
                     operation = ('-', (u, v))
                     if operation not in self.tabu_list:
-                        old_parents = list(self.dag.predecessors(v))
+                        old_parents = list(dag.predecessors(v))
                         new_parents = old_parents[:]
                         new_parents.remove(u)
                         score_delta = self.s.local_score(v, tuple(new_parents)) - self.s.local_score(v,
                                                                                                      tuple(old_parents))
                         yield operation, score_delta
 
-                    if not any(map(lambda path: len(path) > 2, nx.all_simple_paths(self.dag, u, v))):
+                    if not any(map(lambda path: len(path) > 2, nx.all_simple_paths(dag, u, v))):
                         operation = ('flip', (u, v))
                         if operation not in self.tabu_list:
-                            old_v_parents = list(self.dag.predecessors(v))
-                            old_u_parents = list(self.dag.predecessors(u))
+                            old_v_parents = list(dag.predecessors(v))
+                            old_u_parents = list(dag.predecessors(u))
                             new_u_parents = old_u_parents + [v]
                             new_v_parents = old_v_parents[:]
                             new_v_parents.remove(u)
@@ -79,10 +87,10 @@ class HillClimb:
                                 v, tuple(old_v_parents)) - self.s.local_score(u, tuple(old_u_parents)))
                             yield operation, score_delta
                 else:
-                    if not nx.has_path(self.dag, v, u):
+                    if not nx.has_path(dag, v, u):
                         operation = ('+', (u, v))
                         if operation not in self.tabu_list:
-                            old_parents = list(self.dag.predecessors(v))
+                            old_parents = list(dag.predecessors(v))
                             new_parents = old_parents + [u]
                             score_delta = self.s.local_score(v, tuple(new_parents)) - self.s.local_score(v,
                                                                                                   tuple(old_parents))
@@ -94,46 +102,49 @@ class HillClimb:
         :param direction: the direction of search, up or down
         :return: a DAG instance
         """
+
         result = []
-        self.score_result = []
         for i in range(self.restart):
             if i != 0:
-                self.dag.remove_edges_from([e for e in self.dag.edges])
-                self.dag.random_dag(num_parents=self.num_parents)
+                temp = random_dag(self.nodes)
+            else:
+                temp = deepcopy(self.dag)
+            scores = [temp.score(self.s)]
             for _ in range(self.max_iter):
                 # randomly select a node list
-                node_list = random.sample(list(self.dag.nodes), self.explore_num)
+                node_list = random.choices(self.nodes, k=self.explore_num)
                 sys.stdout.write(f"\r {_}-th hill climbing")
                 sys.stdout.flush()
                 if direction == 'up':
                     sys.stdout.write(f"\r {_}-th hill climbing: exploring {node_list}")
                     sys.stdout.flush()
-                    best_operation, score_delta = max(self.possible_operation(node_list), key=lambda x: x[1])
+                    best_operation, score_delta = max(self.possible_operation(temp,node_list), key=lambda x: x[1])
                     if score_delta < 0:
                         break
-                if direction == 'down':
-                    best_operation, score_delta = min(self.possible_operation(node_list), key=lambda x: x[1])
+                else:
+                    best_operation, score_delta = min(self.possible_operation(temp,node_list), key=lambda x: x[1])
                     if score_delta > 0:
                         break
                 if best_operation[0] == '+':
-                    self.tabu_list.append(('-', best_operation[1]))
-                    self.dag.add_edge(*best_operation[1])
+                    temp.add_edge(*best_operation[1])
                 if best_operation[0] == '-':
                     self.tabu_list.append(('+', best_operation[1]))
-                    self.dag.remove_edge(*best_operation[1])
+                    temp.remove_edge(*best_operation[1])
                 if best_operation[0] == 'flip':
                     self.tabu_list.append(('flip', best_operation[1]))
                     u, v = best_operation[1]
-                    self.dag.remove_edge(u, v)
-                    self.dag.add_edge(v, u)
-            result.append(deepcopy(self.dag))
-            score = result[-1].score(self.s)
-            print(f"\r {i}-th restarting found dag with score: {score}")
-            self.score_result.append(score)
+                    temp.remove_edge(u, v)
+                    temp.add_edge(v, u)
+                scores.append(scores[-1]+score_delta)
+            self.history.append(scores)
+            temp_score = temp.score(self.s)
+            result.append((temp,temp_score))
+            print(f"\r {i}-th restarting found dag with score: {temp_score}")
+
         if direction == 'up':
-            self.dag = result[np.argmax(self.score_result)]
+            self.dag = max(result,key=lambda x:x[1])
         if direction == 'down':
-            self.dag = result[np.argmin(self.score_result)]
+            self.dag = min(result,key=lambda x:x[1])
         return self.dag
 
 
