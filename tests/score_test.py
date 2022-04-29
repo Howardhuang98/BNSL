@@ -35,8 +35,9 @@ class Test_Score(unittest.TestCase):
         l2c = bnsl.L2C_score(self.data, k)
         # mdl tub-->asia 265.13
         print("l2c")
+        print(l2c.K)
         print(l2c.local_score("asia", ("tub",)))
-        print(l2c.local_score("asia", ()))
+        #print(l2c.local_score("asia", ()))
 
     def test_kfscore(self):
         e1 = pd.read_csv(r"test_data/asia_expert0.csv", index_col=0)
@@ -44,5 +45,6 @@ class Test_Score(unittest.TestCase):
         expert = Expert([e1,e2],[0.5,0.5])
         kfs = bnsl.Knowledge_fused_score(self.data,expert)
         print("kfs")
+        print(expert.fused_matrix)
         print(kfs.local_score("asia", ("tub",)))
-        print(kfs.local_score("asia", ()))
+        #print(kfs.local_score("asia", ()))

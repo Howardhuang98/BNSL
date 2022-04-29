@@ -131,12 +131,13 @@ class L2C_score(Score):
         first_second_part = self.bic.local_score(x, parents)
         p = []
         for node in self.node_list:
+            thinks = [self.K.loc[node][x],self.K.loc[x][node],1-self.K.loc[node][x]-self.K.loc[x][node]]
             if node in parents:
-                p.append(self.K.loc[node][x])
+                p.append(thinks[0])
             elif node == x:
                 continue
             else:
-                p.append(self.K.loc[node][x] + self.K.loc[x][node])
+                p.append(thinks[1]+thinks[2])
 
         third_part = np.log(self.n) * self.activation_function(sum(p))
         return first_second_part + third_part
