@@ -89,7 +89,7 @@ class Expert:
             Accuracy value.
 
         """
-        diff = self.fused_matrix.values - ground_truth.adj_matrix
+        diff = self.fused_matrix.values - ground_truth.adj_np
         return np.linalg.norm(diff)
 
 

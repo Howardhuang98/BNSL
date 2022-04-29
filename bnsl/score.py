@@ -18,11 +18,12 @@ from .expert import Expert
 
 class MDL_score(Score):
     """
-    MDL score, it must be a positive number. A optimal network is the network with lowest MDL score!
+    MDL score.
 
     reference:
-    Lam, W., & Bacchus, F. (1994). Learning Bayesian belief networks: An approach based on the MDL principle. Computational intelligence, 10(3), 269-293.
-    Yuan, C., Malone, B., & Wu, X. (2011, June). Learning optimal Bayesian networks using A* search. In Twenty-Second International Joint Conference on Artificial Intelligence.
+
+        Lam, W., & Bacchus, F. (1994). Learning Bayesian belief networks: An approach based on the MDL principle. Computational intelligence, 10(3), 269-293.
+        Yuan, C., Malone, B., & Wu, X. (2011, June). Learning optimal Bayesian networks using A* search. In Twenty-Second International Joint Conference on Artificial Intelligence.
     """
 
     def __init__(self, data: pd.DataFrame):
@@ -30,23 +31,19 @@ class MDL_score(Score):
 
     def likelihood(self, Nijk: np.ndarray):
         """
-
-        Args:
-            Nijk:
-            while there the parent set is not None, Nijk is a table
+        Calculate the likelihood.
+        ::
+            Nijk is a table-like array.
                 q1  q2  q3
             r1  10  12  30
             r2  50  60  17
             (qi are the states of parents)
-            (ri are the states of variable)
+            (ri are the states of x)
 
-            while the parent is None, Nijk is a 1 dim array
-                r1  r2
-            q   50  60
-
-
+        Args:
+            Nijk: state table
         Returns:
-
+            likelihood.
         """
         # There is parent
         if Nijk.ndim > 1:
@@ -62,16 +59,19 @@ class MDL_score(Score):
 
     def local_score(self, x: str, parents: tuple):
         """
-        calculate local score.
-        MDL score = -Likelihood + log N / 2 * F.
+        Calculate local score.
 
-        reference:
-        pgmpy;
-        《Learning Optimal Bayesian Networks Using A* Search》.
-        :param x: name of node
-        :param parents: list of parents
-        :return: score
+        References:
+            Kitson, N.K., Constantinou, A.C., Guo, Z., Liu, Y. and Chobtham, K., 2021. A survey of Bayesian Network structure learning. arXiv preprint arXiv:2109.11415.
+
+        Args:
+            x: str: Node.
+            parents: tuple: Parents of node.
+
+        Returns:
+            float: Local score
         """
+
         state_count = self.state_count(x, list(parents))
         # if the state_count has 0 in the array, it will old_result numerical error in log(), to
         # avoid this error, add 1 on each 0 value
@@ -91,7 +91,7 @@ class MDL_score(Score):
 
 class BIC_score(Score):
     """
-    BIC is minus MDL score
+    BIC score class, BIC score is minus MDL score.
     """
 
     def __init__(self, data: pd.DataFrame, **kwargs):
@@ -99,15 +99,23 @@ class BIC_score(Score):
         self.mdl = MDL_score(data)
 
     def local_score(self, x, parents):
+        """
+        Calculate local score of BIC score.
+
+        Args:
+            x: str: node
+            parents: tuple: parents of node.
+
+        Returns:
+            BIC score
+        """
         score = - self.mdl.local_score(x, parents)
         return score
 
 
 class Knowledge_fused_score(Score):
     """
-    Knowledge fused score
-    score = likelihood + log p(G|E)
-    where E is fused expert matrix
+    Knowledge fused score where score = likelihood + log p(G|E) + log p(G).
     """
 
     def __init__(self, data: pd.DataFrame, expert: Expert):
@@ -119,9 +127,19 @@ class Knowledge_fused_score(Score):
 
     @lru_cache(int(1e5))
     def local_score(self, x: str, parents: tuple):
-        parents = list(parents)
+        """
+        Calculate local score.
+
+        Args:
+            x: node.
+            parents: parents of node.
+
+        Returns:
+            Knowledge fused score.
+
+        """
         likelihood = - self.mdl.local_score(x, parents)
-        log_pg = np.log(self.n) * self.activation_function(self.multiply_epsilon(x, parents), activation='else')
+        log_pg = np.log(self.n) * self.activation_function(self.multiply_epsilon(x, parents))
         return likelihood + log_pg
 
     def multiply_epsilon(self, x, parents):
@@ -140,51 +158,39 @@ class Knowledge_fused_score(Score):
                 E += thinks[2] + thinks[1]
         return E
 
-    def activation_function(self, x, activation="else"):
-        if activation == "cubic":
-            parameters = self.get_activation_parameter()
-            y = parameters[0] * x ** 3 + parameters[1] * (x ** 2) + parameters[2] * x + parameters[3]
-        if activation == "else":
-            n = len(self.data.columns)
-            zero_point = (1 / 3) * (n - 1)
-            if x < zero_point:
-                y = 0
-            else:
-                y = 10 * (x - zero_point)
-        return y
-
-    def get_activation_parameter(self):
+    def activation_function(self, x):
         n = len(self.data.columns)
-        zero_point = (1 / 3) ** (n - 1)
-
-        def func(i, z):
-            a, b, c, d = i[0], i[1], i[2], i[3]
-            return [
-                a * z ** 3 + b * z ** 2 + c * z + d,
-                3 * a * z ** 2 + 2 * b * z + c,
-                a + b + c + d - 1000000,
-                3 * a + 2 * b + c - 10000000
-            ]
-
-        r = fsolve(func, x0=[0, 0, 0, 0], args=zero_point)
-        return r
+        zero_point = (1 / 3) * (n - 1)
+        if x < zero_point:
+            y = 0
+        else:
+            y = 10 * (x - zero_point)
+        return y
 
 
 class BDeu_score(MDL_score):
     """
-    reference pgmpy code
-    https://pgmpy.org/_modules/pgmpy/estimators/StructureScore.html#BDsScore
+    BDeu score.
     """
 
     def __init__(self, data: pd.DataFrame, equivalent_sample_size=10, **kwargs):
         super(BDeu_score, self).__init__(data)
         self.equivalent_sample_size = np.float_(equivalent_sample_size)
 
-    def local_score(self, variable, parents):
-        'Computes a score that measures how much a \
-        given variable is "influenced" by a given list of potential parents.'
+    def local_score(self, x, parents):
+        """
+        Calculate local score.
 
-        state_count = self.state_count(variable, parents)
+        Args:
+            x: node.
+            parents: parents of node.
+
+        Returns:
+            BDeu score.
+
+        """
+        parents = list(parents)
+        state_count = self.state_count(x, parents)
         state_count[state_count == 0] = 1
         Nijk = np.asarray(state_count, dtype=np.float_)
         Nij = np.sum(Nijk, axis=0, dtype=np.float_)

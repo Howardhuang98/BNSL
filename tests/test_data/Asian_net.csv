@@ -1,9 +1,0 @@
-﻿source node,target node
-asia,tub
-tub,either
-smoke,lung
-lung,either
-smoke,bronc
-bronc,dysp
-either,dysp
-either,xray

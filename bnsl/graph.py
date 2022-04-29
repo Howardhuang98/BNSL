@@ -12,28 +12,31 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from numpy.random import permutation
 
 from .base import Score
 
 
-def acc(dag, true_dag):
+def compare(dag, true_dag):
     """
+    Compare two dag.
 
-    :param true_dag:
-    :param dag:
-    :return:
+    Args:
+        dag: DAG instance, usually predicted DAG.
+        true_dag: DAG instance, the ground truth DAG.
+
+    Returns:
+        dict: a dict containing accuracy, precision, recall, SHD, norm
     """
     FP = len(set(dag.edges) - set(true_dag.edges))
     FN = len(set(true_dag.edges) - set(dag.edges))
     TP = len(set(true_dag.edges) & set(dag.edges))
     TN = (len(dag.nodes) ** 2 - len(dag.nodes)) - FP - FN - TP
-    return (TP + TN) / (FP + FN + TP + TN)
-
-
-def norm_distance(dag, true_dag):
-    diff = dag.adj_matrix - true_dag.adj_matrix
-    return np.linalg.norm(diff)
+    accuracy = (TP + TN) / (FP + FN + TP + TN)
+    precision = TP / (TP + FP)
+    recall = TP / (TP + FN)
+    SHD = np.sum(np.absolute(dag.adj_np - true_dag.adj_np))
+    norm = np.linalg.norm(dag.adj_np - true_dag.adj_np)
+    return {'accuracy': accuracy, 'precision': precision, 'recall': recall, 'SHD': SHD, 'norm': norm}
 
 
 class DAG(nx.DiGraph):
@@ -65,13 +68,12 @@ class DAG(nx.DiGraph):
             raise ValueError(out_str)
         self.calculated_score = None
 
-    def _check_cycle(self) -> bool:
+    def _check_cycle(self):
         """
         Check cycles.
 
         Returns:
             False if there is no cycle, node list if there is cycle
-
         """
         try:
             cycles = list(nx.find_cycle(self))
@@ -91,7 +93,6 @@ class DAG(nx.DiGraph):
 
         Returns:
             score of the DAG (or score, dict)
-
         """
         score_dict = {}
         score_list = []
@@ -109,59 +110,6 @@ class DAG(nx.DiGraph):
         if detail:
             return self.calculated_score, score_dict
         return self.calculated_score
-
-    def to_excel(self, path: str, source='source node', target='target node'):
-        """
-        Save the DAG into excel file, notice that this file may lose node(s).
-
-        Args:
-            path: file path.
-            source: column name of source node, default as source node.
-            target: column name of target node, default as target node.
-
-        Returns:
-            None
-        """
-        edge_list = self.edges
-        edges_data = pd.DataFrame(columns=[source, target])
-        for edge_pair in edge_list:
-            edges_data.loc[edges_data.shape[0]] = {source: edge_pair[0], target: edge_pair[1]}
-        edges_data.to_excel(path)
-        return None
-
-    def to_csv(self, path: str, source='source node', target='target node'):
-        """
-        Save the DAG into csv file, notice that this file may lose node(s).
-
-        Args:
-            path: file path.
-            source: column name of source node, default as source node.
-            target: column name of target node, default as target node.
-
-        Returns:
-            None
-
-        """
-        edge_list = self.edges
-        edges_data = pd.DataFrame(columns=[source, target])
-        for edge_pair in edge_list:
-            edges_data.loc[edges_data.shape[0]] = {source: edge_pair[0], target: edge_pair[1]}
-        edges_data.to_csv(path)
-        return None
-
-    def to_csv_adj(self, path: str):
-        """
-        Save the DAG in format of the adjacent matrix into csv file .
-
-        Args:
-            path: file path.
-
-        Returns:
-            None
-        """
-        df = nx.to_pandas_adjacency(self)
-        df.to_csv(path)
-        return None
 
     def __sub__(self, other):
         """
@@ -186,45 +134,72 @@ class DAG(nx.DiGraph):
         else:
             raise ValueError("cannot subtract DAG instance with other instance")
 
-    def read(self, path: str, source='source node', target='target node'):
+    def read(self, path: str, mode='edge_list', source='source node', target='target node'):
         """
-        Notice: file only contain edges, the DAG instance may lose isolated nodes.
-        here we need excel written in this format:
+        Read DAG from csv file.There are two modes: edge_list, adjacent_matrix.
 
-            source node   target node
-        1       a            b
-        2       a            c
-       ...       ...          ...
+        In the `edge_list` mode, the csv file looks like:
+        ::
 
-       Args:
-           path: file path.
-           source: the source node column.
-           target: the target node column.
+            source node,target node
+            asia,tub
+            tub,either
+            either,dysp
+            either,xray
 
+        In the `adjacent_matrix` mode, the csv file looks like:
+        ::
+
+            ,asia,tub,either,smoke,lung,bronc,dysp,xray
+            asia,0,1,0,0,0,0,0,0
+            tub,0,0,1,0,0,0,0,0
+            either,0,0,0,0,0,0,1,1
+            smoke,0,0,0,0,1,1,0,0
+            lung,0,0,1,0,0,0,0,0
+            bronc,0,0,0,0,0,0,1,0
+            dysp,0,0,0,0,0,0,0,0
+            xray,0,0,0,0,0,0,0,0
+
+        Args:
+            path: file path.
+            mode: `edge_list` mode or `adjacent_matrix` mode.
+            source: the source node column.
+            target: the target node column.
         """
-        if path.endswith("xlsx"):
-            data = pd.read_excel(path)
-        elif path.endswith("csv"):
+        if not path.endswith("csv"):
+            raise ValueError("BNSL only supports csv files.")
+
+        if mode == 'edge_list':
             data = pd.read_csv(path)
+            edge_list = []
+            for row_tuple in data.iterrows():
+                u = row_tuple[1][source]
+                v = row_tuple[1][target]
+                edge_list.append((u, v))
+            self.add_edges_from(edge_list)
+        elif mode == 'adjacent_matrix':
+            data = pd.read_csv(path, index_col=0)
+            self.add_nodes_from(data.columns)
+            edges = ((data.columns[int(e[0])], data.columns[int(e[1])]) for e in zip(*data.values.nonzero()))
+            self.add_edges_from(edges)
         else:
-            raise ValueError()
-        edge_list = []
-        for row_tuple in data.iterrows():
-            u = row_tuple[1][source]
-            v = row_tuple[1][target]
-            edge_list.append((u, v))
-        self.add_edges_from(edge_list)
-        return self
+            raise ValueError("Mode error!")
 
-    def read_DataFrame_adjacency(self, path: str):
-        if path.endswith("xlsx"):
-            df = pd.read_excel(path, index_col=0)
-        elif path.endswith("csv"):
-            df = pd.read_csv(path, index_col=0)
-        self.add_nodes_from(df.columns)
-        edges = ((df.columns[int(e[0])], df.columns[int(e[1])]) for e in zip(*df.values.nonzero()))
-        self.add_edges_from(edges)
-        return self
+    def save(self, path: str, mode='edge_list'):
+        """
+        Save the DAG into csv file.
+
+        Args:
+            path: file path.
+            mode: `edge_list` mode or `adjacent_matrix` mode.
+        """
+        if mode == 'edge_list':
+            with open(path, "w") as f:
+                f.write("source node,target node\n")
+                for u, v in self.edges:
+                    f.write(str(u) + "," + str(v) + "\n")
+        elif mode == 'adjacent_matrix':
+            self.adj_df.to_csv(path)
 
     def show(self):
         """
@@ -239,15 +214,7 @@ class DAG(nx.DiGraph):
         """
         Print a summary to describe current dag.
         """
-        print(
-            """
-            DAG summary:
-            Number of nodes: {},
-            Number of edges: {},
-            Adjacency matrix: {},
-            
-            """.format(len(self.nodes), len(self.edges), self.adj_matrix)
-        )
+        print(f"DAG summary:\nNumber of nodes: {len(self.nodes)}\nNumber of edges: {len(self.edges)}\n")
 
     def legal_operations(self):
         """
@@ -286,39 +253,33 @@ class DAG(nx.DiGraph):
         return None
 
     @property
-    def adj_matrix(self):
-        return nx.to_numpy_array(self, dtype=int)
+    def adj_np(self):
+        """
+        The adjacent matrix in the form of np.array of DAG.
 
-    def adj_DataFrame(self, **kwargs):
-        return nx.to_pandas_adjacency(self, **kwargs)
+        Returns:
+            np.array
+        """
+        return nx.to_numpy_array(self, dtype=int)
 
     @property
     def adj_df(self, **kwargs):
-        return nx.to_pandas_adjacency(self, **kwargs)
+        """
+        The adjacent matrix in the form of pd.Dataframe of DAG.
+        Args:
+            **kwargs:
+
+        Returns:
+            pd.Dataframe
+        """
+        return nx.to_pandas_adjacency(self, **kwargs,dtype=int)
 
     @property
     def genome(self):
-        return self.adj_matrix.flatten()
+        """
+        The genome of DAG
 
-    def random_dag(self, nodes=None, seed=None, num_parents=None):
-        if not num_parents:
-            num_parents = len(self.nodes)
-        if seed:
-            np.random.seed(seed)
-        if nodes is not None:
-            nodes = permutation(nodes)
-            num_parents = len(nodes)
-        else:
-            self.remove_edges_from([i for i in self.edges])
-            nodes = permutation(list(self.nodes))
-        for i in range(len(nodes)):
-            v = nodes[i]
-            num_parents = np.random.randint(0, num_parents + 1)
-            parent_list = permutation(nodes[i + 1:])[:num_parents]
-            for pa in parent_list:
-                self.add_edge(pa, v)
-            if parent_list.size == 0:
-                self.add_node(v)
-        return self
-
-
+        Returns:
+            np.array
+        """
+        return self.adj_np.flatten()

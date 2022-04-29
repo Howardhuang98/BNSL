@@ -6,34 +6,31 @@
 @Modify Time :    2021/12/30 18:32  
 ------------      
 """
+import copy
 import unittest
-
-import pandas as pd
-
-from bnsl.graph import DAG
+from bnsl.graph import DAG, compare
 from bnsl.score import BIC_score
 
 
 class Test_graph(unittest.TestCase):
 
     def setUp(self):
-        dag = DAG()
-        self.asia_net = dag.read(r"../../datasets/asian/Asian_net.csv")
+        self.Asian = DAG()
+        self.Asian.read(r"../datasets/asian/Asian_net.csv")
+        self.Asian.summary()
 
-    def test_to_excel_DataFrame(self):
-        dag = DAG()
-        dag.read(r"../../datasets/asian/Asian net.xlsx")
-        dag.to_excel_DataFrame("test_result.csv")
+    def test_save(self):
+        self.Asian.save(r"./test_data/test_save_edge_list.csv")
+        self.Asian.save(r"./test_data/test_save_adjacent_matrix.csv", mode='adjacent_matrix')
 
-    def test_read_DataFrame_adjacency(self):
-        dag = DAG()
-        dag.read_DataFrame_adjacency("test_result.csv")
-        self.assertEqual(len(dag.edges), 8)
+    def test_read(self):
+        g = DAG()
+        g.read(r"./test_data/test_save_adjacent_matrix.csv", mode='adjacent_matrix')
+        g.summary()
 
-    def test_score(self):
-        data = pd.read_csv(r"../../datasets/asian/Asian.csv")
-        bic = BIC_score(data)
-        print(self.asia_net.score(bic))
-
-
+    def test_compare(self):
+        other = copy.deepcopy(self.Asian)
+        other.remove_edge('asia', 'tub')
+        metrics = compare(self.Asian, other)
+        print(metrics)
 

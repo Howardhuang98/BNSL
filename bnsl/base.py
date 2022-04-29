@@ -59,7 +59,7 @@ class Estimator(ABC):
         print("=========Estimator Information=========")
         print(self.data.head(3))
         print("Recover the BN with {} variables".format(len(self.data.columns)))
-        print("old_result:\n{}".format(self.result.adj_matrix))
+        print("old_result:\n{}".format(self.result.adj_np))
 
     @abstractmethod
     def run(self):
@@ -107,7 +107,7 @@ class Score(ABC):
         q1
         q2
 
-        :param x: variable name
+        :param x: x name
         :param parents: list include str
         :return:
         """

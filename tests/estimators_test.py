@@ -18,7 +18,7 @@ from bnsl.score import MDL_score, BIC_score
 
 class Test_estimator(unittest.TestCase):
     """
-    sample0.xlsx has the same value for E, F variable, thus there should be an edge between E and F, but
+    sample0.xlsx has the same value for E, F x, thus there should be an edge between E and F, but
     unable to determine the direction.
     """
 
