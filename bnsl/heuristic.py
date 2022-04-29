@@ -83,7 +83,8 @@ class HillClimb:
                             new_v_parents = old_v_parents[:]
                             new_v_parents.remove(u)
                             score_delta = (self.s.local_score(v, tuple(new_v_parents)) + self.s.local_score(u,
-                                                                                                     tuple(new_u_parents)) - self.s.local_score(
+                                                                                                            tuple(
+                                                                                                                new_u_parents)) - self.s.local_score(
                                 v, tuple(old_v_parents)) - self.s.local_score(u, tuple(old_u_parents)))
                             yield operation, score_delta
                 else:
@@ -93,7 +94,8 @@ class HillClimb:
                             old_parents = list(dag.predecessors(v))
                             new_parents = old_parents + [u]
                             score_delta = self.s.local_score(v, tuple(new_parents)) - self.s.local_score(v,
-                                                                                                  tuple(old_parents))
+                                                                                                         tuple(
+                                                                                                             old_parents))
                             yield operation, score_delta
 
     def climb(self, direction='up'):
@@ -118,11 +120,11 @@ class HillClimb:
                 if direction == 'up':
                     sys.stdout.write(f"\r {_}-th hill climbing: exploring {node_list}")
                     sys.stdout.flush()
-                    best_operation, score_delta = max(self.possible_operation(temp,node_list), key=lambda x: x[1])
+                    best_operation, score_delta = max(self.possible_operation(temp, node_list), key=lambda x: x[1])
                     if score_delta < 0:
                         break
                 else:
-                    best_operation, score_delta = min(self.possible_operation(temp,node_list), key=lambda x: x[1])
+                    best_operation, score_delta = min(self.possible_operation(temp, node_list), key=lambda x: x[1])
                     if score_delta > 0:
                         break
                 if best_operation[0] == '+':
@@ -135,16 +137,16 @@ class HillClimb:
                     u, v = best_operation[1]
                     temp.remove_edge(u, v)
                     temp.add_edge(v, u)
-                scores.append(scores[-1]+score_delta)
+                scores.append(scores[-1] + score_delta)
             self.history.append(scores)
             temp_score = temp.score(self.s)
-            result.append((temp,temp_score))
+            result.append((temp, temp_score))
             print(f"\r {i}-th restarting found dag with score: {temp_score}")
 
         if direction == 'up':
-            self.dag = max(result,key=lambda x:x[1])
+            self.dag = max(result, key=lambda x: x[1])[0]
         if direction == 'down':
-            self.dag = min(result,key=lambda x:x[1])
+            self.dag = min(result, key=lambda x: x[1])[0]
         return self.dag
 
 

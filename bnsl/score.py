@@ -6,6 +6,7 @@
 @Modify Time :    2021/9/6 14:56  
 ------------      
 """
+import math
 from functools import lru_cache
 
 import numpy as np
@@ -57,6 +58,7 @@ class MDL_score(Score):
             likelihood = np.sum(np.log(Nijk / Nij) * Nijk)
         return likelihood
 
+    @lru_cache(int(1e6))
     def local_score(self, x: str, parents: tuple):
         """
         Calculate local score.
@@ -111,6 +113,42 @@ class BIC_score(Score):
         """
         score = - self.mdl.local_score(x, parents)
         return score
+
+
+class L2C_score(Score):
+    def __init__(self, data: pd.DataFrame, K: pd.DataFrame):
+        super(L2C_score, self).__init__(data)
+        self.data = data
+        self.n = len(data)
+        self.node_list = list(self.data.columns)
+        self.K = K
+        if len(set(self.data.columns) - set(self.K.columns)) != 0 or len(
+                set(self.K.columns) - set(self.data.columns)) != 0:
+            raise ValueError("Observed data and K do not consist with nodes")
+        self.bic = BIC_score(data)
+
+    def local_score(self, x, parents):
+        first_second_part = self.bic.local_score(x, parents)
+        p = []
+        for node in self.node_list:
+            if node in parents:
+                p.append(self.K.loc[node][x])
+            elif node == x:
+                continue
+            else:
+                p.append(self.K.loc[node][x] + self.K.loc[x][node])
+
+        third_part = np.log(self.n) * self.activation_function(sum(p))
+        return first_second_part + third_part
+
+    def activation_function(self, x):
+        l = len(self.node_list)
+        zero_point = (1 / 3) * (l - 1)
+        if x < zero_point:
+            y = 0
+        else:
+            y = 10 * (x - zero_point)
+        return y
 
 
 class Knowledge_fused_score(Score):

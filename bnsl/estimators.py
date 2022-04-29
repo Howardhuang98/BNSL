@@ -7,9 +7,12 @@
 ------------      
 """
 from multiprocessing import Pool
+from typing import List
 
 import numpy as np
+import pandas as pd
 
+import bnsl
 from .base import Estimator
 from .bionics import Genetic
 from .dp import generate_order_graph, generate_parent_graph, order2dag
@@ -18,6 +21,7 @@ from .heuristic import HillClimb, SimulatedAnnealing
 from .pc import *
 from .score import BIC_score, MDL_score, Knowledge_fused_score
 from .k2 import order_to_dag
+
 
 class HC(Estimator):
     """
@@ -114,7 +118,6 @@ class DP(Estimator):
         og = generate_order_graph(self.data, pg)
         self.result = order2dag(og, self.data)
         return self.result
-
 
 
 def _process(arguments):
@@ -260,4 +263,28 @@ class K2(Estimator):
 
     def run(self):
         self.result = order_to_dag(self.order, 3, self.score_method)
+        return self.result
+
+
+class L2C(Estimator):
+    def __init__(self, data: pd.DataFrame, E: List, c: List):
+        super(L2C, self).__init__()
+        self.load_data(data)
+        self.E = E
+        self.c = c
+        E_primer = []
+        for i in range(len(self.E)):
+            E_primer.append(self.c[i] * (self.E[i] + 1 / 3) / 2)
+        self.K = E_primer[0]
+        for u in self.K.index:
+            for v in self.K.columns:
+                for i in range(1, len(self.E)):
+                    self.K.loc[u][v] = (self.K.loc[u][v]+E_primer[i].loc[u][v])/2
+        self.l2c_score = bnsl.L2C_score(self.data, self.K)
+
+    def run(self, initial_dag=None, max_iter=10000, restart=1, explore_num=5,
+            **kwargs):
+        hc = HillClimb(self.data, self.l2c_score, initial_dag=initial_dag, max_iter=max_iter,
+                       restart=restart, explore_num=explore_num)
+        self.result = hc.climb()
         return self.result

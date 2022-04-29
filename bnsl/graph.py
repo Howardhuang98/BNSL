@@ -34,8 +34,11 @@ def compare(dag, true_dag):
     TN = (len(dag.nodes) ** 2 - len(dag.nodes)) - FP - FN - TP
     accuracy = (TP + TN) / (FP + FN + TP + TN)
     precision = TP / (TP + FP)
-    recall = TP / (TP + FN)
-    node_list = dag.nodes
+    if TP + FN == 0:
+        recall = 0
+    else:
+        recall = TP / (TP + FN)
+    node_list = true_dag.nodes
     SHD = np.sum(np.absolute(dag.adj_np(node_list=node_list) - true_dag.adj_np(node_list=node_list)))
     norm = np.linalg.norm(dag.adj_np(node_list=node_list) - true_dag.adj_np(node_list=node_list))
     return {'accuracy': accuracy, 'precision': precision, 'recall': recall, 'SHD': SHD, 'norm': norm}
@@ -191,9 +194,6 @@ class DAG(nx.DiGraph):
             source: the source node column.
             target: the target node column.
         """
-        if not path.endswith("csv"):
-            raise ValueError("BNSL only supports csv files.")
-
         if mode == 'edge_list':
             data = pd.read_csv(path)
             edge_list = []
