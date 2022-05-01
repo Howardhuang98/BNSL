@@ -21,18 +21,24 @@ from tqdm import tqdm
 from .graph import DAG
 from .score import Score, BIC_score
 from .graph import random_dag
-
+from .log import bnsl_log
 
 class HillClimb:
     """
-    Hill climb search class
+    Hill climb search algorithm.
+
+    Args:
+        data: pd.DataFrame: observed data.
+        Score_method: Score: score method instance.
+        initial_dag: DAG: initial dag.
+        max_iter: int: maximum iteration times.
+        restart: int: number of restart.
+        num_explore: int: number of explored nodes.
+        num_parents: int: number of parents.
     """
 
     def __init__(self, data: pd.DataFrame, Score_method: Score = BIC_score, initial_dag: DAG = None, max_iter=100,
-                 restart=1, explore_num=3, num_parents=5):
-        """
-        Hill climb search in score-based algorithm.
-        """
+                 restart=1, num_explore=3, num_parents=5):
         self.data = data
         self.nodes = list(data.columns.values)
         self.n_samples = len(data)
@@ -44,12 +50,12 @@ class HillClimb:
         if initial_dag:
             self.dag = initial_dag
         else:
-            self.dag = random_dag(self.nodes)
+            self.dag = random_dag(self.nodes, num_parents)
         self.tabu_list = []
         self.max_iter = max_iter
         self.restart = restart
-        self.explore_num = explore_num
-        if explore_num > len(self.nodes):
+        self.explore_num = num_explore
+        if num_explore > len(self.nodes):
             warnings.warn("Explore number exceeds the node number")
         self.num_parents = num_parents
         self.history = []
@@ -108,7 +114,7 @@ class HillClimb:
         result = []
         for i in range(self.restart):
             if i != 0:
-                temp = random_dag(self.nodes)
+                temp = random_dag(self.nodes, self.num_parents)
             else:
                 temp = deepcopy(self.dag)
             scores = [temp.score(self.s)]
@@ -127,6 +133,7 @@ class HillClimb:
                     best_operation, score_delta = min(self.possible_operation(temp, node_list), key=lambda x: x[1])
                     if score_delta > 0:
                         break
+                bnsl_log.info(f"{_}-th iteration: best operation: {best_operation}, score delta: {score_delta}")
                 if best_operation[0] == '+':
                     temp.add_edge(*best_operation[1])
                 if best_operation[0] == '-':

@@ -44,12 +44,13 @@ def compare(dag, true_dag):
     return {'accuracy': accuracy, 'precision': precision, 'recall': recall, 'SHD': SHD, 'norm': norm}
 
 
-def random_dag(node_list):
+def random_dag(node_list, num_parents=None):
     """
     Randomly generate DAG instance.
 
     Args:
         node_list: node list.
+        num_parents: number of parents
 
     Returns:
         A dag
@@ -57,7 +58,10 @@ def random_dag(node_list):
     dag = DAG()
     random.shuffle(node_list)
     for i in range(1, len(node_list)):
-        num_par = np.random.randint(0, i + 1)
+        if not num_parents:
+            num_par = np.random.randint(0, i + 1)
+        else:
+            num_par = min(np.random.randint(0, num_parents), i)
         par = random.sample(node_list[:i], num_par)
         if not par:
             dag.add_node(node_list[i])

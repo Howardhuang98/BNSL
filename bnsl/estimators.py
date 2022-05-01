@@ -59,7 +59,7 @@ class HC(Estimator):
         """
         s = score_method(self.data, **kwargs)
         hc = HillClimb(self.data, s, initial_dag=initial_dag, max_iter=max_iter,
-                       restart=restart, explore_num=explore_num)
+                       restart=restart, num_explore=explore_num)
         self.result = hc.climb(direction)
         return self.result
 
@@ -238,7 +238,7 @@ class KBNL(Estimator):
         """
         s = Knowledge_fused_score(self.data, self.expert)
         hc = HillClimb(self.data, s, initial_dag=initial_dag, max_iter=max_iter,
-                       restart=restart, explore_num=explore_num, **kwargs)
+                       restart=restart, num_explore=explore_num, **kwargs)
         self.result = hc.climb()
         return self.result
 
@@ -285,6 +285,6 @@ class L2C(Estimator):
     def run(self, initial_dag=None, max_iter=10000, restart=1, explore_num=5,
             **kwargs):
         hc = HillClimb(self.data, self.l2c_score, initial_dag=initial_dag, max_iter=max_iter,
-                       restart=restart, explore_num=explore_num)
+                       restart=restart, num_explore=explore_num)
         self.result = hc.climb()
         return self.result
