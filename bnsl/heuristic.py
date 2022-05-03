@@ -16,12 +16,14 @@ from math import exp
 import networkx as nx
 import numpy as np
 import pandas as pd
+import scipy
 from tqdm import tqdm
 
 from .graph import DAG
 from .score import Score, BIC_score
 from .graph import random_dag
 from .log import bnsl_log
+
 
 class HillClimb:
     """
@@ -180,6 +182,97 @@ class SimulatedAnnealing:
             T *= k
         self.dag = current_dag
         return self.dag
+
+
+class Genetic:
+
+    def __init__(self, score_method: Score, population=40, c1=0.5, c2=0.5, w=0.05, num_parents=5, max_iter=10000):
+        self.score_method = score_method
+        self.pop = population
+        self.c1 = c1
+        self.c2 = c2
+        self.w = w
+        self.num_parents = num_parents
+        self.max_iter = max_iter
+        self.data = self.score_method.data
+        self.nodes = list(self.data.columns)
+        self.god = pd.DataFrame(columns=["genome", "score"])
+
+    def start(self):
+        for i in range(self.pop):
+            sys.stdout.write(f"\rGenerating {i}-th genome")
+            sys.stdout.flush()
+            genome, g = self.generate_genome()
+            score = g.score(self.score_method)
+            self.god.loc[i, "genome"] = genome
+            self.god.loc[i, "score"] = score
+            self.god.sort_values(by=['score'], ascending=False, inplace=True)
+            self.god.reset_index(inplace=True, drop=True)
+
+    def crossover(self):
+        children = pd.DataFrame(columns=["genome", "score"])
+        for i in range(self.god.shape[0]):
+            x = self.god.loc[i, "genome"]
+            y_i = random.choice(self.god.index)
+            y = self.god.loc[y_i, "genome"]
+            child = [random.choice([x_gene, y_gene]) for x_gene, y_gene in zip(x, y)]
+            new_genome = np.asarray(child, dtype=int)
+            adj = new_genome.reshape((len(self.nodes), len(self.nodes)))
+            h = np.trace(scipy.linalg.expm(adj))
+            if h < 1e-2:
+                g = self.genome_to_dag(new_genome)
+                score = g.score(self.score_method)
+                row = children.shape[0]
+                children.loc[row, "genome"] = new_genome
+                children.loc[row, "score"] = score
+                print(f"\rAdd a new child with {score}")
+                pd.concat([self.god, children], ignore_index=True)
+                self.god.sort_values(by=['score'], ascending=False, inplace=True)
+                self.god.reset_index(inplace=True, drop=True)
+
+    def add_pop(self, n):
+        new = pd.DataFrame(columns=["genome", "score"])
+        for i in range(n):
+            genome, g = self.generate_genome()
+            score = g.score(self.score_method)
+            row = new.shape[0]
+            new.loc[row, "genome"] = genome
+            new.loc[row, "score"] = score
+        self.god = pd.concat([self.god, new], ignore_index=True)
+        self.god.sort_values(by=['score'], ascending=False, inplace=True)
+        self.god.reset_index(inplace=True, drop=True)
+
+    def select(self, k):
+        probability = [(self.god.shape[0] - (i + 1)) / ((self.god.shape[0] - 1) * self.god.shape[0] / 2) for i in
+                       self.god.index]
+        selected = np.random.choice(self.god.index, size=k, replace=False, p=probability)
+        mask = self.god.index.isin(selected)
+        self.god = self.god.loc[mask]
+        self.god.reset_index(inplace=True, drop=True)
+
+    def generate_genome(self):
+        g = random_dag(self.nodes, self.num_parents)
+        genome = g.genome()
+        return genome, g
+
+    def genome_to_dag(self, genome):
+        g = DAG()
+        adj = genome.reshape(shape=(len(self.nodes), len(self.nodes)))
+        g.add_nodes_from(self.nodes)
+        edges = [(self.nodes[e[0]], self.nodes[e[1]]) for e in zip(*adj.nonzero())]
+        g.add_edges_from(edges)
+        return g
+
+    def evolution(self):
+        self.start()
+        print("\nIteration\tNumber of genome\tHighest score")
+        for _ in range(self.max_iter):
+            now_pop, n = self.god.shape[0], int(self.god.shape[0] / 2)
+            sys.stdout.write(f"\r{_}\t\t\t{now_pop}\t\t\t\t\t{self.god.loc[0, 'score']:>6f}")
+            sys.stdout.flush()
+            self.select(n)
+            self.crossover()
+            self.add_pop(now_pop - n)
 
 
 if __name__ == '__main__':
