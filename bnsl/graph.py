@@ -31,17 +31,16 @@ def compare(dag, true_dag):
     FP = len(set(dag.edges) - set(true_dag.edges))
     FN = len(set(true_dag.edges) - set(dag.edges))
     TP = len(set(true_dag.edges) & set(dag.edges))
+    # The TN might be wrong.
     TN = (len(dag.nodes) ** 2 - len(dag.nodes)) - FP - FN - TP
     accuracy = (TP + TN) / (FP + FN + TP + TN)
     precision = TP / (TP + FP)
-    if TP + FN == 0:
-        recall = 0
-    else:
-        recall = TP / (TP + FN)
+    recall = TP / (TP + FN)
+    F1 = recall * precision * 2 / (precision + recall)
     node_list = true_dag.nodes
     SHD = np.sum(np.absolute(dag.adj_np(node_list=node_list) - true_dag.adj_np(node_list=node_list)))
     norm = np.linalg.norm(dag.adj_np(node_list=node_list) - true_dag.adj_np(node_list=node_list))
-    return {'accuracy': accuracy, 'precision': precision, 'recall': recall, 'SHD': SHD, 'norm': norm}
+    return {'accuracy': accuracy, 'precision': precision, 'recall': recall, 'f1': F1, 'SHD': SHD, 'norm': norm}
 
 
 def random_dag(node_list, num_parents=None):

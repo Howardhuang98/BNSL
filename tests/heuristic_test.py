@@ -8,7 +8,6 @@
 """
 import unittest
 
-import pandas as pd
 
 import bnsl
 from bnsl.heuristic import HillClimb
@@ -22,7 +21,7 @@ class Test_HillClimb(unittest.TestCase):
         self.bic = bnsl.BIC_score(self.data)
 
     def test_climb(self):
-        hc = HillClimb(self.data, self.bic, max_iter=5, restart=3,num_explore=5)
+        hc = HillClimb(self.data, self.bic, max_iter=5, restart=3, num_explore=5)
         hc.climb()
         for h in hc.history:
             print(h)
