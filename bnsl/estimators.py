@@ -274,11 +274,11 @@ class L2C(Estimator):
         self.c = c
         E_primer = []
         for i in range(len(self.E)):
-            E_primer.append(self.c[i] * (self.E[i] + 1 / 3) / 2)
+            E_primer.append(self.c[i] * self.E[i])
         self.K = E_primer[0]
-        for u in self.K.index:
-            for v in self.K.columns:
-                for i in range(1, len(self.E)):
+        for i in range(1, len(self.E)):
+            for u in self.K.index:
+                for v in self.K.columns:
                     self.K.loc[u][v] = (self.K.loc[u][v]+E_primer[i].loc[u][v])/2
         self.l2c_score = bnsl.L2C_score(self.data, self.K)
 
