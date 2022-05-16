@@ -11,14 +11,14 @@ import unittest
 import pandas as pd
 
 import bnsl
-from bnsl.estimators import L2C, HC
+from bnsl.estimators import L2C, HC, DP
 from bnsl.graph import compare
 
 
 class Test_estimator(unittest.TestCase):
 
     def setUp(self):
-        self.data = pd.read_csv(r"test_data/Asia.csv")[:50]
+        self.data = pd.read_csv(r"test_data/Asia.csv")[:2000]
         self.Asian = bnsl.DAG()
         self.Asian.read(r"test_data/test_save_edge_list.csv")
 
@@ -26,6 +26,11 @@ class Test_estimator(unittest.TestCase):
         hc = HC(self.data)
         hc.run()
         print(compare(hc.result, self.Asian))
+
+    def test_dp(self):
+        dp = DP(self.data)
+        dp.run()
+        print(compare(dp.result, self.Asian))
 
     def test_l2c(self):
         e0 = pd.read_csv(r"test_data/asia_expert0.csv", index_col=0)

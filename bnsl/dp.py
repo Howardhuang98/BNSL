@@ -19,6 +19,7 @@ reference:
 Learning Optimal Bayesian Networks: A Shortest Path Perspective
 """
 
+
 def sort_tuple(t: tuple):
     l = list(t)
     l.sort()
@@ -55,7 +56,7 @@ def generate_parent_graph(data: pd.DataFrame, score_method=MDL_score):
 
 
 def calculate_best_score(x, parents, x_parent_graph, score_instance):
-    best_score = score_instance.local_score(str(x), list(parents))
+    best_score = score_instance.local_score(str(x), tuple(parents))
     if len(parents) > 0:
         for ancestor in itertools.combinations(parents, len(parents) - 1):
             ancestor = sort_tuple(ancestor)
@@ -88,6 +89,11 @@ def query_best_structure(variable, parents, parent_graph):
             if x_parent_graph[tuple(ancestor)] == best_score:
                 structure = ancestor
     return structure
+
+
+def a_star(order_graph, data):
+    path = nx.astar_path(order_graph, weight='weight', source=tuple(), target=sort_tuple(tuple(data.columns)))
+    return path
 
 
 def order2dag(order_graph, data):
