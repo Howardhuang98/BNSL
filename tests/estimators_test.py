@@ -11,7 +11,7 @@ import unittest
 import pandas as pd
 
 import bnsl
-from bnsl.estimators import L2C, HC, DP
+from bnsl.estimators import L2C, HC, DP, GA
 from bnsl.graph import compare
 
 
@@ -26,6 +26,12 @@ class Test_estimator(unittest.TestCase):
         hc = HC(self.data)
         hc.run()
         print(compare(hc.result, self.Asian))
+
+    def test_ga(self):
+        ga = GA(self.data,max_iter=5)
+        ga.run()
+        print(compare(ga.result, self.Asian))
+
 
     def test_dp(self):
         dp = DP(self.data)

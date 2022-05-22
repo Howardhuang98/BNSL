@@ -56,6 +56,7 @@ def random_dag(node_list, num_parents=None):
     """
     dag = DAG()
     random.shuffle(node_list)
+    dag.add_nodes_from(node_list)
     for i in range(1, len(node_list)):
         if not num_parents:
             num_par = np.random.randint(0, i + 1)
@@ -63,7 +64,7 @@ def random_dag(node_list, num_parents=None):
             num_par = min(np.random.randint(0, num_parents), i)
         par = random.sample(node_list[:i], num_par)
         if not par:
-            dag.add_node(node_list[i])
+            continue
         else:
             for p in par:
                 dag.add_edge(p, node_list[i])

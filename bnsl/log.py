@@ -12,7 +12,9 @@ from logging.handlers import RotatingFileHandler
 
 os.makedirs('.logs', exist_ok=True)
 bnsl_log = logging.getLogger('bnsl')
+ga_log = logging.getLogger('ga')
 bnsl_log.setLevel(logging.INFO)
+ga_log.setLevel(logging.INFO)
 
 fh = RotatingFileHandler(os.path.join('.logs', 'log'), maxBytes=5 * 1024 * 1024, backupCount=10, encoding='utf-8')
 
@@ -20,3 +22,4 @@ f = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 fh.setFormatter(f)
 bnsl_log.addHandler(fh)
+ga_log.addHandler(fh)

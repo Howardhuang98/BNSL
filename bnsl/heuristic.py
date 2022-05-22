@@ -22,7 +22,7 @@ from tqdm import tqdm
 from .graph import DAG
 from .score import Score, BIC_score
 from .graph import random_dag
-from .log import bnsl_log
+from .log import bnsl_log, ga_log
 
 
 class HillClimb:
@@ -257,7 +257,7 @@ class Genetic:
 
     def genome_to_dag(self, genome):
         g = DAG()
-        adj = genome.reshape(shape=(len(self.nodes), len(self.nodes)))
+        adj = genome.reshape((len(self.nodes), len(self.nodes)))
         g.add_nodes_from(self.nodes)
         edges = [(self.nodes[e[0]], self.nodes[e[1]]) for e in zip(*adj.nonzero())]
         g.add_edges_from(edges)
@@ -267,12 +267,16 @@ class Genetic:
         self.start()
         print("\nIteration\tNumber of genome\tHighest score")
         for _ in range(self.max_iter):
+            ga_log.info(self.god.loc[0])
             now_pop, n = self.god.shape[0], int(self.god.shape[0] / 2)
             sys.stdout.write(f"\r{_}\t\t\t{now_pop}\t\t\t\t\t{self.god.loc[0, 'score']:>6f}")
             sys.stdout.flush()
             self.select(n)
             self.crossover()
             self.add_pop(now_pop - n)
+        self.god.sort_values(by=['score'], ascending=False, inplace=True)
+        self.god.reset_index(inplace=True, drop=True)
+        return self.genome_to_dag(self.god.loc[0, "genome"])
 
 
 if __name__ == '__main__':

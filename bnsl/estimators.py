@@ -14,10 +14,9 @@ import pandas as pd
 
 import bnsl
 from .base import Estimator
-from .bionics import Genetic
 from .dp import generate_order_graph, generate_parent_graph, order2dag
 from .expert import Expert
-from .heuristic import HillClimb, SimulatedAnnealing
+from .heuristic import HillClimb, SimulatedAnnealing, Genetic
 from .pc import *
 from .score import BIC_score, MDL_score, Knowledge_fused_score
 from .k2 import order_to_dag
@@ -178,40 +177,28 @@ class GA(Estimator):
 
     """
 
-    def __init__(self, data):
+    def __init__(self, data,population=40, c1=0.5, c2=0.5, w=0.05, num_parents=5, max_iter=100):
         super(GA, self).__init__()
         self.load_data(data)
         self.history = None
+        self.pop = population
+        self.c1 = c1
+        self.c2 = c2
+        self.w = w
+        self.num_parents = num_parents
+        self.max_iter = max_iter
+        self.result = None
 
-    def run(self, num_parent=5, score_method=BIC_score, pop=40, max_iter=150, c1=0.5, c2=0.5,
-            w=0.05, patience=20, return_history=False):
+    def run(self):
         """
         run the genetic algorithm estimator.
-
-        Args:
-
-            num_parent: the maximum number of parents nodes for one node.
-            score_method: score function.
-            pop: the population number, also known as the number of genomes.
-            max_iter: the maximum number of iteration.
-            c1: the probability of crossover with personal historical best genome.
-            c2: the probability of crossover with global historical best genome.
-            w: the probability of mutation.
-            patience: patience.
-            return_history: if True, it will return a tuple (DAG, history)
-
         Returns:
             A DAG instance or a tuple.
         """
-        ga = Genetic(self.data, num_parent=num_parent, score_method=score_method, pop=pop, max_iter=max_iter, c1=c1,
-                     c2=c2,
-                     w=w, patience=patience)
-        self.result = ga.run()
-        self.history = ga.history
-        if return_history:
-            return self.result, self.history
-        else:
-            return self.result
+        bic = BIC_score(self.data)
+        ga = Genetic(bic, population=self.pop, c1=self.c1, c2=self.c2, w=self.w, num_parents=self.num_parents, max_iter=self.max_iter)
+        self.result = ga.evolution()
+        return self.result
 
 
 class KBNL(Estimator):
